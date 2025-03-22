@@ -450,7 +450,7 @@
         <div class="agreement">
           <label>
             <input type="checkbox" id="agreementCheckbox" required>
-            <span>利用規約とプライバシーポリシーに同意します</span>
+            <span><a href="#" class="terms-link">利用規約</a>と<a href="#" class="privacy-link">プライバシーポリシー</a>に同意します</span>
           </label>
         </div>
 
@@ -505,6 +505,17 @@
       // ここに実際の送信処理を実装
       // 成功時は完了ページ（complete.html）へ遷移
       window.location.href = 'complete.html';
+    });
+
+    // 利用規約とプライバシーポリシーのポップアップ
+    document.querySelector('.terms-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open('terms.html', 'terms', 'width=800,height=600,scrollbars=yes');
+    });
+
+    document.querySelector('.privacy-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open('privacy.html', 'privacy', 'width=800,height=600,scrollbars=yes');
     });
   </script>
 </body>
