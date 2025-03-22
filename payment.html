@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支払い方法の選択 - TeamBase</title>
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 800px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .payment-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .payment-header h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+
+    .payment-header p {
+      color: var(--gray);
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .payment-option {
+      background: var(--light);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .payment-option:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary);
+      background: var(--secondary);
+    }
+
+    .payment-option img {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1rem;
+    }
+
+    .payment-option h3 {
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+
+    .payment-option p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .payment-form {
+      background: var(--light);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .payment-form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--gradient-primary);
+      color: var(--light);
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+      width: 100%;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .payment-options {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="payment-header">
+      <h1>支払い方法の選択</h1>
+      <p>ご希望の支払い方法を選択してください</p>
+    </div>
+
+    <div class="payment-options">
+      <div class="payment-option" onclick="selectPaymentMethod('credit')">
+        <img src="images/credit-card.svg" alt="クレジットカード" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEE2RkZGIj48cGF0aCBkPSJNMjAgNEg0Yy0xLjExIDAtMS45OS45LTEuOTkgMkwyIDE4YzAgMS4xLjg5IDIgMiAyaDE2YzEuMTEgMCAyLS45IDItMlY2YzAtMS4xLS44OS0yLTItMnptMCAxNEg0di02aDE2djZ6bTAtMTBINFY2aDE2djJ6Ii8+PC9zdmc+'" />
+        <h3>クレジットカード決済</h3>
+        <p>安全なオンライン決済で<br>すぐにサービスを開始</p>
+      </div>
+
+      <div class="payment-option" onclick="selectPaymentMethod('contact')">
+        <img src="images/contact.svg" alt="営業担当" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEE2RkZGIj48cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0tLjQgNC4yNWwtNy44OCA0LjcxYy0uMjMuMTMtLjQxLjItLjcyLjItLjMxIDAtLjQ5LS4wNy0uNzItLjJMMS45IDguMjVjLS4yNS0uMTYtLjQtLjQzLS40LS43MiAwLS42Ny43My0xLjA3IDEuMy0uNzJMMTIgMTFsOS4xLTUuMTljLjU3LS4zNSAxLjMuMDUgMS4zLjcyIDAgLjI5LS4xNS41Ni0uNC43MnoiLz48L3N2Zz4='" />
+        <h3>営業担当者に相談</h3>
+        <p>お客様のご要望に合わせた<br>プランをご提案</p>
+      </div>
+    </div>
+
+    <!-- クレジットカード決済フォーム -->
+    <div id="creditCardForm" class="payment-form">
+      <form id="paymentForm" onsubmit="return validateForm(event)">
+        <div class="form-group">
+          <label for="cardNumber">カード番号</label>
+          <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expiryDate">有効期限</label>
+            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">セキュリティコード</label>
+            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cardName">カード名義人</label>
+          <input type="text" id="cardName" placeholder="TARO YAMADA" required>
+        </div>
+
+        <button type="submit" class="btn">支払いを確定する</button>
+      </form>
+    </div>
+
+    <!-- 営業担当者連絡フォーム -->
+    <div id="contactForm" class="payment-form">
+      <form id="inquiryForm" onsubmit="return validateInquiryForm(event)">
+        <div class="form-group">
+          <label for="companyName">会社名</label>
+          <input type="text" id="companyName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contactPerson">担当者名</label>
+          <input type="text" id="contactPerson" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">電話番号</label>
+          <input type="tel" id="phoneNumber" placeholder="03-1234-5678" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" required>
+        </div>
+
+        <button type="submit" class="btn">問い合わせを送信する</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function selectPaymentMethod(method) {
+      // 選択状態のリセット
+      document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      document.querySelectorAll('.payment-form').forEach(form => {
+        form.classList.remove('active');
+      });
+
+      // 選択された方法をハイライト
+      if (method === 'credit') {
+        document.querySelector('.payment-option:first-child').classList.add('selected');
+        document.getElementById('creditCardForm').classList.add('active');
+      } else {
+        document.querySelector('.payment-option:last-child').classList.add('selected');
+        document.getElementById('contactForm').classList.add('active');
+      }
+    }
+
+    function validateForm(event) {
+      event.preventDefault();
+      // ここに実際の決済処理を実装
+      alert('決済処理を実行します。実際の実装では、セキュアな決済処理を行います。');
+      return false;
+    }
+
+    function validateInquiryForm(event) {
+      event.preventDefault();
+      // ここに実際の問い合わせ送信処理を実装
+      alert('お問い合わせを送信しました。営業担当者から連絡させていただきます。');
+      return false;
+    }
+
+    // カード番号の自動フォーマット
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+      let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+      e.target.value = formattedValue;
+    });
+
+    // 有効期限の自動フォーマット
+    document.getElementById('expiryDate').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+      if (value.length > 2) {
+        value = value.substr(0, 2) + '/' + value.substr(2);
+      }
+      e.target.value = value;
+    });
+  </script>
+</body>
+</html> 
