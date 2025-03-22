@@ -1,1 +1,1289 @@
- 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SL.AI Team Base - シンプルで直感的なタスク管理ツール</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 1200px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--dark);
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ボタン */
+    .btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: var(--light);
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      background: var(--gradient-primary);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-large {
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-outline::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      z-index: -1;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      color: white;
+    }
+
+    .btn-outline:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* ヒーローセクション */
+    .hero {
+      background-color: var(--light);
+      padding: 4rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: url("https://raw.githubusercontent.com/Nobutan97/TeamBase/main/%E3%83%8F%E3%82%99%E3%83%83%E3%82%AF%E3%82%AB%E3%83%8F%E3%82%99%E3%83%BC.png") center/cover no-repeat;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      animation: slideIn 1s ease;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .hero-image {
+      max-width: 800px;
+      margin: 3rem auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .hero-image:hover img {
+      transform: scale(1.02);
+    }
+
+    /* 課題喚起セクション */
+    .problems {
+      background-color: var(--secondary);
+      padding: 5rem 0;
+    }
+
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .problem-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+
+    .problem-card:hover::before {
+      opacity: 0.05;
+    }
+
+    .problem-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .problem-card img {
+      width: 160px;
+      margin-bottom: 1.5rem;
+    }
+
+    .problem-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .problem-card h4 {
+      color: var(--dark);
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    .problem-card p {
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    /* TeamBaseとは？セクション */
+    .about-teambase {
+      background: linear-gradient(135deg, var(--secondary) 0%, #ffffff 100%);
+      padding: 8rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-teambase::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a6fff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+    }
+
+    .about-text {
+      max-width: 100%;
+    }
+
+    .about-text h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .about-text p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      color: var(--gray);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-item:hover::before {
+      opacity: 1;
+    }
+
+    .feature-item h4 {
+      color: var(--primary);
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .feature-item h4::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234A6FFF'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+      background-size: contain;
+    }
+
+    .feature-item p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .about-image {
+      position: relative;
+      max-width: 100%;
+    }
+
+    .about-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .about-image::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      background: var(--gradient-primary);
+      opacity: 0.1;
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+
+    .about-image:hover img {
+      transform: translate(-10px, -10px);
+    }
+
+    .about-image:hover::before {
+      transform: translate(10px, 10px);
+    }
+
+    @media (max-width: 768px) {
+      .about-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .about-text h2 {
+        font-size: 2rem;
+      }
+
+      .about-text p {
+        font-size: 1.1rem;
+      }
+
+      .feature-item {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Todoアプリとは？セクション */
+    .about-todoapp {
+      background: linear-gradient(135deg, var(--secondary) 0%, #ffffff 100%);
+      padding: 8rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-todoapp::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a6fff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .todo-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+    }
+
+    .todo-text {
+      max-width: 100%;
+    }
+
+    .todo-text h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .todo-text p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      color: var(--gray);
+    }
+
+    .todo-features {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .todo-feature {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .todo-feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .todo-feature:hover {
+      transform: translateY(-5px);
+    }
+
+    .todo-feature:hover::before {
+      opacity: 1;
+    }
+
+    .todo-feature h4 {
+      color: var(--primary);
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .todo-feature h4::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234A6FFF'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+      background-size: contain;
+    }
+
+    .todo-feature p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .todo-image {
+      position: relative;
+      max-width: 100%;
+    }
+
+    .todo-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .todo-image::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      background: var(--gradient-primary);
+      opacity: 0.1;
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+
+    .todo-image:hover img {
+      transform: translate(-10px, -10px);
+    }
+
+    .todo-image:hover::before {
+      transform: translate(10px, 10px);
+    }
+
+    @media (max-width: 768px) {
+      .todo-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .todo-text h2 {
+        font-size: 2rem;
+      }
+
+      .todo-text p {
+        font-size: 1.1rem;
+      }
+
+      .todo-feature {
+        padding: 1.5rem;
+      }
+    }
+
+    /* 導入効果セクション */
+    .benefits {
+      background-color: var(--secondary);
+      padding: 5rem 0;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .benefit-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .benefit-card h4 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .benefit-content {
+      margin-bottom: 1.5rem;
+    }
+
+    .benefit-content h5 {
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .benefit-content p {
+      color: var(--gray);
+    }
+
+    .benefit-content img {
+      width: 160px;
+      height: auto;
+      border-radius: 8px;
+      margin: 1rem auto;
+      display: block;
+      min-height: unset;
+      object-fit: contain;
+    }
+
+    /* 料金プラン */
+    .pricing {
+      padding: 5rem 0;
+      background-color: var(--light);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .pricing-card {
+      background: var(--light);
+      border: 2px solid var(--secondary);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+    }
+
+    .pricing-card h3 {
+      margin-top: 1rem;
+    }
+
+    .price {
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin: 1.5rem 0;
+    }
+
+    .feature-list {
+      text-align: left;
+      margin: 2rem 0;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      margin-top: auto;
+      margin-bottom: 1rem;
+    }
+
+    .pricing-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .pricing-card.popular {
+      border-color: var(--primary);
+      position: relative;
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .pricing-card.popular::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      bottom: -2px;
+      left: -2px;
+      background: var(--gradient-primary);
+      border-radius: 12px;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    .popular-tag {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background: var(--gradient-accent);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 1rem;
+      transform: translateY(0);
+      z-index: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .feature-list {
+      text-align: left;
+      margin: 2rem 0;
+    }
+
+    .feature-list li {
+      margin-bottom: 0.8rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .feature-list li:before {
+      content: "✓";
+      color: var(--primary);
+      position: absolute;
+      left: 0;
+    }
+
+    /* FAQ */
+    .faq {
+      background-color: var(--light-gray);
+      padding: 5rem 0;
+    }
+
+    .faq-grid {
+      display: grid;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: var(--light);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      transform: translateX(10px);
+    }
+
+    .faq-question {
+      font-weight: bold;
+      margin-bottom: 0.8rem;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+
+    .faq-answer {
+      color: var(--gray);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+    }
+
+    /* フッター */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 3rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(74, 111, 255, 0.1) 0%, transparent 100%);
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .footer-links h4 {
+      margin-bottom: 1rem;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--light);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+      position: relative;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+    }
+
+    .footer-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--light);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .footer-links a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* メディアクエリ */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .steps,
+      .pricing-grid,
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+
+      .integration-logos img {
+        height: 30px;
+        margin: 0.5rem;
+      }
+
+      .pricing-card.popular {
+        transform: scale(1.05);
+      }
+    }
+
+    /* ダークモードサポート */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --light: #1a1a1a;
+        --dark: #ffffff;
+        --gray: #a0a0a0;
+        --light-gray: #2a2a2a;
+      }
+
+      body {
+        background-color: var(--light);
+      }
+
+      header {
+        background-color: rgba(26, 26, 26, 0.9);
+      }
+
+      .integration-logos {
+        background: rgba(26, 26, 26, 0.8);
+      }
+    }
+
+    /* アニメーション定義 */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* スクロールプログレスバー */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: var(--gradient-primary);
+      z-index: 1001;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- スクロールプログレスバー -->
+  <div class="progress-bar"></div>
+
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">SL.AI Team Base</div>
+      <a href="#" class="btn">無料で始める</a>
+    </div>
+  </header>
+
+  <!-- ヒーローセクション -->
+  <section class="hero">
+    <div class="container hero-content" data-aos="fade-up">
+      <h1>シンプルで直感的な<br>タスク管理ツール</h1>
+      <p>Todoアプリでタスク管理がカンタン！<br>導入企業の平均生産性が35%向上</p>
+      <a href="#" class="btn btn-large">無料トライアルを始める</a>
+      
+      <div class="hero-image">
+        <img src="Team base&Todoアプリ サービス解説資料.png" alt="SL.AI Team Base のダッシュボード" style="border-radius: 16px;">
+      </div>
+    </div>
+  </section>
+
+  <!-- 課題喚起セクション -->
+  <section class="problems">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">こんな課題ありませんか？</h2>
+      <div class="problems-grid">
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="100">
+          <h3>01</h3>
+          <h4>各部署のタスクと目標が見えにくい</h4>
+          <p>システム画面で一括管理＆可視化！</p>
+          <img src="17.png" alt="システム可視化イメージ">
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="200">
+          <h3>02</h3>
+          <h4>KPIと業務のつながりが不透明</h4>
+          <p>KPIから逆算したタスク・Todo管理</p>
+          <img src="18.png" alt="KPI管理イメージ">
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="300">
+          <h3>03</h3>
+          <h4>マネジメント層の過剰な管理負担</h4>
+          <p>一括管理と主体性向上で楽々管理</p>
+          <img src="19.png" alt="管理効率化イメージ">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TeamBaseとは？セクション -->
+  <section class="about-teambase">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text" data-aos="fade-right">
+          <h2>SL.AI TeamBaseとは？</h2>
+          <p>TeamBaseは組織マネジメントと企業目標を可視化した<br>ビジュアルマネジメントシステムです。<br>
+          目標達成に必要なタスク・Todoの配分からKPI達成に向けた<br>すべてが管理可能となります。</p>
+          
+          <div class="features-grid">
+            <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
+              <h4>組織活動の可視化</h4>
+              <p>営業部・総務部・開発部といった各部署のKPIと、所属メンバーのTodoが可視化！業務進捗管理がカンタンに！</p>
+            </div>
+            <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
+              <h4>KPI管理がカンタン</h4>
+              <p>目指すKPIと期限設定が直感的に設定できるため、組織目標の進捗と不透明感が無くなります。</p>
+            </div>
+            <div class="feature-item" data-aos="fade-up" data-aos-delay="300">
+              <h4>各メンバーTodo管理と割り振り</h4>
+              <p>誰が今日、どんなTodoを実行するかを一括管理！さらにTodoの割り振りも直感的に可能となります。</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-image" data-aos="fade-left">
+          <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/Team%20base&Todo%E3%82%A2%E3%83%95%E3%82%9A%E3%83%AA%20%E3%82%B5%E3%83%BC%E3%83%92%E3%82%99%E3%82%B9%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99.png" alt="TeamBaseダッシュボード">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Todoアプリとは？セクション -->
+  <section class="about-todoapp">
+    <div class="container">
+      <div class="todo-content">
+        <div class="todo-text" data-aos="fade-right">
+          <h2>Todo appとは？</h2>
+          <p>TeamBaseと強力に連携できる日常でも使えるシンプルなアプリ！<br>
+          プライベートと業務、どちらもカンタン、直感的に管理・実行が可能となります。</p>
+          
+          <div class="todo-features">
+            <div class="todo-feature" data-aos="fade-up" data-aos-delay="100">
+              <h4>直感的なTodoリスト</h4>
+              <p>一般的なタスク・Todoをカンタンに入力ができます。スマホ対応もしているため日常使いでも問題なし。</p>
+            </div>
+            <div class="todo-feature" data-aos="fade-up" data-aos-delay="200">
+              <h4>TeamBase連携で業務依頼もカンタン</h4>
+              <p>チームメンバーや上司からの依頼Todoがあれば、アプリに自動的に入るため、ヌケモレがありません。</p>
+            </div>
+            <div class="todo-feature" data-aos="fade-up" data-aos-delay="300">
+              <h4>タスクプール・定常Todo管理</h4>
+              <p>毎日のルーティン、いつかやろうと思っているTodoもカンタンにストックすることが可能です。</p>
+            </div>
+          </div>
+        </div>
+        <div class="todo-image" data-aos="fade-left">
+          <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/2.png" alt="Todoアプリ画面">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 導入効果セクション -->
+  <section class="benefits">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">導入効果</h2>
+      <h3 class="benefits-subtitle">チームマネジメント＆タスク管理の実現により<br>事業目標の早期達成へ</h3>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <h4>全社視点の効果</h4>
+          <div class="benefit-content">
+            <h5>全社目標の共有</h5>
+            <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
+            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/20.png" alt="導入効果イメージ">
+          </div>
+        </div>
+        <div class="benefit-card">
+          <h4>経営者視点の効果</h4>
+          <div class="benefit-content">
+            <h5>社内活動の可視化</h5>
+            <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
+            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/21.png" alt="経営者視点の効果">
+          </div>
+        </div>
+        <div class="benefit-card">
+          <h4>管理職視点の効果</h4>
+          <div class="benefit-content">
+            <h5>管理効率向上</h5>
+            <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
+            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/22.png" alt="管理職視点の効果">
+          </div>
+        </div>
+        <div class="benefit-card">
+          <h4>社員視点の効果</h4>
+          <div class="benefit-content">
+            <h5>目標の明確化</h5>
+            <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
+            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/1.png" alt="社員視点の効果">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 料金プラン -->
+  <section class="pricing">
+    <div class="container">
+      <h2 class="section-title">料金プラン</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>フリープラン</h3>
+          <div class="price">¥0<span>/月</span></div>
+          <ul class="feature-list">
+            <li>5名まで利用可能</li>
+            <li>Todoアプリ完全無料</li>
+            <li>全機能利用可能</li>
+          </ul>
+          <a href="#" class="btn btn-outline">無料で始める</a>
+        </div>
+        <div class="pricing-card popular">
+          <div class="popular-tag">人気</div>
+          <h3>スタンダード</h3>
+          <div class="price">¥980<span>/月</span></div>
+          <ul class="feature-list">
+            <li>メンバー50名まで</li>
+            <li>導入オンボーディングサポート</li>
+          </ul>
+          <a href="#" class="btn">無料トライアル</a>
+        </div>
+        <div class="pricing-card">
+          <h3>エンタープライズ</h3>
+          <div class="price">お見積り</div>
+          <ul class="feature-list">
+            <li>50名以上ご利用可能</li>
+            <li>ボリュームディスカウント</li>
+            <li>専用サポート</li>
+            <li>カスタム開発対応</li>
+          </ul>
+          <a href="#" class="btn btn-outline">お問い合わせ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="container">
+      <h2 class="section-title">よくある質問</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">Q. 新しいシステムの導入には抵抗がある従業員もいると思いますが、どう対応しますか？</div>
+          <div class="faq-answer">A. 導入前にしっかりとトレーニングを実施し、全従業員がシステムを使いやすいと感じられるようにサポートします。また、導入後もサポート体制を整え、質問や問題があれば迅速に対応します。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Q. システム導入の初期段階で問題が発生した場合、どう対応しますか？</div>
+          <div class="faq-answer">A. 導入初期には、IT部門とベンダーが連携し、迅速なサポートを提供します。問題が発生した場合には、必要な修正や調整を行い、業務への影響を最小限に抑えます。また、定期的に進捗を確認し、柔軟に対応します。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Q. 使い方がわからない場合、どのように相談したら良いですか？</div>
+          <div class="faq-answer">A. 専属コンサルタントにより、丁寧なオンボーディングに加えて、都度使い方のご相談をチャットでお受け付けさせていただきますので、ご安心ください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Q. 教育体制の強化のための相談もできると聞いたんだけど？</div>
+          <div class="faq-answer">A. 法人様の教育体系を構築する研修システム「研修一括つくるくん」をご用意しておりますので、社内教育体系の構築に向けて専属サポートが対応します。詳しくはご相談ください。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <h4>製品情報</h4>
+          <ul>
+            <li><a href="#">機能一覧</a></li>
+            <li><a href="#">料金プラン</a></li>
+            <li><a href="#">導入事例</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>サポート</h4>
+          <ul>
+            <li><a href="#">ヘルプセンター</a></li>
+            <li><a href="#">お問い合わせ</a></li>
+            <li><a href="#">ステータス</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>会社情報</h4>
+          <ul>
+            <li><a href="#">会社概要</a></li>
+            <li><a href="#">ブログ</a></li>
+            <li><a href="#">採用情報</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>法的情報</h4>
+          <ul>
+            <li><a href="#">利用規約</a></li>
+            <li><a href="#">プライバシーポリシー</a></li>
+            <li><a href="#">セキュリティ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2024 SL.AI Team Base. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    // AOS初期化
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+
+    // スクロールプログレスバーの制御
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.querySelector('.progress-bar').style.width = scrolled + '%';
+    });
+
+    // FAQのアコーディオン機能
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const wasActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        if (!wasActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+
+    // スムーズスクロール
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Intersection Observerを使用したアニメーション
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    document.querySelectorAll('.pricing-card, .step-card, .faq-item').forEach(el => {
+      observer.observe(el);
+    });
+
+    // ヒーローセクションのパララックス効果
+    document.addEventListener('mousemove', (e) => {
+      const hero = document.querySelector('.hero-image');
+      const speed = 5;
+      const x = (window.innerWidth - e.pageX * speed) / 100;
+      const y = (window.innerHeight - e.pageY * speed) / 100;
+      hero.style.transform = `translateX(${x}px) translateY(${y}px)`;
+    });
+  </script>
+</body>
+</html>
