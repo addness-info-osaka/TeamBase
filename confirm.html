@@ -283,6 +283,11 @@
       margin-top: 2rem;
     }
 
+    .btn-disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
     .btn {
       display: inline-block;
       padding: 0.8rem 2rem;
@@ -293,27 +298,24 @@
       border: none;
       cursor: pointer;
       font-size: 1rem;
-    }
-
-    .btn-primary {
       background: var(--gradient-primary);
       color: var(--light);
     }
 
-    .btn-primary:disabled {
-      opacity: 0.5;
+    .btn:disabled {
+      background: #ccc;
       cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
     .btn-outline {
       background: transparent;
       border: 2px solid var(--primary);
       color: var(--primary);
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
     /* フッター */
@@ -367,11 +369,6 @@
         width: 100%;
         text-align: center;
       }
-    }
-
-    .btn-disabled {
-      background: #ccc;
-      cursor: not-allowed;
     }
 
     .terms-check {
