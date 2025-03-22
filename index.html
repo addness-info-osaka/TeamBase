@@ -72,6 +72,73 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .nav-menu {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-menu a:hover {
+      color: var(--primary);
+    }
+
+    .nav-menu a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-menu {
+        display: none;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--light);
+        padding: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+    }
+
     /* ボタン */
     .btn {
       display: inline-block;
@@ -874,24 +941,120 @@
     }
 
     /* メディアクエリ */
+    @media (max-width: 1024px) {
+      .container {
+        padding: 0 30px;
+      }
+      
+      .problems-grid,
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .pricing-grid {
+        gap: 1.5rem;
+      }
+
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+    }
+
     @media (max-width: 768px) {
       .hero h1 {
         font-size: 2rem;
-      }
-      
-      .steps,
-      .pricing-grid,
-      .footer-content {
-        grid-template-columns: 1fr;
+        line-height: 1.3;
       }
 
-      .integration-logos img {
-        height: 30px;
-        margin: 0.5rem;
+      .hero p {
+        font-size: 1.1rem;
+      }
+
+      .hero-image {
+        margin: 2rem auto;
+      }
+      
+      .problems-grid,
+      .benefits-grid,
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .about-content,
+      .todo-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .about-text,
+      .todo-text {
+        order: 1;
+      }
+
+      .about-image,
+      .todo-image {
+        order: 2;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
       }
 
       .pricing-card.popular {
-        transform: scale(1.05);
+        transform: scale(1);
+      }
+
+      .popular-tag {
+        font-size: 0.9rem;
+        padding: 4px 16px;
+      }
+
+      .price {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 20px;
+      }
+
+      .hero {
+        padding: 2rem 0;
+      }
+
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+
+      .btn-large {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .feature-item,
+      .todo-feature {
+        padding: 1.5rem;
+      }
+
+      .feature-item h4,
+      .todo-feature h4 {
+        font-size: 1.1rem;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
       }
     }
 
@@ -952,6 +1115,11 @@
       z-index: 1001;
       transition: width 0.3s ease;
     }
+
+    .nav-menu .btn {
+      color: var(--light);
+      background: var(--gradient-primary);
+    }
   </style>
 </head>
 <body>
@@ -962,25 +1130,43 @@
   <header>
     <div class="container header-content">
       <div class="logo">SL.AI Team Base</div>
-      <a href="#" class="btn">無料で始める</a>
+      <nav class="nav-menu">
+        <a href="#problems">課題</a>
+        <a href="#about">TeamBaseとは</a>
+        <a href="#todo">Todoアプリ</a>
+        <a href="#benefits">導入効果</a>
+        <a href="#pricing">料金プラン</a>
+        <a href="#faq">FAQ</a>
+        <a href="signup.html" class="btn">無料で始める</a>
+      </nav>
+      <button class="mobile-menu-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
   </header>
 
   <!-- ヒーローセクション -->
   <section class="hero">
     <div class="container hero-content" data-aos="fade-up">
-      <h1>シンプルで直感的な<br>タスク管理ツール</h1>
-      <p>Todoアプリでタスク管理がカンタン！<br>導入企業の平均生産性が35%向上</p>
-      <a href="#" class="btn btn-large">無料トライアルを始める</a>
+      <h1>チームの生産性を最大化する<br>タスク管理ツール</h1>
+      <p>TeamBaseは、チームの課題を可視化し、メンバー全員の進捗状況を<br>リアルタイムで共有できるタスク管理ツールです。</p>
+      <div class="hero-buttons">
+        <a href="signup.html" class="btn btn-primary">無料で始める</a>
+        <a href="#about" class="btn btn-secondary">詳しく見る</a>
+      </div>
       
       <div class="hero-image">
-        <img src="Team base&Todoアプリ サービス解説資料.png" alt="SL.AI Team Base のダッシュボード" style="border-radius: 16px;">
+        <img src="images/Team base&Todoアプリ サービス解説資料.png" alt="SL.AI Team Base のダッシュボード" style="border-radius: 16px;">
       </div>
     </div>
   </section>
 
   <!-- 課題喚起セクション -->
-  <section class="problems">
+  <section id="problems" class="problems">
     <div class="container">
       <h2 class="section-title" data-aos="fade-up">こんな課題ありませんか？</h2>
       <div class="problems-grid">
@@ -988,26 +1174,26 @@
           <h3>01</h3>
           <h4>各部署のタスクと目標が見えにくい</h4>
           <p>システム画面で一括管理＆可視化！</p>
-          <img src="17.png" alt="システム可視化イメージ">
+          <img src="images/17.png" alt="システム可視化イメージ">
         </div>
         <div class="problem-card" data-aos="fade-up" data-aos-delay="200">
           <h3>02</h3>
           <h4>KPIと業務のつながりが不透明</h4>
           <p>KPIから逆算したタスク・Todo管理</p>
-          <img src="18.png" alt="KPI管理イメージ">
+          <img src="images/18.png" alt="KPI管理イメージ">
         </div>
         <div class="problem-card" data-aos="fade-up" data-aos-delay="300">
           <h3>03</h3>
           <h4>マネジメント層の過剰な管理負担</h4>
           <p>一括管理と主体性向上で楽々管理</p>
-          <img src="19.png" alt="管理効率化イメージ">
+          <img src="images/19.png" alt="管理効率化イメージ">
         </div>
       </div>
     </div>
   </section>
 
   <!-- TeamBaseとは？セクション -->
-  <section class="about-teambase">
+  <section id="about" class="about-teambase">
     <div class="container">
       <div class="about-content">
         <div class="about-text" data-aos="fade-right">
@@ -1038,7 +1224,7 @@
   </section>
 
   <!-- Todoアプリとは？セクション -->
-  <section class="about-todoapp">
+  <section id="todo" class="about-todoapp">
     <div class="container">
       <div class="todo-content">
         <div class="todo-text" data-aos="fade-right">
@@ -1062,14 +1248,14 @@
           </div>
         </div>
         <div class="todo-image" data-aos="fade-left">
-          <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/2.png" alt="Todoアプリ画面">
+          <img src="images/2.png" alt="Todoアプリ画面">
         </div>
       </div>
     </div>
   </section>
 
   <!-- 導入効果セクション -->
-  <section class="benefits">
+  <section id="benefits" class="benefits">
     <div class="container">
       <h2 class="section-title" data-aos="fade-up">導入効果</h2>
       <h3 class="benefits-subtitle">チームマネジメント＆タスク管理の実現により<br>事業目標の早期達成へ</h3>
@@ -1080,7 +1266,7 @@
           <div class="benefit-content">
             <h5>全社目標の共有</h5>
             <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
-            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/20.png" alt="導入効果イメージ">
+            <img src="images/20.png" alt="導入効果イメージ">
           </div>
         </div>
         <div class="benefit-card">
@@ -1088,7 +1274,7 @@
           <div class="benefit-content">
             <h5>社内活動の可視化</h5>
             <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
-            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/21.png" alt="経営者視点の効果">
+            <img src="images/21.png" alt="経営者視点の効果">
           </div>
         </div>
         <div class="benefit-card">
@@ -1096,7 +1282,7 @@
           <div class="benefit-content">
             <h5>管理効率向上</h5>
             <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
-            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/22.png" alt="管理職視点の効果">
+            <img src="images/22.png" alt="管理職視点の効果">
           </div>
         </div>
         <div class="benefit-card">
@@ -1104,7 +1290,7 @@
           <div class="benefit-content">
             <h5>目標の明確化</h5>
             <p>全社目標が明確に定量化し、日々確認することが可能に。</p>
-            <img src="https://raw.githubusercontent.com/Nobutan97/TeamBase/main/1.png" alt="社員視点の効果">
+            <img src="images/1.png" alt="社員視点の効果">
           </div>
         </div>
       </div>
@@ -1112,7 +1298,7 @@
   </section>
 
   <!-- 料金プラン -->
-  <section class="pricing">
+  <section id="pricing" class="pricing">
     <div class="container">
       <h2 class="section-title">料金プラン</h2>
       <div class="pricing-grid">
@@ -1124,7 +1310,7 @@
             <li>Todoアプリ完全無料</li>
             <li>全機能利用可能</li>
           </ul>
-          <a href="#" class="btn btn-outline">無料で始める</a>
+          <a href="signup.html" class="btn btn-outline">無料で始める</a>
         </div>
         <div class="pricing-card popular">
           <div class="popular-tag">人気</div>
@@ -1134,7 +1320,7 @@
             <li>メンバー50名まで</li>
             <li>導入オンボーディングサポート</li>
           </ul>
-          <a href="#" class="btn">無料トライアル</a>
+          <a href="signup.html" class="btn">無料トライアル</a>
         </div>
         <div class="pricing-card">
           <h3>エンタープライズ</h3>
@@ -1145,14 +1331,14 @@
             <li>専用サポート</li>
             <li>カスタム開発対応</li>
           </ul>
-          <a href="#" class="btn btn-outline">お問い合わせ</a>
+          <a href="signup.html" class="btn btn-outline">お問い合わせ</a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="faq">
+  <section id="faq" class="faq">
     <div class="container">
       <h2 class="section-title">よくある質問</h2>
       <div class="faq-grid">
@@ -1183,38 +1369,22 @@
         <div class="footer-links">
           <h4>製品情報</h4>
           <ul>
-            <li><a href="#">機能一覧</a></li>
-            <li><a href="#">料金プラン</a></li>
-            <li><a href="#">導入事例</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>サポート</h4>
-          <ul>
-            <li><a href="#">ヘルプセンター</a></li>
-            <li><a href="#">お問い合わせ</a></li>
-            <li><a href="#">ステータス</a></li>
+            <li><a href="#problems">機能一覧</a></li>
+            <li><a href="#pricing">料金プラン</a></li>
+            <li><a href="#benefits">導入事例</a></li>
           </ul>
         </div>
         <div class="footer-links">
           <h4>会社情報</h4>
           <ul>
-            <li><a href="#">会社概要</a></li>
-            <li><a href="#">ブログ</a></li>
-            <li><a href="#">採用情報</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>法的情報</h4>
-          <ul>
-            <li><a href="#">利用規約</a></li>
-            <li><a href="#">プライバシーポリシー</a></li>
-            <li><a href="#">セキュリティ</a></li>
+            <li><a href="https://addness.co.jp/" target="_blank" rel="noopener noreferrer">会社概要</a></li>
+            <li><a href="https://note.com/addness_recruit" target="_blank" rel="noopener noreferrer">ブログ</a></li>
+            <li><a href="https://addness.co.jp/join-us/" target="_blank" rel="noopener noreferrer">採用情報</a></li>
           </ul>
         </div>
       </div>
       <div class="copyright">
-        <p>© 2024 SL.AI Team Base. All Rights Reserved.</p>
+        <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
       </div>
     </div>
   </footer>
@@ -1247,16 +1417,57 @@
       });
     });
 
+    // モバイルメニューの制御
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navMenu = document.querySelector('.nav-menu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+
     // スムーズスクロール
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
+        
+        if (this.getAttribute('href') === '#') return;
+        
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
+          // モバイルメニューが開いている場合は閉じる
+          navMenu.classList.remove('active');
+          
+          const headerOffset = 80; // ヘッダーの高さ分を考慮
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
           });
+        }
+      });
+    });
+
+    // スクロール時のヘッダーアクティブ状態の更新
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
         }
       });
     });
