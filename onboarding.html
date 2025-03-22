@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>導入オンボーディング - SL.AI Team Base</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>オンボーディング - SL.AI Team Base</title>
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <style>
     :root {
@@ -14,8 +14,10 @@
       --light: #fff;
       --gray: #666;
       --light-gray: #F8F9FA;
-      --max-width: 1200px;
+      --max-width: 800px;
       --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+      --success: #28a745;
     }
 
     * {
@@ -26,7 +28,7 @@
     }
 
     body {
-      background-color: var(--light);
+      background-color: var(--secondary);
       color: var(--dark);
       line-height: 1.6;
     }
@@ -34,14 +36,17 @@
     .container {
       max-width: var(--max-width);
       margin: 0 auto;
-      padding: 2rem 20px;
+      padding: 0 20px;
     }
 
+    /* ヘッダー */
     header {
-      background: var(--gradient-primary);
-      color: var(--light);
+      background-color: var(--light);
       padding: 1rem 0;
-      margin-bottom: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     .header-content {
@@ -53,66 +58,289 @@
     .logo {
       font-size: 1.5rem;
       font-weight: bold;
-      color: var(--light);
-      text-decoration: none;
-    }
-
-    .section-title {
-      font-size: 2rem;
-      text-align: center;
-      margin-bottom: 2rem;
-      color: var(--dark);
-    }
-
-    .onboarding-content {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .onboarding-section {
-      background: var(--light);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .onboarding-section h3 {
       color: var(--primary);
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+      text-decoration: none;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .text-guide {
-      margin-bottom: 2rem;
+    /* メインコンテンツ */
+    .onboarding-section {
+      padding: 4rem 0;
+      min-height: calc(100vh - 180px);
     }
 
-    .text-guide h4 {
+    .onboarding-container {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .onboarding-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .onboarding-header h1 {
+      font-size: 2.5rem;
       color: var(--dark);
-      margin: 1.5rem 0 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .onboarding-header p {
+      color: var(--gray);
       font-size: 1.2rem;
     }
 
-    .text-guide p {
-      color: var(--gray);
-      margin-bottom: 1rem;
+    /* プログレスバー */
+    .progress-container {
+      margin-bottom: 3rem;
     }
 
-    .text-guide ul {
-      list-style-position: inside;
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--light-gray);
+      border-radius: 4px;
       margin-bottom: 1rem;
-      color: var(--gray);
+      overflow: hidden;
     }
 
-    .video-guide {
-      margin-top: 2rem;
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* ステップコンテンツ */
+    .step-content {
+      display: none;
+      animation: fade-in 0.5s ease;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    .step-title {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .step-description {
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    /* フォーム要素 */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* チェックリスト */
+    .checklist {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--secondary);
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .checklist-item:hover {
+      transform: translateX(10px);
+    }
+
+    .checklist-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      margin-right: 1rem;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .checklist-checkbox.checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .checklist-text {
+      flex-grow: 1;
+    }
+
+    .checklist-text h3 {
+      color: var(--dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .checklist-text p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* ボタン */
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .btn-secondary {
+      background: var(--light);
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* フッター */
+    footer {
+      background-color: var(--light);
+      padding: 1rem 0;
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* アニメーション */
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* レスポンシブデザイン */
+    @media (max-width: 768px) {
+      .onboarding-container {
+        padding: 2rem 1.5rem;
+      }
+
+      .onboarding-header h1 {
+        font-size: 2rem;
+      }
+
+      .onboarding-header p {
+        font-size: 1.1rem;
+      }
+
+      .button-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    .completion-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      background: var(--success);
+      color: var(--light);
+      border-radius: 12px;
+      font-size: 0.8rem;
+      margin-left: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .completion-badge.visible {
+      opacity: 1;
     }
 
     .video-container {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 アスペクト比 */
-      margin: 1rem 0;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding-bottom: 56.25%; /* 16:9のアスペクト比 */
+      height: 0;
+      overflow: hidden;
     }
 
     .video-container iframe {
@@ -121,123 +349,395 @@
       left: 0;
       width: 100%;
       height: 100%;
-      border: none;
-      border-radius: 8px;
     }
 
-    .btn {
-      display: inline-block;
-      background: var(--gradient-primary);
-      color: var(--light);
-      padding: 0.8rem 2rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      border: none;
-      margin-top: 1rem;
+    .checkbox-group {
+      margin: 2rem 0;
     }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(74, 111, 255, 0.2);
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
     }
 
-    .next-steps {
+    .checkbox-item input[type="checkbox"] {
+      margin-right: 1rem;
+      width: 20px;
+      height: 20px;
+    }
+
+    .checkbox-item label {
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+
+    /* Todo app signup button */
+    .todo-app-signup {
       text-align: center;
-      margin-top: 3rem;
+      margin: 2rem 0;
     }
 
-    @media (max-width: 768px) {
-      .section-title {
-        font-size: 1.8rem;
-      }
+    .todo-signup-btn {
+      font-size: 1.1rem;
+      padding: 1rem 2rem;
+    }
 
-      .onboarding-section {
-        padding: 1.5rem;
-      }
+    /* Completion screen styles */
+    .completion-content {
+      text-align: center;
+      padding: 3rem 0;
+    }
 
-      .onboarding-section h3 {
-        font-size: 1.3rem;
+    .completion-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      animation: bounce 1s ease infinite;
+    }
+
+    .completion-title {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .completion-message {
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-bottom: 3rem;
+      line-height: 1.8;
+    }
+
+    .completion-features {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 2rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: var(--secondary);
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+    }
+
+    .feature-text {
+      text-align: left;
+    }
+
+    .feature-text h3 {
+      color: var(--dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .feature-text p {
+      color: var(--gray);
+      margin: 0;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
       }
     }
   </style>
 </head>
 <body>
+  <!-- ヘッダー -->
   <header>
     <div class="container header-content">
       <a href="index.html" class="logo">SL.AI Team Base</a>
     </div>
   </header>
 
-  <main class="container">
-    <h2 class="section-title">導入オンボーディング</h2>
-    
-    <div class="onboarding-content">
-      <div class="onboarding-section">
-        <h3>テキストガイド</h3>
-        <div class="text-guide">
-          <h4>1. 初期設定</h4>
-          <p>TeamBaseを効果的に活用するための初期設定手順をご説明します。</p>
-          <ul>
-            <li>組織構造の設定</li>
-            <li>メンバーの招待と権限設定</li>
-            <li>KPIの設定方法</li>
-          </ul>
-
-          <h4>2. 基本的な使い方</h4>
-          <p>日々の業務で使用する基本的な機能について解説します。</p>
-          <ul>
-            <li>タスクの作成と割り当て</li>
-            <li>進捗管理の方法</li>
-            <li>レポートの確認方法</li>
-          </ul>
-
-          <h4>3. 活用のベストプラクティス</h4>
-          <p>TeamBaseを最大限活用するためのヒントをご紹介します。</p>
-          <ul>
-            <li>効果的なKPI設定のコツ</li>
-            <li>チーム間のコミュニケーション促進方法</li>
-            <li>生産性向上のためのTips</li>
-          </ul>
+  <!-- メインコンテンツ -->
+  <section class="onboarding-section">
+    <div class="container">
+      <div class="onboarding-container">
+        <!-- ヘッダー -->
+        <div class="onboarding-header">
+          <h1>TeamBaseを始めましょう</h1>
+          <p>効率的なチーム管理のために、基本的な設定を行います</p>
         </div>
-      </div>
 
-      <div class="onboarding-section">
-        <h3>動画ガイド</h3>
-        <div class="video-guide">
-          <h4>初期設定ガイド</h4>
-          <div class="video-container">
-            <!-- 動画が用意できたら、適切なURLに置き換えてください -->
-            <iframe src="about:blank" title="TeamBase初期設定ガイド"></iframe>
+        <!-- プログレスバー -->
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
           </div>
-
-          <h4>基本機能の使い方</h4>
-          <div class="video-container">
-            <!-- 動画が用意できたら、適切なURLに置き換えてください -->
-            <iframe src="about:blank" title="TeamBase基本機能ガイド"></iframe>
-          </div>
-
-          <h4>活用事例とTips</h4>
-          <div class="video-container">
-            <!-- 動画が用意できたら、適切なURLに置き換えてください -->
-            <iframe src="about:blank" title="TeamBase活用事例"></iframe>
+          <div class="progress-text">
+            <span class="progress-step">ステップ <span id="currentStep">1</span>/3</span>
+            <span class="progress-percentage">33%</span>
           </div>
         </div>
-      </div>
 
-      <div class="next-steps">
-        <p>準備が整いましたら、ダッシュボードへお進みください。</p>
-        <a href="login.html" class="btn">ログイン画面へ</a>
+        <!-- ステップ1: Todo appの使い方 -->
+        <div class="step-content active" data-step="1">
+          <h2 class="step-title">Todo appの使い方</h2>
+          <p class="step-description">Todo appの基本的な機能と使い方を確認します</p>
+          
+          <div class="video-container">
+            <iframe width="800" height="450" src="https://www.youtube.com/embed/your-todo-video-id" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <div class="todo-app-signup">
+            <a href="https://todo.teambase.ai/signup" target="_blank" class="btn btn-primary todo-signup-btn">Todo appのアカウントを作成する</a>
+          </div>
+
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="todo_basic_check" class="step-checkbox">
+              <label for="todo_basic_check">Todoの作成・編集方法を理解しました</label>
+            </div>
+            
+            <div class="checkbox-item">
+              <input type="checkbox" id="todo_assign_check" class="step-checkbox">
+              <label for="todo_assign_check">Todoの割り当て方法を理解しました</label>
+            </div>
+            
+            <div class="checkbox-item">
+              <input type="checkbox" id="todo_account_check" class="step-checkbox">
+              <label for="todo_account_check">Todo appのアカウントを作成しました</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ステップ2: TeamBaseの使い方 -->
+        <div class="step-content" data-step="2">
+          <h2 class="step-title">TeamBaseの使い方</h2>
+          <p class="step-description">TeamBaseの基本的な機能と使い方を確認します</p>
+          
+          <div class="video-container">
+            <iframe width="800" height="450" src="https://www.youtube.com/embed/your-video-id" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="dashboard_check" class="step-checkbox">
+              <label for="dashboard_check">ダッシュボードの基本的な使い方を理解しました</label>
+            </div>
+            
+            <div class="checkbox-item">
+              <input type="checkbox" id="kpi_check" class="step-checkbox">
+              <label for="kpi_check">KPI管理機能の使い方を理解しました</label>
+            </div>
+            
+            <div class="checkbox-item">
+              <input type="checkbox" id="team_check" class="step-checkbox">
+              <label for="team_check">チームメンバーの管理方法を理解しました</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ステップ3: 完了画面 -->
+        <div class="step-content" data-step="3">
+          <div class="completion-content">
+            <div class="completion-icon">✨</div>
+            <h2 class="completion-title">オンボーディング完了</h2>
+            <p class="completion-message">お疲れ様でした！<br>それではTeamBaseをご活用ください。</p>
+            <div class="completion-features">
+              <div class="feature-item">
+                <div class="feature-icon">✅</div>
+                <div class="feature-text">
+                  <h3>Todo app</h3>
+                  <p>効率的なタスク管理を実現</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">
+                  <h3>TeamBase</h3>
+                  <p>チーム管理とKPI達成をサポート</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ボタン -->
+        <div class="button-container">
+          <button class="btn btn-secondary" id="prevButton" onclick="previousStep()">前へ戻る</button>
+          <button class="btn btn-primary" id="nextButton" onclick="nextStep()">次へ進む</button>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
+    </div>
+  </footer>
+
   <script>
-    AOS.init({
-      duration: 800,
-      once: true
+    // セッションストレージからデータを取得
+    const signupData = JSON.parse(sessionStorage.getItem('signupData'));
+    const selectedPlan = JSON.parse(sessionStorage.getItem('selectedPlan'));
+    const paymentData = JSON.parse(sessionStorage.getItem('paymentData'));
+
+    // 必要なデータが存在しない場合はサインアップページにリダイレクト
+    if (!signupData || !selectedPlan || !paymentData) {
+      window.location.href = 'signup.html';
+    }
+
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // 要素の取得
+    const progressFill = document.querySelector('.progress-bar-fill');
+    const progressStep = document.getElementById('currentStep');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    const stepContents = document.querySelectorAll('.step-content');
+
+    // ステップの表示切り替え
+    function showStep(step) {
+      currentStep = step;
+      
+      stepContents.forEach(content => {
+        content.classList.remove('active');
+        if (parseInt(content.dataset.step) === step) {
+          content.classList.add('active');
+        }
+      });
+
+      // プログレスバーの更新
+      const progress = (step / totalSteps) * 100;
+      progressFill.style.width = `${progress}%`;
+      progressStep.textContent = step;
+      progressPercentage.textContent = `${Math.round(progress)}%`;
+
+      // ボタンの状態更新
+      prevButton.disabled = step === 1;
+      
+      if (step === 1 || step === 2) {
+        // TeamBaseの使い方とTodo appの使い方の画面では
+        // チェックボックスの状態に応じてボタンを有効/無効化
+        const stepCheckboxes = document.querySelectorAll(`.step-content[data-step="${step}"] .step-checkbox`);
+        const allChecked = Array.from(stepCheckboxes).every(checkbox => checkbox.checked);
+        nextButton.disabled = !allChecked;
+      } else if (step === totalSteps) {
+        nextButton.textContent = 'TeamBaseを始める';
+        nextButton.disabled = false;
+      }
+    }
+
+    // チェックボックスの変更を監視
+    document.querySelectorAll('.step-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const step = parseInt(checkbox.closest('.step-content').dataset.step);
+        if (step === 1 || step === 2) {
+          const stepCheckboxes = document.querySelectorAll(`.step-content[data-step="${step}"] .step-checkbox`);
+          const allChecked = Array.from(stepCheckboxes).every(cb => cb.checked);
+          nextButton.disabled = !allChecked;
+        }
+      });
+    });
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        showStep(currentStep + 1);
+      } else {
+        // 最終ステップの場合はダッシュボードへ
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 1) {
+        showStep(currentStep - 1);
+      }
+    }
+
+    // 初期表示
+    showStep(1);
+
+    // チェックリストの処理
+    document.querySelectorAll('.checklist-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const checkbox = item.querySelector('.checklist-checkbox');
+        checkbox.classList.toggle('checked');
+      });
+    });
+
+    // フォーム入力の監視
+    document.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('input', () => {
+        validateStep(currentStep);
+      });
+    });
+
+    // ステップごとのバリデーション
+    function validateStep(step) {
+      let isValid = true;
+
+      switch (step) {
+        case 1:
+          const teamName = document.getElementById('teamName').value;
+          const timezone = document.getElementById('timezone').value;
+          isValid = teamName.trim() !== '' && timezone !== '';
+          break;
+
+        case 2:
+          const departmentName = document.getElementById('departmentName').value;
+          const teamSize = document.getElementById('teamSize').value;
+          isValid = departmentName.trim() !== '' && teamSize !== '';
+          break;
+
+        case 3:
+          const checkedItems = document.querySelectorAll('.step-content[data-step="3"] .checklist-checkbox.checked');
+          isValid = checkedItems.length === 3;
+          break;
+
+        case 4:
+          isValid = true;
+          break;
+      }
+
+      nextButton.disabled = !isValid;
+    }
+
+    // 初期表示時のバリデーション
+    validateStep(currentStep);
+
+    function toggleSection(sectionId) {
+      const content = document.getElementById(`${sectionId}-content`);
+      const button = content.parentElement.querySelector('.toggle-button');
+      const isActive = content.classList.contains('active');
+
+      // 他のセクションを閉じる
+      document.querySelectorAll('.section-content').forEach(section => {
+        section.classList.remove('active');
+        section.parentElement.querySelector('.toggle-button').textContent = '▼';
+      });
+
+      // クリックされたセクションの表示を切り替え
+      if (!isActive) {
+        content.classList.add('active');
+        button.textContent = '▲';
+      }
+    }
+
+    // 初期表示時に最初のセクションを開く
+    document.addEventListener('DOMContentLoaded', () => {
+      toggleSection('kpi');
     });
   </script>
 </body>

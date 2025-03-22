@@ -2,8 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>支払い方法の選択 - TeamBase</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>支払い情報入力 - SL.AI Team Base</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <style>
     :root {
       --primary: #4A6FFF;
@@ -15,6 +16,7 @@
       --light-gray: #F8F9FA;
       --max-width: 800px;
       --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
     }
 
     * {
@@ -25,7 +27,7 @@
     }
 
     body {
-      background-color: var(--light-gray);
+      background-color: var(--secondary);
       color: var(--dark);
       line-height: 1.6;
     }
@@ -33,45 +35,143 @@
     .container {
       max-width: var(--max-width);
       margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-decoration: none;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* メインコンテンツ */
+    .payment-section {
+      padding: 4rem 0;
+      min-height: calc(100vh - 180px);
+    }
+
+    .payment-container {
+      background: var(--light);
+      border-radius: 16px;
       padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     .payment-header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
     .payment-header h1 {
       font-size: 2rem;
-      margin-bottom: 1rem;
       color: var(--dark);
+      margin-bottom: 1rem;
     }
 
     .payment-header p {
       color: var(--gray);
     }
 
+    /* ステップインジケーター */
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--light-gray);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      background: var(--light);
+      padding: 0.5rem;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--light-gray);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-weight: bold;
+      color: var(--gray);
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number,
+    .step.completed .step-number {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .step-title {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .step.active .step-title,
+    .step.completed .step-title {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* 支払い方法選択 */
     .payment-options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 2rem;
     }
 
     .payment-option {
       background: var(--light);
+      border: 2px solid var(--light-gray);
       border-radius: 12px;
       padding: 2rem;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       transition: all 0.3s ease;
-      border: 2px solid transparent;
     }
 
     .payment-option:hover {
-      transform: translateY(-5px);
       border-color: var(--primary);
+      transform: translateY(-5px);
     }
 
     .payment-option.selected {
@@ -86,8 +186,7 @@
     }
 
     .payment-option h3 {
-      margin-bottom: 1rem;
-      color: var(--dark);
+      margin-bottom: 0.5rem;
     }
 
     .payment-option p {
@@ -95,17 +194,9 @@
       font-size: 0.9rem;
     }
 
+    /* フォーム */
     .payment-form {
-      background: var(--light);
-      border-radius: 12px;
-      padding: 2rem;
       margin-top: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-
-    .payment-form.active {
-      display: block;
     }
 
     .form-group {
@@ -116,178 +207,489 @@
       display: block;
       margin-bottom: 0.5rem;
       color: var(--dark);
+      font-weight: 500;
     }
 
     .form-group input {
       width: 100%;
       padding: 0.8rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
       font-size: 1rem;
+      transition: border-color 0.3s ease;
     }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1rem;
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* ボタン */
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
     }
 
     .btn {
       display: inline-block;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
       background: var(--gradient-primary);
       color: var(--light);
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      text-align: center;
-      width: 100%;
+    }
+
+    .btn-secondary {
+      background: var(--light);
+      color: var(--primary);
+      border: 2px solid var(--primary);
     }
 
     .btn:hover {
-      opacity: 0.9;
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
+    /* フッター */
+    footer {
+      background-color: var(--light);
+      padding: 1rem 0;
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* レスポンシブデザイン */
     @media (max-width: 768px) {
       .payment-options {
-        grid-template-columns: 1fr;
+        flex-direction: column;
       }
 
-      .form-row {
-        grid-template-columns: 1fr;
+      .button-container {
+        flex-direction: column;
+        gap: 1rem;
       }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      background-color: var(--light);
+      cursor: pointer;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* クレジットカードフォーム専用スタイル */
+    .card-input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .card-input-group input {
+      width: 100%;
+      padding: 0.8rem;
+      padding-left: 3rem; /* カードアイコン用のスペース */
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    .card-input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+    }
+
+    .card-input-group .card-icon {
+      position: absolute;
+      left: 1rem;
+      top: 2.3rem;
+      color: var(--gray);
+    }
+
+    .card-input-group .card-brand {
+      position: absolute;
+      right: 1rem;
+      top: 2.3rem;
+      width: 32px;
+      height: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .expiry-cvc-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .expiry-cvc-group .card-input-group {
+      flex: 1;
+    }
+
+    .card-error {
+      color: var(--accent);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .card-input-group.error input {
+      border-color: var(--accent);
+    }
+
+    .card-input-group.error .card-error {
+      display: block;
+    }
+
+    .card-input-group.success input {
+      border-color: #28a745;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="payment-header">
-      <h1>支払い方法の選択</h1>
-      <p>ご希望の支払い方法を選択してください</p>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <a href="index.html" class="logo">SL.AI Team Base</a>
     </div>
+  </header>
 
-    <div class="payment-options">
-      <div class="payment-option" onclick="selectPaymentMethod('credit')">
-        <img src="images/credit-card.svg" alt="クレジットカード" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEE2RkZGIj48cGF0aCBkPSJNMjAgNEg0Yy0xLjExIDAtMS45OS45LTEuOTkgMkwyIDE4YzAgMS4xLjg5IDIgMiAyaDE2YzEuMTEgMCAyLS45IDItMlY2YzAtMS4xLS44OS0yLTItMnptMCAxNEg0di02aDE2djZ6bTAtMTBINFY2aDE2djJ6Ii8+PC9zdmc+'" />
-        <h3>クレジットカード決済</h3>
-        <p>安全なオンライン決済で<br>すぐにサービスを開始</p>
-      </div>
-
-      <div class="payment-option" onclick="selectPaymentMethod('contact')">
-        <img src="images/contact.svg" alt="営業担当" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNEE2RkZGIj48cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0tLjQgNC4yNWwtNy44OCA0LjcxYy0uMjMuMTMtLjQxLjItLjcyLjItLjMxIDAtLjQ5LS4wNy0uNzItLjJMMS45IDguMjVjLS4yNS0uMTYtLjQtLjQzLS40LS43MiAwLS42Ny43My0xLjA3IDEuMy0uNzJMMTIgMTFsOS4xLTUuMTljLjU3LS4zNSAxLjMuMDUgMS4zLjcyIDAgLjI5LS4xNS41Ni0uNC43MnoiLz48L3N2Zz4='" />
-        <h3>営業担当者に相談</h3>
-        <p>お客様のご要望に合わせた<br>プランをご提案</p>
-      </div>
-    </div>
-
-    <!-- クレジットカード決済フォーム -->
-    <div id="creditCardForm" class="payment-form">
-      <form id="paymentForm" onsubmit="return validateForm(event)">
-        <div class="form-group">
-          <label for="cardNumber">カード番号</label>
-          <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+  <!-- メインコンテンツ -->
+  <section class="payment-section">
+    <div class="container">
+      <div class="payment-container">
+        <div class="payment-header">
+          <h1>支払い情報の入力</h1>
+          <p>選択したプランに応じた支払い方法を選択してください</p>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="expiryDate">有効期限</label>
-            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+        <!-- ステップインジケーター -->
+        <div class="steps">
+          <div class="step completed">
+            <div class="step-number">1</div>
+            <div class="step-title">会社情報の入力</div>
           </div>
-          <div class="form-group">
-            <label for="cvv">セキュリティコード</label>
-            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+          <div class="step completed">
+            <div class="step-number">2</div>
+            <div class="step-title">利用プランの選択</div>
+          </div>
+          <div class="step active">
+            <div class="step-number">3</div>
+            <div class="step-title">支払い情報の入力</div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="cardName">カード名義人</label>
-          <input type="text" id="cardName" placeholder="TARO YAMADA" required>
+        <!-- 支払い方法選択 -->
+        <div class="payment-options">
+          <div class="payment-option" onclick="selectPaymentMethod('credit')">
+            <div class="payment-option-content">
+              <h3>クレジットカード</h3>
+              <p>主要なクレジットカードに対応しています</p>
+            </div>
+          </div>
+
+          <div class="payment-option" onclick="selectPaymentMethod('sales')">
+            <div class="payment-option-content">
+              <h3>営業担当に相談</h3>
+              <p>カスタマイズプランについてご相談ください</p>
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="btn">支払い情報を確定する</button>
-      </form>
+        <!-- クレジットカードフォーム -->
+        <div id="credit-card-form" class="payment-form" style="display: none;">
+          <form class="payment-form" id="paymentForm">
+            <div class="card-input-group">
+              <label for="cardNumber">カード番号</label>
+              <i class="card-icon">💳</i>
+              <div class="card-brand"></div>
+              <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" autocomplete="cc-number">
+              <div class="card-error">有効なカード番号を入力してください</div>
+            </div>
+
+            <div class="expiry-cvc-group">
+              <div class="card-input-group">
+                <label for="expiryDate">有効期限</label>
+                <i class="card-icon">📅</i>
+                <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                <div class="card-error">有効な有効期限を入力してください</div>
+              </div>
+
+              <div class="card-input-group">
+                <label for="cvc">セキュリティコード</label>
+                <i class="card-icon">🔒</i>
+                <input type="text" id="cvc" placeholder="123" maxlength="4" autocomplete="cc-csc">
+                <div class="card-error">有効なセキュリティコードを入力してください</div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- 営業相談フォーム -->
+        <div id="sales-form" class="payment-form" style="display: none;">
+          <div class="form-group">
+            <label for="contact_preference">ご希望の連絡方法</label>
+            <select id="contact_preference" name="contact_preference" class="form-select" required>
+              <option value="">選択してください</option>
+              <option value="email">メール</option>
+              <option value="phone">電話</option>
+              <option value="meeting">オンライン面談</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="preferred_time">ご希望の連絡時間帯</label>
+              <select id="preferred_time" name="preferred_time" class="form-select" required>
+                <option value="">選択してください</option>
+                <option value="morning">午前（9:00-12:00）</option>
+                <option value="afternoon">午後（13:00-17:00）</option>
+                <option value="evening">夕方（17:00-19:00）</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="preferred_date">ご希望の連絡日</label>
+              <select id="preferred_date" name="preferred_date" class="form-select" required>
+                <option value="">選択してください</option>
+                <option value="asap">できるだけ早く</option>
+                <option value="next_week">来週以降</option>
+                <option value="next_month">来月以降</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">ご要望・ご質問など</label>
+            <textarea id="message" name="message" rows="4" class="form-textarea" placeholder="カスタマイズのご要望やご質問がありましたらご記入ください"></textarea>
+          </div>
+        </div>
+
+        <div class="button-container">
+          <button type="button" class="btn btn-secondary" onclick="history.back()">戻る</button>
+          <button type="button" class="btn btn-primary" id="submit-button" disabled>次へ進む</button>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- 営業担当者連絡フォーム -->
-    <div id="contactForm" class="payment-form">
-      <form id="inquiryForm" onsubmit="return validateInquiryForm(event)">
-        <div class="form-group">
-          <label for="companyName">会社名</label>
-          <input type="text" id="companyName" required>
-        </div>
-
-        <div class="form-group">
-          <label for="contactPerson">担当者名</label>
-          <input type="text" id="contactPerson" required>
-        </div>
-
-        <div class="form-group">
-          <label for="phoneNumber">電話番号</label>
-          <input type="tel" id="phoneNumber" placeholder="03-1234-5678" required>
-        </div>
-
-        <div class="form-group">
-          <label for="email">メールアドレス</label>
-          <input type="email" id="email" required>
-        </div>
-
-        <button type="submit" class="btn">問い合わせを送信する</button>
-      </form>
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
     </div>
-  </div>
+  </footer>
 
   <script>
+    // セッションストレージからデータを取得
+    const signupData = JSON.parse(sessionStorage.getItem('signupData'));
+    const selectedPlan = JSON.parse(sessionStorage.getItem('selectedPlan'));
+
+    if (!signupData || !selectedPlan) {
+      window.location.href = 'signup.html';
+    }
+
+    let selectedMethod = null;
+
     function selectPaymentMethod(method) {
-      // 選択状態のリセット
+      selectedMethod = method;
       document.querySelectorAll('.payment-option').forEach(option => {
         option.classList.remove('selected');
       });
-      document.querySelectorAll('.payment-form').forEach(form => {
-        form.classList.remove('active');
-      });
+      event.currentTarget.classList.add('selected');
+      
+      // フォームの表示切り替え
+      document.getElementById('credit-card-form').style.display = method === 'credit' ? 'block' : 'none';
+      document.getElementById('sales-form').style.display = method === 'sales' ? 'block' : 'none';
+      
+      // ボタンの有効化
+      document.getElementById('submit-button').disabled = false;
+    }
 
-      // 選択された方法をハイライト
-      if (method === 'credit') {
-        document.querySelector('.payment-option:first-child').classList.add('selected');
-        document.getElementById('creditCardForm').classList.add('active');
-      } else {
-        document.querySelector('.payment-option:last-child').classList.add('selected');
-        document.getElementById('contactForm').classList.add('active');
+    // 送信ボタンのクリックイベント
+    document.getElementById('submit-button').addEventListener('click', async () => {
+      try {
+        const paymentData = {
+          ...signupData,
+          plan: selectedPlan,
+          payment_method: selectedMethod,
+          timestamp: new Date().toISOString()
+        };
+
+        if (selectedMethod === 'credit') {
+          paymentData.card_info = {
+            number: document.getElementById('cardNumber').value,
+            name: document.getElementById('card_name').value,
+            expiry: document.getElementById('expiryDate').value,
+            cvc: document.getElementById('cvc').value
+          };
+        } else if (selectedMethod === 'sales') {
+          paymentData.sales_info = {
+            contact_preference: document.getElementById('contact_preference').value,
+            preferred_time: document.getElementById('preferred_time').value,
+            preferred_date: document.getElementById('preferred_date').value,
+            message: document.getElementById('message').value
+          };
+        }
+
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwtoev6YM3euRbvZuX149CrqFr_4zGb8F_Nhslm81b1B27A_IS0vY-Fjase6QgW34qTeQ/exec', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(paymentData)
+        });
+
+        // no-corsモードではレスポンスの内容を読み取れないため、
+        // ステータスコードで成功を判断
+        if (response.status === 0 || response.status === 200) {
+          // 支払い情報をセッションストレージに保存
+          sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+
+          // プランに応じてオンボーディングの初期ステップを設定
+          let onboardingStep = 1;
+          if (selectedPlan.name === 'エンタープライズ') {
+            // エンタープライズプランの場合は営業担当からの連絡待ちのため、
+            // オンボーディングは基本設定から開始
+            onboardingStep = 1;
+          } else if (selectedPlan.name === 'スタンダード') {
+            // スタンダードプランの場合は通常のオンボーディングフロー
+            onboardingStep = 1;
+          } else {
+            // フリープランの場合も同様
+            onboardingStep = 1;
+          }
+
+          // オンボーディングステップをセッションストレージに保存
+          sessionStorage.setItem('onboardingStep', onboardingStep);
+          
+          // オンボーディングページに遷移
+          window.location.href = 'onboarding.html';
+        } else {
+          throw new Error('処理に失敗しました');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('処理中にエラーが発生しました。もう一度お試しください。');
       }
-    }
-
-    function validateForm(event) {
-      event.preventDefault();
-      // ここに実際の決済処理を実装
-      alert('決済処理を実行します。実際の実装では、セキュアな決済処理を行います。');
-      return false;
-    }
-
-    function validateInquiryForm(event) {
-      event.preventDefault();
-      // ここに実際の問い合わせ送信処理を実装
-      alert('お問い合わせを送信しました。営業担当者から連絡させていただきます。');
-      return false;
-    }
-
-    // カード番号の自動フォーマット
-    document.getElementById('cardNumber').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
-      let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
-      e.target.value = formattedValue;
     });
 
-    // 有効期限の自動フォーマット
-    document.getElementById('expiryDate').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
-      if (value.length > 2) {
-        value = value.substr(0, 2) + '/' + value.substr(2);
+    // カード番号のフォーマット
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      let formattedValue = '';
+      
+      for(let i = 0; i < value.length; i++) {
+        if(i > 0 && i % 4 === 0) {
+          formattedValue += ' ';
+        }
+        formattedValue += value[i];
       }
+      
+      e.target.value = formattedValue;
+      
+      // カードブランドの判定
+      const cardBrand = document.querySelector('.card-brand');
+      if(value.startsWith('4')) {
+        cardBrand.style.backgroundImage = 'url(path/to/visa.png)';
+      } else if(value.startsWith('5')) {
+        cardBrand.style.backgroundImage = 'url(path/to/mastercard.png)';
+      } else if(value.startsWith('3')) {
+        cardBrand.style.backgroundImage = 'url(path/to/amex.png)';
+      } else {
+        cardBrand.style.backgroundImage = '';
+      }
+      
+      // バリデーション
+      const isValid = value.length >= 13 && value.length <= 16;
+      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
+      this.parentElement.classList.toggle('success', isValid);
+    });
+
+    // 有効期限のフォーマット
+    document.getElementById('expiryDate').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      
+      if(value.length >= 2) {
+        const month = value.slice(0, 2);
+        const year = value.slice(2);
+        value = month + (year.length ? '/' + year : '');
+      }
+      
       e.target.value = value;
+      
+      // バリデーション
+      const [month, year] = value.split('/');
+      const isValid = month >= 1 && month <= 12 && value.length === 5;
+      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
+      this.parentElement.classList.toggle('success', isValid);
+    });
+
+    // CVCの制限
+    document.getElementById('cvc').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      e.target.value = value;
+      
+      // バリデーション
+      const isValid = value.length >= 3 && value.length <= 4;
+      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
+      this.parentElement.classList.toggle('success', isValid);
     });
   </script>
 </body>

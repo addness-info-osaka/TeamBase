@@ -248,74 +248,79 @@
     .confirm-label {
       font-weight: bold;
       color: var(--gray);
+      width: 30%;
     }
 
     .confirm-value {
-      color: var(--dark);
+      width: 70%;
+      text-align: right;
     }
 
-    /* 同意チェックボックス */
-    .agreement {
+    /* 利用規約とボタン */
+    .terms-container {
+      text-align: center;
       margin: 2rem 0;
       padding: 1rem;
-      background: var(--light-gray);
+      background: var(--light);
       border-radius: 8px;
-      text-align: center;
     }
 
-    .agreement label {
+    .terms-checkbox {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      cursor: pointer;
+      margin-bottom: 1rem;
     }
 
-    .agreement input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-    }
-
-    /* ボタン */
-    .btn-container {
+    .terms-links {
       display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
-    .btn-disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .terms-links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .terms-links a:hover {
+      text-decoration: underline;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
     .btn {
-      display: inline-block;
-      padding: 0.8rem 2rem;
-      border-radius: 6px;
-      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
       font-weight: bold;
+      text-decoration: none;
       transition: all 0.3s ease;
-      border: none;
       cursor: pointer;
-      font-size: 1rem;
+      min-width: 200px;
+    }
+
+    .btn-primary {
       background: var(--gradient-primary);
       color: var(--light);
+      border: none;
+    }
+
+    .btn-secondary {
+      background: var(--light);
+      color: var(--primary);
+      border: 2px solid var(--primary);
     }
 
     .btn:disabled {
-      background: #ccc;
+      opacity: 0.5;
       cursor: not-allowed;
-    }
-
-    .btn:not(:disabled):hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--primary);
-      color: var(--primary);
     }
 
     /* フッター */
@@ -360,33 +365,13 @@
         grid-template-columns: 1fr;
       }
 
-      .btn-container {
+      .button-container {
         flex-direction: column;
-        gap: 1rem;
       }
 
       .btn {
         width: 100%;
-        text-align: center;
       }
-    }
-
-    .terms-check {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .terms-check label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .terms-check input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
     }
   </style>
 </head>
@@ -410,7 +395,7 @@
       <div class="steps">
         <div class="step completed">
           <div class="step-number">1</div>
-          <div class="step-title">会社情報の入力</div>
+          <div class="step-title">会社情報入力</div>
         </div>
         <div class="step active">
           <div class="step-number">2</div>
@@ -422,10 +407,43 @@
         </div>
       </div>
 
-      <!-- プラン選択 -->
+      <!-- 確認情報の表示部分 -->
+      <div class="confirm-card">
+        <h2 style="margin-bottom: 1.5rem;">入力情報の確認</h2>
+        <div class="confirm-item">
+          <div class="confirm-label">会社名</div>
+          <div class="confirm-value" id="companyName"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">部署名</div>
+          <div class="confirm-value" id="department"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">お名前</div>
+          <div class="confirm-value" id="name"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">メールアドレス</div>
+          <div class="confirm-value" id="email"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">電話番号</div>
+          <div class="confirm-value" id="phone"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">従業員数</div>
+          <div class="confirm-value" id="employeeCount"></div>
+        </div>
+        <div class="confirm-item">
+          <div class="confirm-label">導入目的</div>
+          <div class="confirm-value" id="purpose"></div>
+        </div>
+      </div>
+
+      <!-- プラン選択部分 -->
       <div class="plans-grid">
-        <div class="plan-card" data-plan="free">
-          <h3 class="plan-name">フリープラン</h3>
+        <div class="plan-card" data-plan="free" data-price="0">
+          <h3>フリープラン</h3>
           <div class="plan-price">¥0<span>/月</span></div>
           <ul class="plan-features">
             <li>5名まで利用可能</li>
@@ -433,20 +451,19 @@
             <li>全機能利用可能</li>
           </ul>
         </div>
-        <div class="plan-card selected" data-plan="standard">
-          <h3 class="plan-name">スタンダード</h3>
+        <div class="plan-card" data-plan="standard" data-price="980">
+          <h3>スタンダード</h3>
           <div class="plan-price">¥980<span>/月</span></div>
           <ul class="plan-features">
             <li>メンバー50名まで</li>
             <li>導入オンボーディングサポート</li>
-            <li>30日間無料トライアル</li>
           </ul>
         </div>
-        <div class="plan-card" data-plan="enterprise">
-          <h3 class="plan-name">エンタープライズ</h3>
+        <div class="plan-card" data-plan="enterprise" data-price="0">
+          <h3>エンタープライズ</h3>
           <div class="plan-price">お見積り</div>
           <ul class="plan-features">
-            <li>50名以上利用可能</li>
+            <li>50名以上ご利用可能</li>
             <li>ボリュームディスカウント</li>
             <li>専用サポート</li>
             <li>カスタム開発対応</li>
@@ -454,29 +471,20 @@
         </div>
       </div>
 
-      <!-- 確認フォーム -->
-      <form id="confirmForm" action="complete.html" method="POST">
-        <div class="confirm-card">
-          <div class="confirm-item">
-            <div class="confirm-label">選択プラン</div>
-            <div class="confirm-value" id="selectedPlan">スタンダード</div>
-          </div>
-          <div class="confirm-item">
-            <div class="confirm-label">料金</div>
-            <div class="confirm-value" id="selectedPrice">¥980/月（30日間無料）</div>
-          </div>
+      <div class="terms-container">
+        <div class="terms-checkbox">
+          <input type="checkbox" id="terms_agree" required>
+          <label for="terms_agree">以下の規約に同意する</label>
         </div>
-
-        <div class="btn-container">
-          <a href="signup.html" class="btn btn-outline">戻る</a>
-          <button type="button" id="submitBtn" class="btn btn-disabled" onclick="location.href='payment.html'" disabled>支払い情報を入力する</button>
+        <div class="terms-links">
+          <a href="terms.html" target="_blank">利用規約</a>
+          <span>と</span>
+          <a href="privacy.html" target="_blank">プライバシーポリシー</a>
         </div>
-      </form>
-
-      <div class="terms-check">
-        <label>
-          <input type="checkbox" id="termsCheck"> 利用規約とプライバシーポリシーに同意します
-        </label>
+        <div class="button-container">
+          <button type="button" class="btn btn-secondary" onclick="history.back()">戻る</button>
+          <button type="button" class="btn btn-primary" id="next_button" disabled>支払い情報入力へ</button>
+        </div>
       </div>
     </div>
   </section>
@@ -491,57 +499,75 @@
   </footer>
 
   <script>
+    // セッションストレージからデータを取得
+    const signupData = JSON.parse(sessionStorage.getItem('signupData'));
+    if (!signupData) {
+      window.location.href = 'signup.html';
+    }
+
+    // フォームの値を表示
+    document.getElementById('companyName').textContent = signupData.company_name || '';
+    document.getElementById('department').textContent = signupData.department || '';
+    document.getElementById('name').textContent = signupData.name || '';
+    document.getElementById('email').textContent = signupData.email || '';
+    document.getElementById('phone').textContent = signupData.phone || '';
+    document.getElementById('employeeCount').textContent = signupData.employee_count || '';
+    document.getElementById('purpose').textContent = signupData.purpose || '';
+
     // プラン選択の処理
-    const planCards = document.querySelectorAll('.plan-card');
-    const selectedPlanElement = document.getElementById('selectedPlan');
-    const selectedPriceElement = document.getElementById('selectedPrice');
+    let selectedPlan = null;
 
-    planCards.forEach(card => {
-      card.addEventListener('click', () => {
-        // 選択状態の更新
-        planCards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-
-        // 選択内容の表示更新
-        const planName = card.querySelector('.plan-name').textContent;
-        const planPrice = card.querySelector('.plan-price').textContent;
-        selectedPlanElement.textContent = planName;
-        selectedPriceElement.textContent = planPrice + (planName === 'スタンダード' ? '（30日間無料）' : '');
+    // プランカードにクリックイベントを追加
+    document.querySelectorAll('.plan-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const planName = this.dataset.plan;
+        const price = parseInt(this.dataset.price);
+        selectPlan(planName, price);
       });
     });
 
-    // 同意チェックボックスの処理
-    document.getElementById('termsCheck').addEventListener('change', function() {
-      const submitBtn = document.getElementById('submitBtn');
-      if (this.checked) {
-        submitBtn.classList.remove('btn-disabled');
-        submitBtn.classList.add('btn');
-        submitBtn.disabled = false;
-      } else {
-        submitBtn.classList.add('btn-disabled');
-        submitBtn.classList.remove('btn');
-        submitBtn.disabled = true;
+    function selectPlan(planName, price) {
+      selectedPlan = { name: planName, price: price };
+      
+      // 選択状態の更新
+      document.querySelectorAll('.plan-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // 選択されたプランカードにselectedクラスを追加
+      document.querySelector(`.plan-card[data-plan="${planName}"]`).classList.add('selected');
+      
+      // 次へ進むボタンの有効化
+      updateNextButton();
+    }
+
+    // 利用規約同意の処理
+    const termsCheckbox = document.getElementById('terms_agree');
+    if (termsCheckbox) {
+      termsCheckbox.addEventListener('change', updateNextButton);
+    }
+
+    // 次へボタンの有効/無効を更新
+    function updateNextButton() {
+      const termsChecked = document.getElementById('terms_agree').checked;
+      const nextButton = document.getElementById('next_button');
+      if (nextButton) {
+        nextButton.disabled = !selectedPlan || !termsChecked;
       }
-    });
+    }
 
-    // フォームの送信処理
-    document.getElementById('confirmForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // ここに実際の送信処理を実装
-      // 成功時は完了ページ（complete.html）へ遷移
-      window.location.href = 'complete.html';
-    });
-
-    // 利用規約とプライバシーポリシーのポップアップ
-    document.querySelector('.terms-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      window.open('terms.html', 'terms', 'width=800,height=600,scrollbars=yes');
-    });
-
-    document.querySelector('.privacy-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      window.open('privacy.html', 'privacy', 'width=800,height=600,scrollbars=yes');
-    });
+    // 次へボタンのクリック処理
+    const nextButton = document.getElementById('next_button');
+    if (nextButton) {
+      nextButton.addEventListener('click', function() {
+        if (selectedPlan && document.getElementById('terms_agree').checked) {
+          // 選択されたプラン情報をセッションストレージに保存
+          sessionStorage.setItem('selectedPlan', JSON.stringify(selectedPlan));
+          // 支払い情報入力ページへ遷移
+          window.location.href = 'payment.html';
+        }
+      });
+    }
   </script>
 </body>
 </html> 
