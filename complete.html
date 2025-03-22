@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>申し込み完了 - SL.AI Team Base</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 800px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    /* メインコンテンツ */
+    .complete-section {
+      padding: 4rem 0;
+      background: linear-gradient(135deg, var(--secondary) 0%, #ffffff 100%);
+      min-height: calc(100vh - 180px);
+    }
+
+    .complete-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .complete-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scale-in 0.5s ease;
+    }
+
+    .complete-icon svg {
+      width: 60px;
+      height: 60px;
+      fill: var(--light);
+    }
+
+    .complete-header {
+      margin-bottom: 3rem;
+    }
+
+    .complete-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fade-in 0.5s ease 0.3s both;
+    }
+
+    .complete-header p {
+      color: var(--gray);
+      font-size: 1.1rem;
+      animation: fade-in 0.5s ease 0.6s both;
+    }
+
+    /* ステップインジケーター */
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--light-gray);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      background: var(--light);
+      padding: 0.5rem;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--light-gray);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-weight: bold;
+      color: var(--gray);
+      transition: all 0.3s ease;
+    }
+
+    .step.completed .step-number {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .step-title {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .step.completed .step-title {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* 次のステップ */
+    .next-steps {
+      margin-top: 4rem;
+      animation: fade-in 0.5s ease 0.9s both;
+    }
+
+    .next-steps h2 {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: var(--dark);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      text-align: left;
+    }
+
+    .step-card {
+      background: var(--light);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .step-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .step-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-card h3 span {
+      width: 24px;
+      height: 24px;
+      background: var(--gradient-primary);
+      color: var(--light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .step-card p {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    /* ボタン */
+    .btn-container {
+      margin-top: 3rem;
+      animation: fade-in 0.5s ease 1.2s both;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 3rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* アニメーション */
+    @keyframes scale-in {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* フッター */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    .copyright {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .complete-header h1 {
+        font-size: 2rem;
+      }
+
+      .steps {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .steps::before {
+        display: none;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .step-number {
+        margin: 0;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <a href="index.html" class="logo">SL.AI Team Base</a>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <section class="complete-section">
+    <div class="container">
+      <div class="complete-content">
+        <!-- ステップインジケーター -->
+        <div class="steps">
+          <div class="step completed">
+            <div class="step-number">1</div>
+            <div class="step-title">会社情報の入力</div>
+          </div>
+          <div class="step completed">
+            <div class="step-number">2</div>
+            <div class="step-title">利用プランの選択</div>
+          </div>
+          <div class="step completed">
+            <div class="step-number">3</div>
+            <div class="step-title">申し込み完了</div>
+          </div>
+        </div>
+
+        <!-- 完了アイコン -->
+        <div class="complete-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+          </svg>
+        </div>
+
+        <!-- 完了メッセージ -->
+        <div class="complete-header">
+          <h1>お申し込みありがとうございます</h1>
+          <p>ご登録いただいたメールアドレスに<br>アカウント設定のご案内をお送りしました</p>
+        </div>
+
+        <!-- 次のステップ -->
+        <div class="next-steps">
+          <h2>次のステップ</h2>
+          <div class="steps-grid">
+            <div class="step-card">
+              <h3><span>1</span>メールを確認</h3>
+              <p>登録したメールアドレスに送信された案内メールを確認してください</p>
+            </div>
+            <div class="step-card">
+              <h3><span>2</span>アカウント設定</h3>
+              <p>メールの案内に従って、アカウントの初期設定を完了させてください</p>
+            </div>
+            <div class="step-card">
+              <h3><span>3</span>チーム招待</h3>
+              <p>チームメンバーを招待して、すぐにTeamBaseを始めましょう</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ダッシュボードへのリンク -->
+        <div class="btn-container">
+          <a href="login.html" class="btn btn-primary">ログイン画面へ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <div class="copyright">
+        <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html> 

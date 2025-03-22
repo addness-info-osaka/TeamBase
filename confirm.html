@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>プラン選択・確認 - SL.AI Team Base</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 800px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    /* メインコンテンツ */
+    .confirm-section {
+      padding: 4rem 0;
+      background: linear-gradient(135deg, var(--secondary) 0%, #ffffff 100%);
+      min-height: calc(100vh - 180px);
+    }
+
+    .confirm-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .confirm-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .confirm-header p {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    /* ステップインジケーター */
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--light-gray);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      background: var(--light);
+      padding: 0.5rem;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--light-gray);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-weight: bold;
+      color: var(--gray);
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number,
+    .step.completed .step-number {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .step-title {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .step.active .step-title,
+    .step.completed .step-title {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* プラン選択 */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .plan-card {
+      background: var(--light);
+      border: 2px solid var(--secondary);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .plan-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .plan-card.selected {
+      border-color: var(--primary);
+      background: var(--secondary);
+    }
+
+    .plan-card.selected::before {
+      content: '✓';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      background: var(--gradient-primary);
+      color: var(--light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .plan-name {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .plan-price {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-features {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-features li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    /* 確認フォーム */
+    .confirm-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+
+    .confirm-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .confirm-item:last-child {
+      border-bottom: none;
+    }
+
+    .confirm-label {
+      font-weight: bold;
+      color: var(--gray);
+    }
+
+    .confirm-value {
+      color: var(--dark);
+    }
+
+    /* 同意チェックボックス */
+    .agreement {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: var(--light-gray);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .agreement label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .agreement input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ボタン */
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* フッター */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    .copyright {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .confirm-header h1 {
+        font-size: 2rem;
+      }
+
+      .steps {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .steps::before {
+        display: none;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .step-number {
+        margin: 0;
+      }
+
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <a href="index.html" class="logo">SL.AI Team Base</a>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <section class="confirm-section">
+    <div class="container">
+      <div class="confirm-header">
+        <h1>プラン選択・確認</h1>
+        <p>ご希望のプランを選択し、内容をご確認ください</p>
+      </div>
+
+      <!-- ステップインジケーター -->
+      <div class="steps">
+        <div class="step completed">
+          <div class="step-number">1</div>
+          <div class="step-title">会社情報の入力</div>
+        </div>
+        <div class="step active">
+          <div class="step-number">2</div>
+          <div class="step-title">利用プランの選択</div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">申し込み完了</div>
+        </div>
+      </div>
+
+      <!-- プラン選択 -->
+      <div class="plans-grid">
+        <div class="plan-card" data-plan="free">
+          <h3 class="plan-name">フリープラン</h3>
+          <div class="plan-price">¥0<span>/月</span></div>
+          <ul class="plan-features">
+            <li>5名まで利用可能</li>
+            <li>Todoアプリ完全無料</li>
+            <li>全機能利用可能</li>
+          </ul>
+        </div>
+        <div class="plan-card selected" data-plan="standard">
+          <h3 class="plan-name">スタンダード</h3>
+          <div class="plan-price">¥980<span>/月</span></div>
+          <ul class="plan-features">
+            <li>メンバー50名まで</li>
+            <li>導入オンボーディングサポート</li>
+            <li>30日間無料トライアル</li>
+          </ul>
+        </div>
+        <div class="plan-card" data-plan="enterprise">
+          <h3 class="plan-name">エンタープライズ</h3>
+          <div class="plan-price">お見積り</div>
+          <ul class="plan-features">
+            <li>50名以上利用可能</li>
+            <li>ボリュームディスカウント</li>
+            <li>専用サポート</li>
+            <li>カスタム開発対応</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 確認フォーム -->
+      <form id="confirmForm" action="complete.html" method="POST">
+        <div class="confirm-card">
+          <div class="confirm-item">
+            <div class="confirm-label">選択プラン</div>
+            <div class="confirm-value" id="selectedPlan">スタンダード</div>
+          </div>
+          <div class="confirm-item">
+            <div class="confirm-label">料金</div>
+            <div class="confirm-value" id="selectedPrice">¥980/月（30日間無料）</div>
+          </div>
+        </div>
+
+        <div class="agreement">
+          <label>
+            <input type="checkbox" id="agreementCheckbox" required>
+            <span>利用規約とプライバシーポリシーに同意します</span>
+          </label>
+        </div>
+
+        <div class="btn-container">
+          <a href="signup.html" class="btn btn-outline">戻る</a>
+          <button type="submit" class="btn btn-primary" id="submitBtn" disabled>申し込みを確定する</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <div class="copyright">
+        <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // プラン選択の処理
+    const planCards = document.querySelectorAll('.plan-card');
+    const selectedPlanElement = document.getElementById('selectedPlan');
+    const selectedPriceElement = document.getElementById('selectedPrice');
+
+    planCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // 選択状態の更新
+        planCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        // 選択内容の表示更新
+        const planName = card.querySelector('.plan-name').textContent;
+        const planPrice = card.querySelector('.plan-price').textContent;
+        selectedPlanElement.textContent = planName;
+        selectedPriceElement.textContent = planPrice + (planName === 'スタンダード' ? '（30日間無料）' : '');
+      });
+    });
+
+    // 同意チェックボックスの処理
+    const agreementCheckbox = document.getElementById('agreementCheckbox');
+    const submitBtn = document.getElementById('submitBtn');
+
+    agreementCheckbox.addEventListener('change', () => {
+      submitBtn.disabled = !agreementCheckbox.checked;
+    });
+
+    // フォームの送信処理
+    document.getElementById('confirmForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // ここに実際の送信処理を実装
+      // 成功時は完了ページ（complete.html）へ遷移
+      window.location.href = 'complete.html';
+    });
+  </script>
+</body>
+</html> 
