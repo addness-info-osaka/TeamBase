@@ -368,6 +368,29 @@
         text-align: center;
       }
     }
+
+    .btn-disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .terms-check {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .terms-check label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .terms-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
   </style>
 </head>
 <body>
@@ -447,18 +470,17 @@
           </div>
         </div>
 
-        <div class="agreement">
-          <label>
-            <input type="checkbox" id="agreementCheckbox" required>
-            <span><a href="#" class="terms-link">利用規約</a>と<a href="#" class="privacy-link">プライバシーポリシー</a>に同意します</span>
-          </label>
-        </div>
-
         <div class="btn-container">
           <a href="signup.html" class="btn btn-outline">戻る</a>
-          <button type="submit" class="btn" onclick="location.href='payment.html'">支払い情報を入力する</button>
+          <button type="button" id="submitBtn" class="btn btn-disabled" onclick="location.href='payment.html'" disabled>支払い情報を入力する</button>
         </div>
       </form>
+
+      <div class="terms-check">
+        <label>
+          <input type="checkbox" id="termsCheck"> 利用規約とプライバシーポリシーに同意します
+        </label>
+      </div>
     </div>
   </section>
 
@@ -492,11 +514,17 @@
     });
 
     // 同意チェックボックスの処理
-    const agreementCheckbox = document.getElementById('agreementCheckbox');
-    const submitBtn = document.getElementById('submitBtn');
-
-    agreementCheckbox.addEventListener('change', () => {
-      submitBtn.disabled = !agreementCheckbox.checked;
+    document.getElementById('termsCheck').addEventListener('change', function() {
+      const submitBtn = document.getElementById('submitBtn');
+      if (this.checked) {
+        submitBtn.classList.remove('btn-disabled');
+        submitBtn.classList.add('btn');
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.classList.add('btn-disabled');
+        submitBtn.classList.remove('btn');
+        submitBtn.disabled = true;
+      }
     });
 
     // フォームの送信処理
