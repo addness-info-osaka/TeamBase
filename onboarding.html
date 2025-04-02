@@ -455,6 +455,53 @@
         transform: translateY(-10px);
       }
     }
+
+    /* 動画セクションのスタイル */
+    .video-section {
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .video-title {
+      font-size: 1.2rem;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--secondary);
+    }
+
+    .video-container {
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 450px;
+      border: none;
+    }
+
+    .checkbox-group {
+      margin-top: 1.5rem;
+    }
+
+    .checkbox-item {
+      margin-bottom: 1rem;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+
+    .checkbox-item label {
+      color: var(--dark);
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
@@ -489,27 +536,88 @@
         <!-- ステップ1: Todo appの使い方 -->
         <div class="step-content active" data-step="1">
           <h2 class="step-title">Todo appの使い方</h2>
-          <p class="step-description">Todo appの基本的な機能と使い方を確認します</p>
+          <p class="step-description">Todo appの基本的な機能と使い方を確認します。すべてチェックしたら次へ進めます。</p>
           
-          <div class="video-container">
-            <iframe width="800" height="450" src="https://www.youtube.com/embed/your-todo-video-id" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div class="video-section">
+            <h3 class="video-title">1. Todo appの基本操作　ログイン</h3>
+            <div class="video-container">
+              <iframe src="https://player.vimeo.com/video/1069133957?h=49b5be1d67&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
+                      width="800" height="450" 
+                      frameborder="0" 
+                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                      title="ToDoアプリの基本操作説明01"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_basic1_check" class="step-checkbox">
+                <label for="todo_basic1_check">Todo appのログイン方法を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_basic2_check" class="step-checkbox">
+                <label for="todo_basic2_check">Todo appの基本的な機能を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_basic3_check" class="step-checkbox">
+                <label for="todo_basic3_check">Todo appの特徴を理解しました</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="video-section">
+            <h3 class="video-title">2. Todo appの基本操作　タスクプールについて</h3>
+            <div class="video-container">
+              <iframe src="https://player.vimeo.com/video/1069133914?h=8cc9dee985&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
+                      width="800" height="450" 
+                      frameborder="0" 
+                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                      title="ToDoアプリの基本操作説明02"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_advanced1_check" class="step-checkbox">
+                <label for="todo_advanced1_check">タスクプールの概念を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_advanced2_check" class="step-checkbox">
+                <label for="todo_advanced2_check">タスクプールの使い方を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_advanced3_check" class="step-checkbox">
+                <label for="todo_advanced3_check">定常Todoの使い方を理解しました</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="video-section">
+            <h3 class="video-title">3. Todo appの基本操作 Todoの作り方</h3>
+            <div class="video-container">
+              <iframe src="https://player.vimeo.com/video/1069133930?h=c89e23e108&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
+                      width="800" height="450" 
+                      frameborder="0" 
+                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                      title="ToDoアプリの基本操作説明03"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_team1_check" class="step-checkbox">
+                <label for="todo_team1_check">Todoの入力方法を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_team2_check" class="step-checkbox">
+                <label for="todo_team2_check">Todoの細分化方法を理解しました</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="todo_team3_check" class="step-checkbox">
+                <label for="todo_team3_check">スマホでの使い方を理解しました</label>
+              </div>
+            </div>
           </div>
 
           <div class="todo-app-signup">
-            <a href="https://todo.teambase.ai/signup" target="_blank" class="btn btn-primary todo-signup-btn">Todo appのアカウントを作成する</a>
+            <a href="https://todo.addness.com/login" target="_blank" class="btn btn-primary todo-signup-btn">Todo appのアカウントを作成する</a>
           </div>
 
           <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="todo_basic_check" class="step-checkbox">
-              <label for="todo_basic_check">Todoの作成・編集方法を理解しました</label>
-            </div>
-            
-            <div class="checkbox-item">
-              <input type="checkbox" id="todo_assign_check" class="step-checkbox">
-              <label for="todo_assign_check">Todoの割り当て方法を理解しました</label>
-            </div>
-            
             <div class="checkbox-item">
               <input type="checkbox" id="todo_account_check" class="step-checkbox">
               <label for="todo_account_check">Todo appのアカウントを作成しました</label>
@@ -655,8 +763,8 @@
       if (currentStep < totalSteps) {
         showStep(currentStep + 1);
       } else {
-        // 最終ステップの場合はダッシュボードへ
-        window.location.href = 'dashboard.html';
+        // 最終ステップの場合はTeamBaseのログインページへ
+        window.location.href = 'https://teambase.addness.com/login';
       }
     }
 
