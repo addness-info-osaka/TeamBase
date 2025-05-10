@@ -552,7 +552,7 @@
       const termsChecked = document.getElementById('terms_agree').checked;
       const nextButton = document.getElementById('next_button');
       if (nextButton) {
-        nextButton.disabled = !selectedPlan || !termsChecked;
+      nextButton.disabled = !selectedPlan || !termsChecked;
       }
     }
 
@@ -562,12 +562,12 @@
       nextButton.addEventListener('click', function() {
         if (selectedPlan && document.getElementById('terms_agree').checked) {
           // 選択されたプラン情報をセッションストレージに保存
-          sessionStorage.setItem('selectedPlan', JSON.stringify(selectedPlan));
+        sessionStorage.setItem('selectedPlan', JSON.stringify(selectedPlan));
           // 支払い情報入力ページへ遷移
           window.location.href = 'payment.html';
         }
       });
-    }
+      }
   </script>
 </body>
 </html> 

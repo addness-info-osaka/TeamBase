@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>支払い情報入力 - SL.AI Team Base</title>
+  <title>登録完了 - SL.AI Team Base</title>
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <style>
     :root {
@@ -322,80 +322,25 @@
       margin-bottom: 1.5rem;
     }
 
-    /* クレジットカードフォーマット専用スタイル */
-    .card-input-group {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-
-    .card-input-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: var(--dark);
-      font-weight: 500;
-    }
-
-    .card-input-group input {
-      width: 100%;
-      padding: 0.8rem;
-      padding-left: 3rem; /* カードアイコン用のスペース */
-      border: 2px solid var(--light-gray);
-      border-radius: 8px;
+    /* 決済関連のスタイル */
+    .payment-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
       font-size: 1rem;
+      cursor: pointer;
       transition: all 0.3s ease;
-      letter-spacing: 1px;
+      text-align: center;
+      margin-top: 1rem;
     }
 
-    .card-input-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
-    }
-
-    .card-input-group .card-icon {
-      position: absolute;
-      left: 1rem;
-      top: 2.3rem;
-      color: var(--gray);
-    }
-
-    .card-input-group .card-brand {
-      position: absolute;
-      right: 1rem;
-      top: 2.3rem;
-      width: 32px;
-      height: 20px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
-    .expiry-cvc-group {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .expiry-cvc-group .card-input-group {
-      flex: 1;
-    }
-
-    .card-error {
-      color: var(--accent);
-      font-size: 0.85rem;
-      margin-top: 0.3rem;
-      display: none;
-    }
-
-    .card-input-group.error input {
-      border-color: var(--accent);
-    }
-
-    .card-input-group.error .card-error {
-      display: block;
-    }
-
-    .card-input-group.success input {
-      border-color: #28a745;
+    .payment-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(74, 111, 255, 0.2);
     }
 
     /* 決済結果表示用のスタイル */
@@ -445,8 +390,8 @@
   <section class="payment-section">
     <div class="container">
       <div class="payment-container">
-        <h1>支払い情報の入力</h1>
-        <p class="subtitle">選択したプランに応じた支払い方法を選択してください</p>
+        <h1>登録完了</h1>
+        <p class="subtitle">基本情報の登録が完了しました</p>
 
         <div class="progress-steps">
           <div class="step completed">
@@ -459,17 +404,17 @@
           </div>
           <div class="step active">
             <div class="step-number">3</div>
-            <div class="step-label">支払い情報の入力</div>
+            <div class="step-label">登録完了</div>
           </div>
         </div>
 
         <div class="payment-options">
           <button class="payment-option-button" onclick="proceedToPayment()">
             <div class="payment-option-content">
-              <div class="payment-option-icon">💳</div>
+              <div class="payment-option-icon">🚀</div>
               <div>
-                <h3>クレジットカード情報を入力</h3>
-                <p>主要なクレジットカードに対応しています</p>
+                <h3>オンボーディングへ進む</h3>
+                <p>チームの設定を開始しましょう</p>
               </div>
             </div>
             <div class="payment-option-arrow">→</div>
@@ -478,7 +423,10 @@
 
         <div class="button-container">
           <button class="btn btn-outline" onclick="window.history.back()">戻る</button>
+          <button class="payment-button" onclick="proceedToPayment()">オンボーディングへ進む</button>
         </div>
+
+
       </div>
     </div>
   </section>
@@ -507,53 +455,14 @@
       window.location.href = 'signup.html';
     }
 
-    // URLパラメータから決済結果を取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('status');
-    const paymentId = urlParams.get('payment_id');
+    // 決済処理をスキップして直接オンボーディングに進むように変更
+    document.addEventListener('DOMContentLoaded', function() {
+      // ページが読み込まれたときに必要な初期化処理があれば実行
+    });
 
-    // 決済完了後の処理
-    if (paymentStatus === 'success' && paymentId) {
-      // 決済成功時の処理
-      showSuccessMessage();
-      // 3秒後にオンボーディングページへ遷移
-      setTimeout(() => {
-        window.location.href = 'onboarding.html';
-      }, 3000);
-    } else if (paymentStatus === 'error') {
-      // 決済失敗時の処理
-      showErrorMessage();
-    }
-
-    function showSuccessMessage() {
-      const paymentContainer = document.querySelector('.payment-container');
-      paymentContainer.innerHTML = `
-        <div class="payment-success">
-          <div class="success-icon">✓</div>
-          <h2>支払いが完了しました</h2>
-          <p>オンボーディングページへ移動します...</p>
-        </div>
-      `;
-    }
-
-    function showErrorMessage() {
-      const paymentContainer = document.querySelector('.payment-container');
-      paymentContainer.innerHTML = `
-        <div class="payment-error">
-          <div class="error-icon">×</div>
-          <h2>支払いに失敗しました</h2>
-          <p>もう一度お試しください。</p>
-          <button class="btn btn-primary" onclick="retryPayment()">再試行</button>
-        </div>
-      `;
-    }
-
-    function retryPayment() {
-      window.location.href = 'https://univa.cc/DX_tCu';
-    }
 
     function proceedToPayment() {
-      // 決済データをセッションストレージに保存
+      // 登録データをセッションストレージに保存
       const paymentData = {
         plan: selectedPlan,
         user: signupData,
@@ -561,71 +470,14 @@
       };
       sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
       
-      // UnivaPayの決済ページへ遷移
-      window.location.href = 'https://univa.cc/DX_tCu';
+      // オンボーディングページへ直接遷移
+      window.location.href = 'onboarding.html';
     }
 
-    // カード番号のフォーマット
-    document.getElementById('cardNumber').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      let formattedValue = '';
-      
-      for(let i = 0; i < value.length; i++) {
-        if(i > 0 && i % 4 === 0) {
-          formattedValue += ' ';
-        }
-        formattedValue += value[i];
-      }
-      
-      e.target.value = formattedValue;
-      
-      // カードブランドの判定
-      const cardBrand = document.querySelector('.card-brand');
-      if(value.startsWith('4')) {
-        cardBrand.style.backgroundImage = 'url(path/to/visa.png)';
-      } else if(value.startsWith('5')) {
-        cardBrand.style.backgroundImage = 'url(path/to/mastercard.png)';
-      } else if(value.startsWith('3')) {
-        cardBrand.style.backgroundImage = 'url(path/to/amex.png)';
-      } else {
-        cardBrand.style.backgroundImage = '';
-      }
-      
-      // バリデーション
-      const isValid = value.length >= 13 && value.length <= 16;
-      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
-      this.parentElement.classList.toggle('success', isValid);
-    });
-
-    // 有効期限のフォーマット
-    document.getElementById('expiryDate').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      
-      if(value.length >= 2) {
-        const month = value.slice(0, 2);
-        const year = value.slice(2);
-        value = month + (year.length ? '/' + year : '');
-      }
-      
-      e.target.value = value;
-      
-      // バリデーション
-      const [month, year] = value.split('/');
-      const isValid = month >= 1 && month <= 12 && value.length === 5;
-      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
-      this.parentElement.classList.toggle('success', isValid);
-    });
-
-    // CVCの制限
-    document.getElementById('cvc').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      e.target.value = value;
-      
-      // バリデーション
-      const isValid = value.length >= 3 && value.length <= 4;
-      this.parentElement.classList.toggle('error', !isValid && value.length > 0);
-      this.parentElement.classList.toggle('success', isValid);
+    // 決済ページへの遷移時にローディング表示などを追加できます
+    document.addEventListener('DOMContentLoaded', function() {
+      // 必要に応じて初期化処理を追加
     });
   </script>
 </body>
-</html> 
+</html>

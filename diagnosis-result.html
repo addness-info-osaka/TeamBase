@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>診断結果 - SL.AI Team Base</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 800px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    }
+    body {
+      background-color: var(--secondary);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-decoration: none;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .result-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 2rem;
+    }
+    .result-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .result-date {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .result-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .result-score {
+      text-align: center;
+    }
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #007bff;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1rem;
+    }
+    .score-circle span:first-child {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .score-max {
+      font-size: 1rem;
+    }
+    .score-label {
+      font-size: 1.1rem;
+      color: #333;
+    }
+    .result-level {
+      text-align: center;
+    }
+    .result-level h4 {
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .result-level p {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .result-details {
+      margin-bottom: 2rem;
+    }
+    .category-scores {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .category-score {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .category-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .score-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      background: #007bff;
+      width: 0%;
+      transition: width 0.5s ease-in-out;
+    }
+    .result-recommendations {
+      margin-bottom: 2rem;
+    }
+    .recommendation-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .recommendation-item h5 {
+      color: #007bff;
+      margin-bottom: 0.5rem;
+    }
+    .result-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: #007bff;
+      color: white;
+      border: none;
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <a href="index.html" class="logo">SL.AI Team Base</a>
+    </div>
+  </header>
+  <section class="diagnosis-section">
+    <div class="container">
+      <div class="result-container">
+        <div class="consultant-message" style="background:#f8f9fa;padding:1.2rem 1.5rem;border-radius:8px;margin-bottom:2rem;text-align:center;font-size:1.1rem;color:#007bff;font-weight:600;">
+          診断結果をもとに、専属コンサルタントよりご連絡いたします。ご入力いただいたメールアドレス宛にご案内をお送りします。
+        </div>
+        <div class="result-header">
+          <h2>診断結果</h2>
+          <p class="result-date">診断日: <span id="diagnosis-date"></span></p>
+        </div>
+        <div class="result-summary">
+          <div class="result-score">
+            <div class="score-circle">
+              <span id="total-score">0</span>
+              <span class="score-max">/100</span>
+            </div>
+            <p class="score-label">総合スコア</p>
+          </div>
+          <div class="result-level">
+            <h4>チームレベル</h4>
+            <p id="team-level">-</p>
+          </div>
+        </div>
+        <div class="result-details">
+          <h4>診断項目別スコア</h4>
+          <div class="category-scores">
+            <div class="category-score">
+              <div class="category-info">
+                <span class="category-name">目標設定</span>
+                <span class="category-score-value" id="goal-score">0/20</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill" id="goal-score-bar"></div>
+              </div>
+            </div>
+            <div class="category-score">
+              <div class="category-info">
+                <span class="category-name">コミュニケーション</span>
+                <span class="category-score-value" id="communication-score">0/20</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill" id="communication-score-bar"></div>
+              </div>
+            </div>
+            <div class="category-score">
+              <div class="category-info">
+                <span class="category-name">タスク管理</span>
+                <span class="category-score-value" id="task-score">0/20</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill" id="task-score-bar"></div>
+              </div>
+            </div>
+            <div class="category-score">
+              <div class="category-info">
+                <span class="category-name">チーム文化</span>
+                <span class="category-score-value" id="culture-score">0/20</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill" id="culture-score-bar"></div>
+              </div>
+            </div>
+            <div class="category-score">
+              <div class="category-info">
+                <span class="category-name">リーダーシップ</span>
+                <span class="category-score-value" id="leadership-score">0/20</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill" id="leadership-score-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="result-recommendations">
+          <h4>改善提案</h4>
+          <div id="recommendations-list">
+            <!-- 改善提案はJavaScriptで動的に追加 -->
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn btn-primary" onclick="saveResults()">結果を保存</button>
+          <button class="btn btn-secondary" onclick="downloadPDF()">PDFでダウンロード</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="container">
+      <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
+    </div>
+  </footer>
+  <script>
+    // 診断日を設定
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date();
+      document.getElementById('diagnosis-date').textContent = today.toLocaleDateString('ja-JP');
+      // 仮データ（本番ではセッションやAPIから取得）
+      const scores = {
+        goal: 16,
+        communication: 14,
+        task: 18,
+        culture: 12,
+        leadership: 15
+      };
+      const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+      document.getElementById('total-score').textContent = totalScore;
+      document.getElementById('team-level').textContent = calculateTeamLevel(totalScore);
+      Object.entries(scores).forEach(([category, score]) => {
+        document.getElementById(`${category}-score`).textContent = `${score}/20`;
+        document.getElementById(`${category}-score-bar`).style.width = `${(score / 20) * 100}%`;
+      });
+      displayRecommendations(scores);
+    });
+    function calculateTeamLevel(score) {
+      if (score >= 80) return 'S';
+      if (score >= 60) return 'A';
+      if (score >= 40) return 'B';
+      if (score >= 20) return 'C';
+      return 'D';
+    }
+    function displayRecommendations(scores) {
+      const recommendations = [];
+      if (scores.goal < 15) {
+        recommendations.push({
+          title: '目標設定の改善',
+          description: 'より具体的で測定可能な目標を設定し、定期的な進捗確認を実施しましょう。'
+        });
+      }
+      if (scores.communication < 15) {
+        recommendations.push({
+          title: 'コミュニケーションの活性化',
+          description: '定期的な1on1ミーティングの実施や、フィードバックの仕組みを整備しましょう。'
+        });
+      }
+      if (scores.task < 15) {
+        recommendations.push({
+          title: 'タスク管理の効率化',
+          description: 'プロジェクト管理ツールの活用や、タスクの優先順位付けの仕組みを導入しましょう。'
+        });
+      }
+      if (scores.culture < 15) {
+        recommendations.push({
+          title: 'チーム文化の醸成',
+          description: 'チームビルディング活動の実施や、心理的安全性を高める取り組みを行いましょう。'
+        });
+      }
+      if (scores.leadership < 15) {
+        recommendations.push({
+          title: 'リーダーシップの強化',
+          description: 'リーダーシップスキルの向上トレーニングや、メンタリング制度の導入を検討しましょう。'
+        });
+      }
+      const container = document.getElementById('recommendations-list');
+      container.innerHTML = '';
+      recommendations.forEach(rec => {
+        const div = document.createElement('div');
+        div.className = 'recommendation-item';
+        div.innerHTML = `
+          <h5>${rec.title}</h5>
+          <p>${rec.description}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+    function saveResults() {
+      alert('診断結果を保存しました。');
+    }
+    function downloadPDF() {
+      alert('PDFのダウンロードを開始します。');
+    }
+  </script>
+</body>
+</html> 

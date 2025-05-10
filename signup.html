@@ -366,10 +366,10 @@
 
       try {
         // フォームデータをセッションストレージに保存
-        sessionStorage.setItem('signupData', JSON.stringify(formData));
-        
-        // 確認ページへ遷移
-        window.location.href = 'confirm.html';
+          sessionStorage.setItem('signupData', JSON.stringify(formData));
+          
+          // 確認ページへ遷移
+          window.location.href = 'confirm.html';
       } catch (error) {
         console.error('Error:', error);
         alert('エラーが発生しました。もう一度お試しください。');
