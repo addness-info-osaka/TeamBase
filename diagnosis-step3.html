@@ -476,7 +476,7 @@
 
         <div class="button-container">
           <a href="diagnosis-step2.html" class="btn btn-outline">戻る</a>
-          <a href="#" class="btn btn-primary" id="submitDiagnosis">診断結果を見る</a>
+          <a href="#" class="btn btn-primary" id="submitDiagnosis" disabled>診断結果を見る</a>
         </div>
       </div>
     </div>
@@ -490,6 +490,9 @@
   </footer>
 
   <script>
+    // GASのWebアプリURL
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbydPV0C9k_ZEnAaolxhJV00T6OC73vayf9PVWq7NZ4LhLqsRv9jbg0OIDYyTzQfaf9h/exec';
+
     // ページ読み込み時に前のステップのデータを確認
     document.addEventListener('DOMContentLoaded', function() {
       const diagnosisData = JSON.parse(sessionStorage.getItem('diagnosisData')) || {};
@@ -534,6 +537,7 @@
           document.getElementById('improvement').value = diagnosisData.step3.improvement;
         }
       }
+      validateForm(); // 初期バリデーション
     });
 
     // オプション選択の処理
@@ -608,6 +612,28 @@
       // セッションストレージにデータを保存
       sessionStorage.setItem('diagnosisData', JSON.stringify(diagnosisData));
     }
+
+    // バリデーション関数
+    function validateForm() {
+      // ミーティング頻度
+      const meetingChecked = Array.from(document.querySelectorAll('[name="meeting"]')).some(r => r.checked);
+      // 役割明確さ
+      const rolesChecked = Array.from(document.querySelectorAll('[name="roles"]')).some(r => r.checked);
+      // ツール（1つ以上）
+      const toolsChecked = Array.from(document.querySelectorAll('[name="tools"]')).some(c => c.checked);
+      // 改善点
+      const improvement = document.getElementById('improvement').value.trim();
+      const improvementFilled = improvement.length > 0;
+
+      const isValid = meetingChecked && rolesChecked && toolsChecked && improvementFilled;
+      document.getElementById('submitDiagnosis').disabled = !isValid;
+    }
+
+    // 入力監視
+    Array.from(document.querySelectorAll('[name="meeting"]')).forEach(r => r.addEventListener('change', validateForm));
+    Array.from(document.querySelectorAll('[name="roles"]')).forEach(r => r.addEventListener('change', validateForm));
+    Array.from(document.querySelectorAll('[name="tools"]')).forEach(c => c.addEventListener('change', validateForm));
+    document.getElementById('improvement').addEventListener('input', validateForm);
 
     document.getElementById('submitDiagnosis').addEventListener('click', function(e) {
       e.preventDefault();

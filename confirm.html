@@ -568,6 +568,34 @@
         }
       });
       }
+
+    document.getElementById('submitDiagnosis').addEventListener('click', function(e) {
+      e.preventDefault();
+      saveStep3Data();
+      const diagnosisData = JSON.parse(sessionStorage.getItem('diagnosisData')) || {};
+
+      // GASのWebアプリURL
+      const GAS_URL = '【ここに発行したGASのURLを貼る】';
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyName: diagnosisData.step1?.companyName,
+          name: diagnosisData.step1?.name,
+          email: diagnosisData.step1?.email,
+          meeting: diagnosisData.step3?.meeting,
+          roles: diagnosisData.step3?.roles,
+          tools: diagnosisData.step3?.tools,
+          improvement: diagnosisData.step3?.improvement
+          // 必要に応じて他の項目も
+        })
+      }).then(() => {
+        window.location.href = 'diagnosis-result.html';
+      }).catch(() => {
+        alert('送信に失敗しました。');
+      });
+    });
   </script>
 </body>
 </html> 
