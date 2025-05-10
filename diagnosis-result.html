@@ -281,27 +281,171 @@
     </div>
   </footer>
   <script>
-    // 診断日を設定
     document.addEventListener('DOMContentLoaded', function() {
+      // 診断日を設定
       const today = new Date();
       document.getElementById('diagnosis-date').textContent = today.toLocaleDateString('ja-JP');
-      // 仮データ（本番ではセッションやAPIから取得）
+      
+      // セッションストレージから診断データを取得
+      const diagnosisData = JSON.parse(sessionStorage.getItem('diagnosisData')) || {};
+      console.log('診断結果表示データ:', diagnosisData);
+      
+      // データがない場合は診断ページにリダイレクト
+      if (!diagnosisData.step1 || !diagnosisData.step2 || !diagnosisData.step3) {
+        alert('診断データが見つかりません。診断を最初からやり直してください。');
+        window.location.href = 'diagnosis.html';
+        return;
+      }
+      
+      // 各カテゴリーのスコアを計算
       const scores = {
-        goal: 16,
-        communication: 14,
-        task: 18,
-        culture: 12,
-        leadership: 15
+        goal: calculateGoalScore(diagnosisData),
+        communication: calculateCommunicationScore(diagnosisData),
+        task: calculateTaskScore(diagnosisData),
+        culture: calculateCultureScore(diagnosisData),
+        leadership: calculateLeadershipScore(diagnosisData)
       };
+      
+      // 総合スコアを計算
       const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
       document.getElementById('total-score').textContent = totalScore;
-      document.getElementById('team-level').textContent = calculateTeamLevel(totalScore);
+      
+      // チームレベルを設定
+      const level = calculateTeamLevel(totalScore);
+      document.getElementById('team-level').textContent = level;
+      
+      // 各カテゴリーのスコアを表示
       Object.entries(scores).forEach(([category, score]) => {
         document.getElementById(`${category}-score`).textContent = `${score}/20`;
         document.getElementById(`${category}-score-bar`).style.width = `${(score / 20) * 100}%`;
       });
+      
+      // 改善提案を表示
       displayRecommendations(scores);
     });
+    
+    // 目標設定スコアの計算
+    function calculateGoalScore(data) {
+      let score = 0;
+      
+      // 課題が業務プロセスまたはマネジメント関連なら高得点
+      if (data.step2?.challenge === 'process' || data.step2?.challenge === 'management') {
+        score += 10;
+      } else {
+        score += 5;
+      }
+      
+      // 意思決定プロセスの透明性
+      score += Math.min(10, data.step2?.transparencyRating * 2) || 0;
+      
+      return Math.min(20, score);
+    }
+    
+    // コミュニケーションスコアの計算
+    function calculateCommunicationScore(data) {
+      let score = 0;
+      
+      // コミュニケーション満足度
+      score += Math.min(10, data.step2?.communicationRating * 2) || 0;
+      
+      // ミーティング頻度
+      if (data.step3?.meeting === 'daily' || data.step3?.meeting === 'weekly') {
+        score += 6;
+      } else if (data.step3?.meeting === 'biweekly') {
+        score += 4;
+      } else if (data.step3?.meeting === 'monthly') {
+        score += 2;
+      }
+      
+      // 使用ツール数
+      score += Math.min(4, data.step3?.tools?.length || 0);
+      
+      return Math.min(20, score);
+    }
+    
+    // タスク管理スコアの計算
+    function calculateTaskScore(data) {
+      let score = 0;
+      
+      // 進捗管理方法
+      if (data.step2?.progress === 'project-tool') {
+        score += 10;
+      } else if (data.step2?.progress === 'excel') {
+        score += 7;
+      } else if (data.step2?.progress === 'custom') {
+        score += 10;
+      } else {
+        score += 3;
+      }
+      
+      // 課題が生産性または業務プロセス関連なら減点
+      if (data.step2?.challenge === 'productivity' || data.step2?.challenge === 'process') {
+        score -= 2;
+      }
+      
+      // プロジェクト管理ツール使用
+      if (data.step3?.tools?.includes('project')) {
+        score += 5;
+      }
+      
+      return Math.min(20, Math.max(0, score));
+    }
+    
+    // チーム文化スコアの計算
+    function calculateCultureScore(data) {
+      let score = 0;
+      
+      // コミュニケーション満足度と透明性の平均
+      const commScore = data.step2?.communicationRating || 0;
+      const transScore = data.step2?.transparencyRating || 0;
+      score += Math.min(10, ((commScore + transScore) / 2) * 2);
+      
+      // 課題がコミュニケーションなら減点
+      if (data.step2?.challenge === 'communication') {
+        score -= 3;
+      }
+      
+      // チャットツールの使用
+      if (data.step3?.tools?.includes('chat')) {
+        score += 5;
+      }
+      
+      // ビデオ会議の使用
+      if (data.step3?.tools?.includes('video')) {
+        score += 3;
+      }
+      
+      return Math.min(20, Math.max(0, score));
+    }
+    
+    // リーダーシップスコアの計算
+    function calculateLeadershipScore(data) {
+      let score = 0;
+      
+      // 役割の明確さ
+      if (data.step3?.roles === 'very-clear') {
+        score += 10;
+      } else if (data.step3?.roles === 'somewhat-clear') {
+        score += 7;
+      } else if (data.step3?.roles === 'neutral') {
+        score += 5;
+      } else if (data.step3?.roles === 'somewhat-unclear') {
+        score += 3;
+      } else {
+        score += 1;
+      }
+      
+      // 透明性スコア
+      score += Math.min(10, data.step2?.transparencyRating * 2) || 0;
+      
+      // 課題がマネジメントなら減点
+      if (data.step2?.challenge === 'management') {
+        score -= 5;
+      }
+      
+      return Math.min(20, Math.max(0, score));
+    }
+    
     function calculateTeamLevel(score) {
       if (score >= 80) return 'S';
       if (score >= 60) return 'A';
@@ -309,38 +453,53 @@
       if (score >= 20) return 'C';
       return 'D';
     }
+    
     function displayRecommendations(scores) {
       const recommendations = [];
+      
       if (scores.goal < 15) {
         recommendations.push({
           title: '目標設定の改善',
           description: 'より具体的で測定可能な目標を設定し、定期的な進捗確認を実施しましょう。'
         });
       }
+      
       if (scores.communication < 15) {
         recommendations.push({
           title: 'コミュニケーションの活性化',
           description: '定期的な1on1ミーティングの実施や、フィードバックの仕組みを整備しましょう。'
         });
       }
+      
       if (scores.task < 15) {
         recommendations.push({
           title: 'タスク管理の効率化',
           description: 'プロジェクト管理ツールの活用や、タスクの優先順位付けの仕組みを導入しましょう。'
         });
       }
+      
       if (scores.culture < 15) {
         recommendations.push({
           title: 'チーム文化の醸成',
           description: 'チームビルディング活動の実施や、心理的安全性を高める取り組みを行いましょう。'
         });
       }
+      
       if (scores.leadership < 15) {
         recommendations.push({
           title: 'リーダーシップの強化',
           description: 'リーダーシップスキルの向上トレーニングや、メンタリング制度の導入を検討しましょう。'
         });
       }
+      
+      // 提案がない場合
+      if (recommendations.length === 0) {
+        recommendations.push({
+          title: '素晴らしいチーム運営です！',
+          description: 'すべての指標が高いスコアを示しています。この状態を維持しつつ、さらなる高みを目指しましょう。'
+        });
+      }
+      
       const container = document.getElementById('recommendations-list');
       container.innerHTML = '';
       recommendations.forEach(rec => {
@@ -353,9 +512,11 @@
         container.appendChild(div);
       });
     }
+    
     function saveResults() {
       alert('診断結果を保存しました。');
     }
+    
     function downloadPDF() {
       alert('PDFのダウンロードを開始します。');
     }

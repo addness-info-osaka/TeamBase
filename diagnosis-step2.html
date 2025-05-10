@@ -475,7 +475,7 @@
 
         <div class="button-container">
           <a href="diagnosis.html" class="btn btn-outline">戻る</a>
-          <a href="diagnosis-step3.html" class="btn btn-primary" onclick="saveStep2Data()">次へ進む</a>
+          <a href="#" class="btn btn-primary" id="next_button" disabled>次へ進む</a>
         </div>
       </div>
     </div>
@@ -524,6 +524,7 @@
           if (commRatingElements[commRatingIndex]) {
             commRatingElements[commRatingIndex].querySelector('.rating-circle').classList.add('selected');
           }
+          window.communicationRating = diagnosisData.step2.communicationRating;
         }
         
         if (diagnosisData.step2.transparencyRating) {
@@ -532,8 +533,29 @@
           if (transRatingElements[transRatingIndex]) {
             transRatingElements[transRatingIndex].querySelector('.rating-circle').classList.add('selected');
           }
+          window.transparencyRating = diagnosisData.step2.transparencyRating;
         }
       }
+      
+      // 選択イベントにバリデーション処理を追加
+      const challengeRadios = document.querySelectorAll('[name="challenge"]');
+      challengeRadios.forEach(radio => {
+        radio.addEventListener('change', validateForm);
+      });
+      
+      const progressRadios = document.querySelectorAll('[name="progress"]');
+      progressRadios.forEach(radio => {
+        radio.addEventListener('change', validateForm);
+      });
+      
+      // 初期バリデーション
+      validateForm();
+      
+      // 次へボタンのクリックイベント
+      document.getElementById('next_button').addEventListener('click', function(e) {
+        e.preventDefault();
+        saveStep2Data();
+      });
     });
 
     // オプション選択の処理
@@ -548,6 +570,9 @@
       element.classList.add('selected');
       const radio = element.querySelector('input[type="radio"]');
       radio.checked = true;
+      
+      // バリデーション実行
+      validateForm();
     }
 
     // レーティング選択の処理
@@ -563,6 +588,9 @@
       
       // データを保存（グローバル変数または隠しフィールドに）
       window[`${groupName}Rating`] = value;
+      
+      // バリデーション実行
+      validateForm();
     }
 
     // ステップ2のデータを保存する関数
@@ -598,6 +626,30 @@
       
       // セッションストレージにデータを保存
       sessionStorage.setItem('diagnosisData', JSON.stringify(diagnosisData));
+      
+      // 次のページへ遷移
+      window.location.href = 'diagnosis-step3.html';
+    }
+
+    // バリデーション関数を追加
+    function validateForm() {
+      // 選択された課題を確認
+      const challengeSelected = Array.from(document.querySelectorAll('[name="challenge"]')).some(radio => radio.checked);
+      
+      // 選択された進捗管理方法を確認
+      const progressSelected = Array.from(document.querySelectorAll('[name="progress"]')).some(radio => radio.checked);
+      
+      // コミュニケーション満足度の選択を確認
+      const commRatingSelected = window.communicationRating > 0;
+      
+      // 意思決定プロセス透明性の選択を確認
+      const transRatingSelected = window.transparencyRating > 0;
+      
+      // すべての必須項目が選択されているか確認
+      const isValid = challengeSelected && progressSelected && commRatingSelected && transRatingSelected;
+      
+      // 次へボタンの有効/無効を切り替え
+      document.getElementById('next_button').disabled = !isValid;
     }
   </script>
 </body>

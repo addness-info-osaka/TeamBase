@@ -638,11 +638,50 @@
     document.getElementById('submitDiagnosis').addEventListener('click', function(e) {
       e.preventDefault();
       saveStep3Data();
-      // ここで診断データ＋連絡先情報を送信（ダミー: console.log）
+      // データ取得
       const diagnosisData = JSON.parse(sessionStorage.getItem('diagnosisData')) || {};
+      
+      // コンソールに送信内容をログ出力（デバッグ用）
       console.log('診断申し込み送信内容:', diagnosisData);
-      // 実際はここでAPI送信やメール送信処理を追加
-      window.location.href = 'diagnosis-result.html';
+      
+      // データを整形
+      const postData = {
+        companyName: diagnosisData.step1?.companyName || '',
+        name: diagnosisData.step1?.name || '',
+        email: diagnosisData.step1?.email || '',
+        industry: diagnosisData.step1?.industry || '',
+        position: diagnosisData.step1?.position || '',
+        challenge: diagnosisData.step2?.challenge || '',
+        communicationRating: diagnosisData.step2?.communicationRating || 0,
+        progress: diagnosisData.step2?.progress || '',
+        transparencyRating: diagnosisData.step2?.transparencyRating || 0,
+        meeting: diagnosisData.step3?.meeting || '',
+        roles: diagnosisData.step3?.roles || '',
+        tools: diagnosisData.step3?.tools || [],
+        improvement: diagnosisData.step3?.improvement || ''
+      };
+
+      try {
+        // GASにデータを送信
+        fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors', // CORSエラー回避
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(postData)
+        }).then(function() {
+          // 送信成功後、結果ページへ遷移
+          window.location.href = 'diagnosis-result.html';
+        }).catch(function(error) {
+          console.error('送信エラー:', error);
+          alert('送信に失敗しました。ネットワーク接続を確認してください。');
+          // エラーでも結果ページへ遷移（本番ではこの動作は要検討）
+          window.location.href = 'diagnosis-result.html';
+        });
+      } catch (error) {
+        console.error('送信処理エラー:', error);
+        alert('エラーが発生しましたが、診断結果は表示できます。');
+        window.location.href = 'diagnosis-result.html';
+      }
     });
   </script>
 </body>
