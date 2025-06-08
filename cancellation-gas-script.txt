@@ -158,7 +158,7 @@ function processCancellation(email, companyName, name, cancelReason, detailedRea
       
       if (row[2] === email) { // C列: メールアドレスで検索
         // ステータスを「解約済み」に更新
-        sheet.getRange(i + 1, 10).setValue('cancelled'); // J列: ステータス
+        sheet.getRange(i + 1, 10).setValue('解約済み'); // J列: ステータス
         sheet.getRange(i + 1, 11).setValue(cancelReason); // K列: 解約理由
         sheet.getRange(i + 1, 12).setValue(detailedReason); // L列: 詳細理由
         sheet.getRange(i + 1, 13).setValue(new Date()); // M列: 解約日時
@@ -561,7 +561,7 @@ function handleSignup(postData) {
     // 会社情報を追加列に保存
     if (postData.companyData) {
       sheet.getRange(lastRow, COLUMNS.COMPANY_NAME).setValue(postData.companyData.companyName || '');
-      sheet.getRange(lastRow, COLUMNS.STATUS).setValue(postData.companyData.status || '');
+      sheet.getRange(lastRow, COLUMNS.STATUS).setValue(postData.companyData.status || 'トライアル申込完了');
       sheet.getRange(lastRow, COLUMNS.FORM_TYPE).setValue(postData.companyData.formType || '申し込み');
     }
     
@@ -753,6 +753,34 @@ function sendConfirmationEmail(postData) {
     Logger.log("エラースタックトレース: " + error.stack);
     return false;
   }
+}
+
+// ====================================================
+// ステータス管理関数（日本語対応）
+// ====================================================
+function getStatusText(statusCode) {
+  const statusMap = {
+    'トライアル申込完了': 'トライアル申込完了',
+    'pending_approval': 'トライアル申込完了',  // 旧形式対応
+    'trial_active': 'トライアル利用中',
+    'trial_expiring': 'トライアル期限間近',
+    'cancelled': '解約済み',
+    'converted_paid': '有料契約移行',
+    'expired': '期限切れ'
+  };
+  
+  return statusMap[statusCode] || statusCode;
+}
+
+function getFormTypeText(formType) {
+  const formTypeMap = {
+    '申し込み': '申し込み',
+    'signup': '申し込み',  // 旧形式対応
+    'cancellation': '解約申請',
+    'inquiry': 'お問い合わせ'
+  };
+  
+  return formTypeMap[formType] || formType;
 }
 
 // ====================================================

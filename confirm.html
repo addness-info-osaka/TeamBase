@@ -1005,8 +1005,8 @@
            companyData: {
              companyName: signupData.company_name,             // 会社名
              applicationDate: new Date().toISOString(),        // 申し込み日時
-             status: 'pending_approval',                       // ステータス
-             formType: 'signup'                                // フォーム種別
+             status: 'トライアル申込完了',                        // ステータス
+             formType: '申し込み'                               // フォーム種別
            }
          };
          
@@ -1040,7 +1040,7 @@
          sessionStorage.setItem('applicationData', JSON.stringify({
            ...signupData,
            applicationDate: new Date().toISOString(),
-           status: 'pending_approval',
+           status: 'トライアル申込完了',
            gasSubmitted: true
          }));
          
