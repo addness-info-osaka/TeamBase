@@ -721,109 +721,210 @@
     /* 料金プラン */
     .pricing {
       padding: 5rem 0;
-      background-color: var(--light);
+      background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
     }
 
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
+    .pricing-subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 1.2rem;
+      margin-bottom: 3rem;
+    }
+
+    .single-pricing-container {
+      display: flex;
+      justify-content: center;
       margin-top: 3rem;
     }
 
-    .pricing-card {
+    .pricing-card-single {
       background: var(--light);
-      border: 2px solid var(--secondary);
-      border-radius: 12px;
-      padding: 2rem;
+      border: 3px solid var(--primary);
+      border-radius: 20px;
+      padding: 3rem;
       text-align: center;
-      transition: all 0.3s ease;
+      max-width: 600px;
+      width: 100%;
       position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 400px;
+      box-shadow: 0 20px 40px rgba(74, 111, 255, 0.15);
+      transform: translateY(-10px);
     }
 
-    .pricing-card h3 {
-      margin-top: 1rem;
-    }
-
-    .price {
-      font-size: 2.5rem;
-      color: var(--dark);
-      margin: 1.5rem 0;
-    }
-
-    .feature-list {
-      text-align: left;
-      margin: 2rem 0;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-
-    .btn {
-      margin-top: auto;
-      margin-bottom: 1rem;
-    }
-
-    .pricing-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-5px);
-    }
-
-    .pricing-card.popular {
-      border-color: var(--primary);
-      position: relative;
-      transform: scale(1.02);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .pricing-card.popular::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      bottom: -2px;
-      left: -2px;
-      background: var(--gradient-primary);
-      border-radius: 12px;
-      z-index: -1;
-      opacity: 0.1;
-    }
-
-    .popular-tag {
-      position: absolute;
-      top: 10px;
-      right: 20px;
+    .trial-badge {
       background: var(--gradient-accent);
       color: white;
-      padding: 6px 20px;
-      border-radius: 20px;
-      font-size: 1rem;
-      transform: translateY(0);
-      z-index: 1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      display: inline-block;
+      animation: pulse 2s infinite;
     }
 
-    .feature-list {
-      text-align: left;
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .pricing-header h3 {
+      font-size: 2rem;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .price-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .trial-price {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .free-text {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .trial-period {
+      font-size: 1.2rem;
+      color: var(--gray);
+    }
+
+    .arrow {
+      font-size: 2rem;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .regular-price {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .price-amount {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--dark);
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-size: 1rem;
+      color: var(--gray);
+    }
+
+    .feature-highlight {
+      background: var(--secondary);
+      padding: 1.5rem;
+      border-radius: 12px;
       margin: 2rem 0;
     }
 
-    .feature-list li {
-      margin-bottom: 0.8rem;
-      padding-left: 1.5rem;
-      position: relative;
+    .feature-highlight h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
     }
 
-    .feature-list li:before {
-      content: "✓";
-      color: var(--primary);
+    .feature-highlight p {
+      color: var(--gray);
+      margin: 0;
+    }
+
+    .feature-list-enhanced {
+      text-align: left;
+      margin: 2rem 0;
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list-enhanced li {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+
+    .cta-section {
+      margin: 3rem 0 2rem;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 20px 40px;
+      border-radius: 15px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(74, 111, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(74, 111, 255, 0.4);
+    }
+
+    .btn-cta::before {
+      content: '';
       position: absolute;
-      left: 0;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-cta:hover::before {
+      left: 100%;
+    }
+
+    .btn-text {
+      display: block;
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .btn-subtext {
+      display: block;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .risk-free {
+      margin-top: 1rem;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .pricing-note {
+      background: rgba(74, 111, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-top: 2rem;
+    }
+
+    .pricing-note p {
+      margin: 0.5rem 0;
+      color: var(--gray);
+      font-size: 0.9rem;
     }
 
     /* FAQ */
@@ -977,10 +1078,28 @@
       }
       
       .problems-grid,
-      .benefits-grid,
-      .pricing-grid {
+      .benefits-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+      }
+
+      .pricing-card-single {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+      }
+
+      .price-display {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .btn-cta {
+        padding: 18px 30px;
+        font-size: 1.1rem;
+      }
+
+      .btn-text {
+        font-size: 1.2rem;
       }
 
       .about-content,
@@ -1155,7 +1274,6 @@
       <h1>チームの生産性を最大化する<br>タスク管理ツール</h1>
       <p>TeamBaseは、アドネス株式会社が提供する、チームの課題を可視化し、<br>メンバー全員の進捗状況をリアルタイムで共有できるタスク管理ツールです。</p>
       <div class="hero-buttons">
-        <a href="diagnosis.html" class="btn btn-large btn-diagnosis">無料組織診断をはじめる</a>
         <a href="signup.html" class="btn btn-primary">無料で始める</a>
         <a href="#about" class="btn btn-secondary">詳しく見る</a>
       </div>
@@ -1302,37 +1420,53 @@
   <section id="pricing" class="pricing">
     <div class="container">
       <h2 class="section-title">料金プラン</h2>
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3>フリープラン</h3>
-          <div class="price">¥0<span>/月</span></div>
-          <ul class="feature-list">
-            <li>5名まで利用可能</li>
-            <li>Todoアプリ完全無料</li>
-            <li>全機能利用可能</li>
+      <p class="pricing-subtitle">シンプルで分かりやすい料金体系</p>
+      
+      <div class="single-pricing-container">
+        <div class="pricing-card-single">
+          <div class="trial-badge">🎉 14日間無料トライアル実施中！</div>
+          
+          <div class="pricing-header">
+            <h3>TeamBase</h3>
+            <div class="price-display">
+              <div class="trial-price">
+                <span class="free-text">無料</span>
+                <span class="trial-period">14日間</span>
+              </div>
+              <div class="arrow">→</div>
+              <div class="regular-price">
+                <span class="price-amount">¥10,000</span>
+                <span class="price-unit">/ユーザー・月</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-highlight">
+            <h4>✨ トライアル期間中は完全無料</h4>
+            <p>クレジットカード不要・いつでも解約可能</p>
+          </div>
+
+          <ul class="feature-list-enhanced">
+            <li>✅ 全機能利用可能</li>
+            <li>✅ 無制限のタスク・プロジェクト管理</li>
+            <li>✅ チーム全体でのリアルタイム共有</li>
+            <li>✅ 詳細なレポート・分析機能</li>
+            <li>✅ 導入サポート＆メールサポート</li>
+            <li>✅ モバイルアプリ対応</li>
           </ul>
-          <a href="signup.html" class="btn btn-outline">無料で始める</a>
-        </div>
-        <div class="pricing-card popular">
-          <div class="popular-tag">人気</div>
-          <h3>スタンダード</h3>
-          <div class="price">¥2,500<span>/月</span></div>
-          <ul class="feature-list">
-            <li>メンバー50名まで</li>
-            <li>導入オンボーディングサポート</li>
-          </ul>
-          <a href="signup.html" class="btn">無料トライアルをスタート</a>
-        </div>
-        <div class="pricing-card">
-          <h3>エンタープライズ</h3>
-          <div class="price">お見積り</div>
-          <ul class="feature-list">
-            <li>50名以上ご利用可能</li>
-            <li>ボリュームディスカウント</li>
-            <li>専用サポート</li>
-            <li>カスタム開発対応</li>
-          </ul>
-          <a href="signup.html" class="btn btn-outline">営業担当に問い合わせる</a>
+
+          <div class="cta-section">
+            <a href="signup.html" class="btn-cta">
+              <span class="btn-text">今すぐ無料で始める</span>
+              <span class="btn-subtext">14日間完全無料・解約も簡単</span>
+            </a>
+            <p class="risk-free">💳 クレジットカード登録不要</p>
+          </div>
+
+          <div class="pricing-note">
+            <p>※ トライアル終了2日前にお知らせメールをお送りします</p>
+            <p>※ 継続しない場合は、期間内に解約手続きをお願いします</p>
+          </div>
         </div>
       </div>
     </div>

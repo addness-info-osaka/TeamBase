@@ -1,0 +1,363 @@
+// TeamBase サインアップフォーム用のGASスクリプト（新システム対応版）
+// このスクリプトをGoogleスプレッドシートに紐付けて使用します
+
+// デバッグモード - 詳細なログを出力します
+const DEBUG = true;
+
+// 管理者のメールアドレス
+const ADMIN_EMAIL = 'info.osaka@addness.co.jp';
+
+// 会社からの送信者名
+const COMPANY_NAME = 'SL.AI Team Base';
+const COMPANY_EMAIL = 'noreply@sl-ai.com';
+
+// Webアプリとして公開した際のGETリクエストを処理する関数
+function doGet(e) {
+  // GETリクエストの場合はステータス情報を返す
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'TeamBase申し込みシステム',
+    message: '申し込み処理はPOSTリクエストで行ってください',
+    timestamp: new Date().toString()
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Webアプリとして公開した際のPOSTリクエストを処理する関数
+function doPost(e) {
+  try {
+    // POSTリクエストからデータを取得
+    var postData = JSON.parse(e.postData.contents);
+    
+    // ログ出力（デバッグ用）
+    if (DEBUG) {
+      Logger.log("===== 受信データ =====");
+      Logger.log(JSON.stringify(postData, null, 2));
+    }
+    
+    // スプレッドシートを取得
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow() + 1;
+    
+    // タイムスタンプを作成（A列）
+    var timestamp = new Date();
+    
+    // 新システム構成に合わせてデータをスプレッドシートに書き込む
+    sheet.getRange(lastRow, 1).setValue(timestamp); // A列: タイムスタンプ
+    sheet.getRange(lastRow, 2).setValue(postData.columnB || ''); // B列: 担当者名
+    sheet.getRange(lastRow, 3).setValue(postData.columnC || ''); // C列: メールアドレス
+    sheet.getRange(lastRow, 4).setValue(postData.columnD || ''); // D列: 電話番号
+    sheet.getRange(lastRow, 5).setValue(postData.columnE || ''); // E列: 部署名
+    sheet.getRange(lastRow, 6).setValue(postData.columnF || ''); // F列: 従業員数
+    sheet.getRange(lastRow, 7).setValue(postData.columnG || ''); // G列: 導入目的
+    sheet.getRange(lastRow, 8).setValue('未送信'); // H列: メール送信状態
+    
+    // 会社情報を追加列に保存（新システム構成）
+    if (postData.companyData) {
+      sheet.getRange(lastRow, 9).setValue(postData.companyData.companyName || ''); // I列: 会社名
+      sheet.getRange(lastRow, 10).setValue('trial'); // J列: ステータス（初期値：trial）
+    } else {
+      sheet.getRange(lastRow, 10).setValue('trial'); // J列: ステータス（初期値：trial）
+    }
+    
+    // 管理者への通知メール送信
+    sendAdminNotification(postData, lastRow);
+    
+    // 申し込み者本人への確認メール送信
+    var emailSent = sendConfirmationEmail(postData);
+    
+    // メール送信状態を更新
+    if (emailSent) {
+      sheet.getRange(lastRow, 8).setValue('送信完了');
+    } else {
+      sheet.getRange(lastRow, 8).setValue('送信失敗');
+    }
+    
+    // レスポンスを返す
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'success',
+      timestamp: timestamp.toString(),
+      message: 'お申し込みデータを正常に受信し、確認メールを送信しました',
+      rowNumber: lastRow,
+      emailSent: emailSent
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log("===== エラー発生 =====");
+    Logger.log("エラー: " + error.toString());
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      timestamp: new Date().toString(),
+      message: 'エラーが発生しました',
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// 管理者への通知メール送信
+function sendAdminNotification(postData, rowNumber) {
+  var subject = '【TeamBase】新しい無料トライアル申し込みがありました';
+  var body = `
+新しいTeamBaseの無料トライアル申し込みがありました。
+
+申し込み者情報：
+会社名: ${postData.companyData?.companyName || '未入力'}
+担当者名: ${postData.columnB || '未入力'}
+メールアドレス: ${postData.columnC || '未入力'}
+電話番号: ${postData.columnD || '未入力'}
+部署名: ${postData.columnE || '未入力'}
+従業員数: ${postData.columnF || '未入力'}
+導入目的: ${postData.columnG || '未入力'}
+
+スプレッドシートの${rowNumber}行目に詳細を記録しました。
+ステータス: trial（トライアル開始）
+
+申し込み者には自動で確認メールを送信済みです。
+12日後に自動的にトライアル終了通知が送信されます。
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    Logger.log('管理者への通知メール送信完了');
+  } catch (error) {
+    Logger.log('管理者への通知メール送信失敗: ' + error.toString());
+  }
+}
+
+// 申し込み者本人への確認メール送信
+function sendConfirmationEmail(postData) {
+  var email = postData.columnC;
+  var name = postData.columnB;
+  var companyName = postData.companyData?.companyName || '';
+  
+  if (!email) {
+    Logger.log('メールアドレスが設定されていません');
+    return false;
+  }
+  
+  var subject = '【TeamBase】無料トライアル申し込み承認リンクをお送りします';
+  
+  // オンボーディングページのリンク（実際のドメインに変更してください）
+  var onboardingLink = 'http://localhost:1800/onboarding.html'; // ローカル開発用
+  // 本番環境: var onboardingLink = 'https://yourdomain.com/onboarding.html';
+  
+  var htmlBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+    .button { display: inline-block; background: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+    .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px; }
+    .trial-info { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin: 20px 0; border-left: 4px solid #f39c12; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>TeamBase 無料トライアル申し込みありがとうございます</h1>
+    </div>
+    <div class="content">
+      <p>${name} 様</p>
+      
+      <p>この度は、TeamBaseの無料トライアルにお申し込みいただき、誠にありがとうございます。</p>
+      
+      <p><strong>申し込み内容確認：</strong></p>
+      <ul>
+        <li>会社名: ${companyName}</li>
+        <li>担当者名: ${name}</li>
+        <li>メールアドレス: ${email}</li>
+      </ul>
+      
+      <div class="trial-info">
+        <h3>🎯 14日間無料トライアル開始</h3>
+        <p><strong>トライアル期間:</strong> 14日間（本日から）<br>
+        <strong>料金:</strong> 完全無料<br>
+        <strong>12日目:</strong> 自動的に有料プラン移行のご案内をお送りします</p>
+      </div>
+      
+      <p>申し込みを承認するため、下記のリンクをクリックしてオンボーディングを開始してください：</p>
+      
+      <p style="text-align: center;">
+        <a href="${onboardingLink}" class="button">オンボーディングを開始する</a>
+      </p>
+      
+      <p><strong>次のステップ：</strong></p>
+      <ol>
+        <li>上記ボタンをクリックしてオンボーディングページにアクセス</li>
+        <li>チーム設定と初期設定を完了</li>
+        <li>TeamBaseの全機能をお試しください</li>
+      </ol>
+      
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      
+      <p>今後ともよろしくお願いいたします。</p>
+    </div>
+    <div class="footer">
+      <p><strong>アドネス株式会社 SL.AI Team Base</strong><br>
+      〒540-0021 大阪府大阪市中央区大手通２丁目４−８ assess大手通ビル４F<br>
+      TEL: 06-4400-0754 | Email: info.osaka@addness.co.jp</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: COMPANY_NAME
+    });
+    Logger.log('申し込み者への確認メール送信完了: ' + email);
+    return true;
+  } catch (error) {
+    Logger.log('申し込み者への確認メール送信失敗: ' + error.toString());
+    return false;
+  }
+}
+
+// スプレッドシートを開いたときにメニューを追加
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('TeamBase')
+    .addItem('手動でメール送信', 'manualSendEmails')
+    .addItem('スプレッドシート初期化', 'setupSheet')
+    .addItem('テストメール送信', 'sendTestEmail')
+    .addSeparator()
+    .addItem('トライアル管理トリガー設定', 'setupTrialTrigger')
+    .addToUi();
+}
+
+// スプレッドシートを初期化する関数（新システム対応）
+function setupSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var ui = SpreadsheetApp.getUi();
+  
+  // 確認ダイアログ
+  var response = ui.alert(
+    '確認',
+    'スプレッドシートを初期化しますか？既存のデータは消去されます。',
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response == ui.Button.YES) {
+    // シートをクリア
+    sheet.clear();
+    
+    // 新システム対応ヘッダー行を設定
+    sheet.getRange("A1:M1").setValues([["タイムスタンプ", "担当者名", "メールアドレス", "電話番号", "部署名", "従業員数", "導入目的", "メール送信状態", "会社名", "ステータス", "解約理由", "詳細理由", "解約日時"]]);
+    
+    // 列幅の調整
+    sheet.setColumnWidth(1, 150); // A列: タイムスタンプ
+    sheet.setColumnWidth(2, 120); // B列: 担当者名
+    sheet.setColumnWidth(3, 200); // C列: メールアドレス
+    sheet.setColumnWidth(4, 120); // D列: 電話番号
+    sheet.setColumnWidth(5, 120); // E列: 部署名
+    sheet.setColumnWidth(6, 100); // F列: 従業員数
+    sheet.setColumnWidth(7, 300); // G列: 導入目的
+    sheet.setColumnWidth(8, 120); // H列: メール送信状態
+    sheet.setColumnWidth(9, 200); // I列: 会社名
+    sheet.setColumnWidth(10, 120); // J列: ステータス
+    sheet.setColumnWidth(11, 120); // K列: 解約理由
+    sheet.setColumnWidth(12, 200); // L列: 詳細理由
+    sheet.setColumnWidth(13, 150); // M列: 解約日時
+    
+    // ヘッダー行の書式設定
+    sheet.getRange("A1:M1").setBackground("#4A6FFF").setFontColor("#FFFFFF").setFontWeight("bold");
+    
+    ui.alert('完了', 'スプレッドシートが新システム構成で初期化されました。', ui.ButtonSet.OK);
+  }
+}
+
+// トライアル管理トリガー設定のヘルパー
+function setupTrialTrigger() {
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('設定', 'トライアル管理システムを使用する場合は、simple-trial-management.txtのGASスクリプトを同じスプレッドシートに追加し、setupDailyTrigger()を実行してください。', ui.ButtonSet.OK);
+}
+
+// テストメール送信
+function sendTestEmail() {
+  var ui = SpreadsheetApp.getUi();
+  
+  var testData = {
+    columnB: 'テスト 太郎',
+    columnC: 'test@example.com', // ← 実際のテスト用メールアドレスに変更
+    columnD: '090-1234-5678',
+    columnE: '営業部',
+    columnF: '10-20名',
+    columnG: 'チーム管理の効率化',
+    companyData: {
+      companyName: 'テスト株式会社'
+    }
+  };
+  
+  var result = sendConfirmationEmail(testData);
+  
+  if (result) {
+    ui.alert('成功', 'テストメールを送信しました。', ui.ButtonSet.OK);
+  } else {
+    ui.alert('失敗', 'テストメールの送信に失敗しました。', ui.ButtonSet.OK);
+  }
+}
+
+// 手動でメールを送信するための関数
+function manualSendEmails() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var ui = SpreadsheetApp.getUi();
+  
+  // 確認ダイアログ
+  var response = ui.alert(
+    '確認',
+    '未送信の申し込み者全員にメールを送信しますか？',
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response == ui.Button.YES) {
+    var data = sheet.getDataRange().getValues();
+    var sent = 0;
+    var failed = 0;
+    
+    // ヘッダー行をスキップして2行目から処理
+    for (var i = 1; i < data.length; i++) {
+      // H列が「未送信」の場合のみメール送信
+      if (data[i][7] === "未送信") {
+        var testData = {
+          columnB: data[i][1],
+          columnC: data[i][2],
+          columnD: data[i][3],
+          columnE: data[i][4],
+          columnF: data[i][5],
+          columnG: data[i][6],
+          companyData: {
+            companyName: data[i][8]
+          }
+        };
+        
+        if (sendConfirmationEmail(testData)) {
+          // 送信済みフラグを設定
+          sheet.getRange(i + 1, 8).setValue("送信完了");
+          sent++;
+        } else {
+          sheet.getRange(i + 1, 8).setValue("送信失敗");
+          failed++;
+        }
+      }
+    }
+    
+    var message = sent + '件のメールを送信しました。';
+    if (failed > 0) {
+      message += '\n' + failed + '件の送信に失敗しました。';
+    }
+    
+    ui.alert('送信完了', message, ui.ButtonSet.OK);
+  }
+} 

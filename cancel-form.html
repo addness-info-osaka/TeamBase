@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeamBase - 解約申し込みフォーム</title>
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #6B8AFF;
+      --accent: #e74c3c;
+      --dark: #1a1a1a;
+      --gray: #6c757d;
+      --light-gray: #f8f9fa;
+      --white: #ffffff;
+      --light: #ffffff;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.7;
+      color: var(--dark);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    /* メインコンテンツ */
+    .cancel-section {
+      padding: 120px 0 80px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .cancel-container {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 3rem;
+      margin: 0 auto;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .cancel-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .cancel-header h1 {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .cancel-header p {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    /* フォーム */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: var(--dark);
+      font-size: 0.95rem;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--accent);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* 注意事項 */
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-left: 4px solid #f39c12;
+    }
+
+    .warning-box h3 {
+      color: #856404;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .warning-box ul {
+      margin-left: 1.2rem;
+      color: #856404;
+    }
+
+    .warning-box li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* ボタン */
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--white);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background: var(--light-gray);
+      color: var(--gray);
+      border: 2px solid #dee2e6;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ローディング */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 完了メッセージ */
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    .success-message h3 {
+      color: #155724;
+      margin-bottom: 1rem;
+    }
+
+    .success-message p {
+      color: #155724;
+    }
+
+    /* フッター */
+    footer {
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* レスポンシブデザイン */
+    @media (max-width: 768px) {
+      .cancel-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+
+      .cancel-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <a href="index.html" class="logo">SL.AI Team Base</a>
+      <nav>
+        <a href="index.html" style="color: var(--gray); text-decoration: none;">← トップページに戻る</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <section class="cancel-section">
+    <div class="container">
+      <div class="cancel-container" data-aos="fade-up">
+        <div class="cancel-header">
+          <h1>無料トライアル解約申し込み</h1>
+          <p>解約をご希望の場合は、以下のフォームにご入力ください</p>
+        </div>
+
+        <div class="warning-box">
+          <h3>⚠️ 解約について</h3>
+          <ul>
+            <li>解約申し込み受理後、即座にサービスの利用が停止されます</li>
+            <li>解約後のデータ復旧はできませんので、必要なデータは事前にバックアップしてください</li>
+            <li>解約完了の確認メールをお送りいたします</li>
+          </ul>
+        </div>
+
+        <form id="cancelForm">
+          <div class="form-group">
+            <label class="required">会社名</label>
+            <input type="text" id="company_name" name="company_name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="required">お名前</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="required">メールアドレス</label>
+            <input type="email" id="email" name="email" required>
+            <small style="color: var(--gray); font-size: 0.9rem;">※ 申し込み時と同じメールアドレスを入力してください</small>
+          </div>
+
+          <div class="form-group">
+            <label class="required">解約理由</label>
+            <select id="cancel_reason" name="cancel_reason" required>
+              <option value="">選択してください</option>
+              <option value="cost">コストが合わない</option>
+              <option value="functionality">機能が不足している</option>
+              <option value="usability">使いにくい</option>
+              <option value="other_tool">他のツールを使用することになった</option>
+              <option value="trial_only">トライアルのみの利用予定だった</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>詳細理由・ご意見（任意）</label>
+            <textarea id="detailed_reason" name="detailed_reason" placeholder="より詳しい理由やご意見がございましたらお聞かせください。今後のサービス改善の参考にさせていただきます。"></textarea>
+          </div>
+
+          <div class="button-container" id="button-container">
+            <button type="button" class="btn btn-secondary" onclick="history.back()">戻る</button>
+            <button type="submit" class="btn btn-danger">解約を申し込む</button>
+          </div>
+        </form>
+
+        <!-- ローディング表示 -->
+        <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <p>解約申し込みを処理中です...</p>
+        </div>
+
+        <!-- 完了メッセージ -->
+        <div class="success-message" id="success-message">
+          <h3>✅ 解約申し込みを受け付けました</h3>
+          <p>解約申し込みありがとうございました。<br>
+          確認メールをお送りしましたので、ご確認ください。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <p>© 2025 SL.AI Team Base. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    // AOS初期化
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+
+    // フォーム送信処理
+    document.getElementById('cancelForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = {
+        company_name: document.getElementById('company_name').value,
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        cancel_reason: document.getElementById('cancel_reason').value,
+        detailed_reason: document.getElementById('detailed_reason').value || ''
+      };
+
+      // UI更新
+      document.getElementById('button-container').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
+      try {
+        // GASのWebアプリURL（解約処理用）
+        const GAS_URL = 'https://script.google.com/macros/s/YOUR_CANCELLATION_GAS_URL/exec';
+
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'cancel',
+            ...formData
+          }),
+          mode: 'no-cors'
+        });
+
+        console.log('解約申し込み送信完了');
+
+        // 成功時の処理
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('success-message').style.display = 'block';
+
+        // 5秒後にトップページに戻る
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 5000);
+
+      } catch (error) {
+        console.error('解約申し込み送信エラー:', error);
+        
+        // エラー時の処理
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('button-container').style.display = 'flex';
+        
+        alert('解約申し込み送信中にエラーが発生しました。しばらく時間をおいて再度お試しください。\n\nエラー詳細: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html> 

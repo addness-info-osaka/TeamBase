@@ -1,0 +1,288 @@
+// ====================================================
+// TeamBase 解約処理用GASスクリプト
+// ====================================================
+
+// 設定値
+const ADMIN_EMAIL = 'info.osaka@addness.co.jp';
+const COMPANY_NAME = 'SL.AI Team Base';
+
+// ====================================================
+// 解約フォームからのPOSTリクエストを処理
+// ====================================================
+function doPost(e) {
+  try {
+    const postData = JSON.parse(e.postData.contents);
+    
+    // デバッグログ
+    Logger.log("===== 解約申し込み受信 =====");
+    Logger.log(JSON.stringify(postData, null, 2));
+    
+    if (postData.action === 'cancel') {
+      // 解約処理を実行
+      const result = processCancellation(
+        postData.email,
+        postData.company_name,
+        postData.name,
+        postData.cancel_reason,
+        postData.detailed_reason
+      );
+      
+      // レスポンスを返す
+      return ContentService.createTextOutput(JSON.stringify({
+        result: result ? 'success' : 'error',
+        message: result ? '解約申し込みを受け付けました' : '解約処理中にエラーが発生しました'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      message: '不正なリクエストです'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log("===== 解約処理エラー =====");
+    Logger.log("エラー: " + error.toString());
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      message: 'サーバーエラーが発生しました'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ====================================================
+// 解約処理機能
+// ====================================================
+function processCancellation(email, companyName, name, cancelReason, detailedReason) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+    
+    // 該当する申し込みを検索
+    let found = false;
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      if (row[2] === email) { // C列: メールアドレスで検索
+        // ステータスを「解約済み」に更新
+        sheet.getRange(i + 1, 10).setValue('cancelled'); // J列: ステータス
+        sheet.getRange(i + 1, 11).setValue(cancelReason); // K列: 解約理由
+        sheet.getRange(i + 1, 12).setValue(detailedReason); // L列: 詳細理由
+        sheet.getRange(i + 1, 13).setValue(new Date()); // M列: 解約日時
+        
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      Logger.log(`該当する申し込みが見つかりません: ${email}`);
+      // 見つからない場合でも、念のため管理者に通知
+    }
+    
+    // 管理者への解約通知
+    sendAdminCancellationNotification(email, companyName, name, cancelReason, detailedReason, found);
+    
+    // 申し込み者への解約確認メール
+    sendCancellationConfirmationEmail(email, name, companyName);
+    
+    Logger.log(`解約処理完了: ${email}`);
+    return true;
+    
+  } catch (error) {
+    Logger.log(`解約処理エラー: ${error.toString()}`);
+    return false;
+  }
+}
+
+// ====================================================
+// 管理者への解約通知メール
+// ====================================================
+function sendAdminCancellationNotification(email, companyName, name, cancelReason, detailedReason, foundInSheet) {
+  const reasonMapping = {
+    'cost': 'コストが合わない',
+    'functionality': '機能が不足している',
+    'usability': '使いにくい',
+    'other_tool': '他のツールを使用することになった',
+    'trial_only': 'トライアルのみの利用予定だった',
+    'other': 'その他'
+  };
+  
+  const reasonText = reasonMapping[cancelReason] || cancelReason;
+  
+  const subject = '【TeamBase】トライアル期間中解約申し込み';
+  const body = `
+トライアル期間中の解約申し込みがありました。
+
+■ 解約申し込み情報
+会社名: ${companyName}
+担当者名: ${name}
+メールアドレス: ${email}
+解約理由: ${reasonText}
+詳細理由: ${detailedReason || '（記載なし）'}
+
+■ 処理状況
+スプレッドシート更新: ${foundInSheet ? '完了' : '該当データが見つからず'}
+確認メール送信: 実行予定
+
+■ 対応事項
+${foundInSheet ? 
+  '・スプレッドシートのステータスを「cancelled」に更新しました\n・請求処理の停止をご確認ください' : 
+  '・スプレッドシートに該当データが見つかりませんでした\n・手動での確認をお願いします'
+}
+
+申し込み者には解約確認メールを自動送信済みです。
+
+解約申し込み受付日時: ${new Date().toLocaleString('ja-JP')}
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    Logger.log('管理者への解約通知メール送信完了');
+  } catch (error) {
+    Logger.log('管理者への解約通知メール送信失敗: ' + error.toString());
+  }
+}
+
+// ====================================================
+// 申し込み者への解約確認メール
+// ====================================================
+function sendCancellationConfirmationEmail(email, name, companyName) {
+  const subject = '【TeamBase】解約申し込み完了のお知らせ';
+  
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeamBase - 解約申し込み完了</title>
+  <style>
+    body {
+      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #6c757d;
+      padding-bottom: 20px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+    .info-box {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
+      color: #6c757d;
+      font-size: 14px;
+    }
+    .contact-info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">TeamBase</div>
+      <h2>解約申し込み完了のお知らせ</h2>
+    </div>
+
+    <p><strong>${name}</strong> 様</p>
+    <p>この度は、TeamBaseの無料トライアル解約申し込みをいただき、ありがとうございました。</p>
+
+    <div class="info-box">
+      <h3>✅ 解約申し込み受付完了</h3>
+      <p>以下の内容で解約申し込みを受け付けいたしました。</p>
+      <ul>
+        <li><strong>会社名：</strong> ${companyName}</li>
+        <li><strong>担当者名：</strong> ${name}</li>
+        <li><strong>メールアドレス：</strong> ${email}</li>
+        <li><strong>解約申し込み日時：</strong> ${new Date().toLocaleString('ja-JP')}</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>📋 今後の流れ</h3>
+      <ul>
+        <li>解約処理を完了いたします</li>
+        <li>トライアル期間終了後の請求は発生いたしません</li>
+        <li>サービスへのアクセスは段階的に制限されます</li>
+      </ul>
+    </div>
+
+    <p>TeamBaseをご利用いただき、誠にありがとうございました。<br>
+    今後ともよろしくお願いいたします。</p>
+
+    <div class="contact-info">
+      <h3>お問い合わせ</h3>
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      <p>📧 info.osaka@addness.co.jp</p>
+      <p>📞 06-4400-0754（平日 9:00-18:00）</p>
+    </div>
+
+    <div class="footer">
+      <p>このメールは自動送信されています。</p>
+      <p>© 2024 TeamBase. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: COMPANY_NAME
+    });
+    Logger.log('解約確認メール送信完了: ' + email);
+  } catch (error) {
+    Logger.log('解約確認メール送信失敗: ' + error.toString());
+  }
+}
+
+// ====================================================
+// テスト用関数
+// ====================================================
+function testCancellation() {
+  const result = processCancellation(
+    'test@example.com',
+    'テスト株式会社',
+    'テスト 太郎',
+    'cost',
+    'テスト用の解約申し込みです'
+  );
+  Logger.log(`テスト結果: ${result ? '成功' : '失敗'}`);
+} 

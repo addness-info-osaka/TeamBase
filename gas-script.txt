@@ -1,0 +1,254 @@
+// 診断フロー用のGASスクリプト
+// このスクリプトをGoogleスプレッドシートに紐付けて使用します
+
+// デバッグモード - 詳細なログを出力します
+const DEBUG = true;
+
+// 管理者のメールアドレス
+const ADMIN_EMAIL = '【管理者のメールアドレス】';
+
+// Webアプリとして公開した際のPOSTリクエストを処理する関数
+function doPost(e) {
+  try {
+    // POSTリクエストからデータを取得
+    var postData = JSON.parse(e.postData.contents);
+    
+    // ログ出力（デバッグ用）
+    if (DEBUG) {
+      Logger.log("===== 受信データ =====");
+      Logger.log(JSON.stringify(postData, null, 2));
+    }
+    
+    // スプレッドシートを取得
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow() + 1;
+    
+    // タイムスタンプを作成（A列）
+    var timestamp = new Date();
+    
+    // データをスプレッドシートに書き込む
+    sheet.getRange(lastRow, 1).setValue(timestamp); // A列: タイムスタンプ
+    sheet.getRange(lastRow, 2).setValue(postData.columnB || ''); // B列: 名前
+    sheet.getRange(lastRow, 3).setValue(postData.columnC || ''); // C列: メールアドレス
+    sheet.getRange(lastRow, 4).setValue(postData.columnD || ''); // D列: ミーティング頻度
+    sheet.getRange(lastRow, 5).setValue(postData.columnE || ''); // E列: 役割の明確さ
+    sheet.getRange(lastRow, 6).setValue(postData.columnF || ''); // F列: 使用ツール
+    sheet.getRange(lastRow, 7).setValue(postData.columnG || ''); // G列: 改善したい点
+    
+    // 会社情報
+    if (postData.companyData) {
+      sheet.getRange(lastRow, 8).setValue(postData.companyData.companyName || '');
+      sheet.getRange(lastRow, 9).setValue(postData.companyData.industry || '');
+      sheet.getRange(lastRow, 10).setValue(postData.companyData.companySize || '');
+      sheet.getRange(lastRow, 11).setValue(postData.companyData.position || '');
+    }
+    
+    // 管理者への通知メール送信
+    var subject = '【組織診断】新しい回答が届きました';
+    var body = `
+新しい組織診断の回答が届きました。
+
+回答者情報：
+名前: ${postData.columnB || '未入力'}
+メールアドレス: ${postData.columnC || '未入力'}
+会社名: ${postData.companyData?.companyName || '未入力'}
+
+スプレッドシートの${lastRow}行目に詳細を記録しました。
+`;
+
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    
+    // レスポンスを返す
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'success',
+      timestamp: timestamp.toString(),
+      message: '診断データを正常に受信しました',
+      rowNumber: lastRow
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log("===== エラー発生 =====");
+    Logger.log("エラー: " + error.toString());
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      timestamp: new Date().toString(),
+      message: 'エラーが発生しました',
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// テスト関数 - スクリプトエディタから実行して動作確認
+function testDoPost() {
+  var testData = {
+    columnB: 'テストユーザー',
+    columnC: 'test@example.com',
+    columnD: 'weekly',
+    columnE: 'very-clear',
+    columnF: 'email, chat',
+    columnG: 'チーム連携の改善',
+    companyData: {
+      companyName: 'テスト株式会社',
+      industry: 'it',
+      companySize: '1-10',
+      position: '担当者'
+    },
+    challengeData: {
+      challenge: 'communication',
+      communicationRating: 4,
+      progress: 'project',
+      transparencyRating: 3
+    },
+    sendEmail: false
+  };
+  
+  // doPost関数をテスト
+  var mockEvent = {
+    postData: {
+      contents: JSON.stringify(testData)
+    }
+  };
+  
+  var response = doPost(mockEvent);
+  Logger.log('テスト結果: ' + response.getContent());
+}
+
+// スプレッドシートを開いたときにメニューを追加
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('Team Base')
+    .addItem('手動でメール送信', 'manualSendEmails')
+    .addItem('スプレッドシート初期化', 'setupSheet')
+    .addToUi();
+}
+
+// スプレッドシートを初期化する関数
+function setupSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var ui = SpreadsheetApp.getUi();
+  
+  // 確認ダイアログ
+  var response = ui.alert(
+    '確認',
+    'スプレッドシートを初期化しますか？既存のデータは消去されます。',
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response == ui.Button.YES) {
+    // シートをクリア
+    sheet.clear();
+    
+    // ヘッダー行を設定
+    sheet.getRange("A1:H1").setValues([["タイムスタンプ", "名前", "メールアドレス", "ミーティング頻度", "役割の明確さ", "使用ツール", "改善したい点", "送信状態"]]);
+    
+    // 列幅の調整
+    sheet.setColumnWidth(1, 150); // A列
+    sheet.setColumnWidth(2, 120); // B列
+    sheet.setColumnWidth(3, 200); // C列
+    sheet.setColumnWidth(4, 120); // D列
+    sheet.setColumnWidth(5, 120); // E列
+    sheet.setColumnWidth(6, 250); // F列
+    sheet.setColumnWidth(7, 300); // G列
+    sheet.setColumnWidth(8, 100); // H列
+    
+    // ヘッダー行の書式設定
+    sheet.getRange("A1:H1").setBackground("#4A6FFF").setFontColor("#FFFFFF").setFontWeight("bold");
+    
+    ui.alert('完了', 'スプレッドシートが初期化されました。', ui.ButtonSet.OK);
+  }
+}
+
+// 手動でメールを送信するための関数
+function manualSendEmails() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var ui = SpreadsheetApp.getUi();
+  
+  // 確認ダイアログ
+  var response = ui.alert(
+    '確認',
+    '未送信の回答者全員にメールを送信しますか？',
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response == ui.Button.YES) {
+    var data = sheet.getDataRange().getValues();
+    var sent = 0;
+    var failed = 0;
+    
+    // ヘッダー行をスキップして2行目から処理
+    for (var i = 1; i < data.length; i++) {
+      // H列が空または「受信済み」の場合のみメール送信
+      if (data[i][7] === "" || data[i][7] === "受信済み") {
+        var name = data[i][1];
+        var email = data[i][2];
+        
+        if (email) {
+          // メール送信処理
+          if (sendThankYouEmail(name, email)) {
+            // 送信済みフラグを設定
+            sheet.getRange(i + 1, 8).setValue("送信済み");
+            sent++;
+          } else {
+            failed++;
+          }
+        } else {
+          sheet.getRange(i + 1, 8).setValue("メール未設定");
+        }
+      }
+    }
+    
+    var message = sent + '件のメールを送信しました。';
+    if (failed > 0) {
+      message += '\n' + failed + '件の送信に失敗しました。';
+    }
+    
+    ui.alert('送信完了', message, ui.ButtonSet.OK);
+  }
+}
+
+// トリガーを設定する関数（初回のみ手動実行）
+function createFormSubmitTrigger() {
+  // すでに同じトリガーがあるか確認
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'onFormSubmit') {
+      return; // 既存のトリガーがある場合は何もしない
+    }
+  }
+  
+  // スプレッドシートの編集時にonFormSubmitを実行するトリガーを作成
+  ScriptApp.newTrigger('onFormSubmit')
+    .forSpreadsheet(SpreadsheetApp.getActive())
+    .onEdit()
+    .create();
+}
+
+// 回答者へのお礼メールを送信する関数
+function sendThankYouEmail(name, email) {
+  try {
+    var subject = '【診断】回答ありがとうございました';
+    
+    // メール本文
+    var body = 
+      name + ' 様\n\n' +
+      'チーム診断へのご回答ありがとうございました。\n' +
+      '診断結果を元に、より良いチーム運営のサポートをさせていただきます。\n\n' +
+      '何かご質問がありましたら、お気軽にお問い合わせください。\n\n' +
+      '====================\n' +
+      'TeamBase運営チーム\n' +
+      'https://example.com/';
+    
+    // メールを送信
+    MailApp.sendEmail(email, subject, body);
+    
+    return true;
+  } catch (error) {
+    Logger.log("お礼メール送信エラー: " + error.toString());
+    return false;
+  }
+} 

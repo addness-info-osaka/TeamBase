@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>TeamBase - Visionから逆算したチーム経営支援ツール</title>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 1200px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--dark);
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-menu a:hover {
+      color: var(--primary);
+    }
+
+    .nav-menu a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* ボタン */
+    .btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: var(--light);
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      background: var(--gradient-primary);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-large {
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-outline::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      z-index: -1;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      color: white;
+    }
+
+    .btn-outline:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* ヒーローセクション */
+    .hero {
+      background-color: var(--light);
+      padding: 6rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      animation: slideIn 1s ease;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+      color: var(--dark);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    /* Whyセクション */
+    .why-section {
+      background-color: var(--secondary);
+      padding: 5rem 0;
+    }
+
+    .why-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .why-content h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--dark);
+    }
+
+    .why-content p {
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .why-conclusion {
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-top: 2rem;
+    }
+
+    /* Whatセクション */
+    .what-section {
+      padding: 5rem 0;
+    }
+
+    .what-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .what-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .what-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .what-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .what-card p {
+      color: var(--gray);
+    }
+
+    /* UI紹介セクション */
+    .ui-section {
+      background-color: var(--secondary);
+      padding: 5rem 0;
+    }
+
+    .ui-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .ui-text h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--dark);
+    }
+
+    .ui-text p {
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .ui-image img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Before→Afterセクション */
+    .comparison-section {
+      padding: 5rem 0;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid var(--light-gray);
+    }
+
+    .comparison-table th {
+      background-color: var(--primary);
+      color: var(--light);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: var(--secondary);
+    }
+
+    /* エグゼクティブ特典セクション */
+    .benefits-section {
+      background-color: var(--secondary);
+      padding: 5rem 0;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    .benefit-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .benefit-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .benefit-card p {
+      color: var(--gray);
+    }
+
+    /* 導入事例セクション */
+    .case-studies-section {
+      padding: 5rem 0;
+    }
+
+    .case-studies-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .case-study-card {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .case-study-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .case-study-card p {
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    /* CTAセクション */
+    .cta-section {
+      background-color: var(--primary);
+      padding: 5rem 0;
+      text-align: center;
+      color: var(--light);
+    }
+
+    .cta-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-content h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    /* フッター */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 3rem 0;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .footer-links h4 {
+      margin-bottom: 1rem;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--light);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* アニメーション */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .what-grid,
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ui-content {
+        grid-template-columns: 1fr;
+      }
+
+      .case-studies-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-buttons,
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">TeamBase</div>
+      <nav class="nav-menu">
+        <a href="#why">課題</a>
+        <a href="#what">ソリューション</a>
+        <a href="#benefits">特典</a>
+        <a href="#cases">導入事例</a>
+        <a href="#cta" class="btn">資料ダウンロード</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ヒーローセクション -->
+  <section class="hero">
+    <div class="container hero-content" data-aos="fade-up">
+      <h1>"このチーム、どこに向かっているのか？"が、<br>全員に共有されていますか？</h1>
+      <p>Teambaseは、ビジョン・目標・タスクを一本の構造に統合。<br>誰もが「何のために動いているのか」が見えるチームを実現します。<br>経営と現場の意図を一致させる、新しいマネジメントOSです。</p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn btn-large">💬 代表みかみの15分コンサルティングを体験する</a>
+        <a href="#cta" class="btn btn-outline btn-large">📝 無料組織診断を実施する</a>
+      </div>
+      <div class="hero-image" style="max-width: 700px; margin: 2.5rem auto 0;">
+        <img src="images/Team base&Todoアプリ サービス解説資料.png" alt="SL.AI Team Base & Todoアプリ サービス解説バナー" style="width:100%;height:auto;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,0.10);">
+      </div>
+    </div>
+  </section>
+
+  <!-- Whyセクション -->
+  <section id="why" class="why-section">
+    <div class="container why-content" data-aos="fade-up">
+      <h2>"働いているのに、前に進んでいない"のはなぜか？</h2>
+      <p>Visionは掲げているが、現場の行動と結びついていない<br>
+      会議が進捗報告に終始し、意思決定や改善が起きない<br>
+      タスクは並んでいるが、"意味"が見えていない</p>
+      <p class="why-conclusion">こうした停滞は、目的と行動が切断されていることが原因です。<br>Teambaseはこの「分断」を解消し、組織が一体で前に進む仕組みを提供します。</p>
+    </div>
+  </section>
+
+  <!-- Whatセクション -->
+  <section id="what" class="what-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Teambaseが実現する「目的で動くチーム」</h2>
+      <div class="what-grid">
+        <div class="what-card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Visionから逆算して行動をつなぐ「目的マップ」</h3>
+          <p>ビジョン → 戦略 → プロジェクト → タスクを構造化<br>組織全体が「どこに向かって」「今何をしているか」が見える</p>
+        </div>
+        <div class="what-card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Todoの設計が変わる。「行動」ではなく「意図」から始める</h3>
+          <p>タスクの粒度も、責任範囲も、目的に基づいて明確化<br>自走・改善型の行動設計へ</p>
+        </div>
+        <div class="what-card" data-aos="fade-up" data-aos-delay="300">
+          <h3>振り返りと成長が循環する「意思ある報告文化」</h3>
+          <p>チェックインのたびに"目的とのズレ"を発見<br>報告が、組織の学びと変化を加速させる</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UI紹介セクション -->
+  <section class="ui-section">
+    <div class="container">
+      <div class="ui-content">
+        <div class="ui-text" data-aos="fade-right">
+          <h2>直感的で、構造的に使える設計</h2>
+          <p>🧭 目的マップ：ビジョンからタスクまでが1枚で見える構造<br>
+          📂 タスク設計画面：すべてが"目的"とセットで作成<br>
+          📊 ダッシュボード：進捗、停滞、学びが可視化される環境</p>
+          <p>UX設計にもこだわり、誰でも「目的から行動を設計」できる直感性を実現しています。</p>
+        </div>
+        <div class="ui-image" data-aos="fade-left">
+          <img src="images/dashboard.png" alt="TeamBaseダッシュボード">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Before→Afterセクション -->
+  <section class="comparison-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Teambase導入で変わる「組織のベースライン」</h2>
+      <table class="comparison-table" data-aos="fade-up">
+        <tr>
+          <th>項目</th>
+          <th>導入前</th>
+          <th>導入後</th>
+        </tr>
+        <tr>
+          <td>Vision共有</td>
+          <td>説明ベース</td>
+          <td>行動レベルまで接続される</td>
+        </tr>
+        <tr>
+          <td>タスク管理</td>
+          <td>バラバラ</td>
+          <td>目的起点で設計される</td>
+        </tr>
+        <tr>
+          <td>報告文化</td>
+          <td>受動的・表層的</td>
+          <td>主体的・内省的</td>
+        </tr>
+        <tr>
+          <td>会議の質</td>
+          <td>情報確認中心</td>
+          <td>意図・問いの深堀りへ</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- エグゼクティブ特典セクション -->
+  <section id="benefits" class="benefits-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Teambase導入企業限定｜経営者の成長を支える特別サービス</h2>
+      <div class="benefits-grid" style="grid-template-columns: repeat(2, 1fr); gap: 2.5rem;">
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="100">
+          <img src="images/21.png" alt="経営者マッチング" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">経営者マッチングプラットフォーム</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">経営者同士の実質連携を実現</div>
+          <div style="color:#888;font-size:0.97em;">Visionや課題でマッチング。共同事業や紹介も。</div>
+        </div>
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="200">
+          <img src="images/22.png" alt="高品質交流会" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">経営者限定・高品質交流会</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">目的でつながる交流会</div>
+          <div style="color:#888;font-size:0.97em;">テーマ別・高解像度の経営者限定イベント。</div>
+        </div>
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="300">
+          <img src="images/20.png" alt="AI経営支援" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">オリジナルAI経営支援ツール</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">AIで意思決定を効率化</div>
+          <div style="color:#888;font-size:0.97em;">実運用AIツールを希望者に提供。</div>
+        </div>
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="400">
+          <img src="images/19.png" alt="メディア＆ハウスリスト" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">メディア＆ハウスリスト活用</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">数千件規模のリスト活用</div>
+          <div style="color:#888;font-size:0.97em;">採用・販促・PRを強力サポート。</div>
+        </div>
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="500">
+          <img src="images/17.png" alt="みかみ代表コンサル" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">みかみ代表による直接コンサル</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">代表が個別伴走</div>
+          <div style="color:#888;font-size:0.97em;">組織開発・戦略設計を直接支援。</div>
+        </div>
+        <div class="benefit-card" data-aos="fade-up" data-aos-delay="600">
+          <img src="images/18.png" alt="人材スカウト" style="width:72px;height:72px;margin-bottom:1rem;object-fit:contain;">
+          <h3 style="font-weight:bold;color:#4A6FFF;">ハイレベル人材スカウト支援</h3>
+          <div style="font-weight:bold;margin-bottom:0.5em;">即戦力人材をご紹介</div>
+          <div style="color:#888;font-size:0.97em;">Teambase育成人材プールから推薦。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 導入事例セクション -->
+  <section id="cases" class="case-studies-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">導入企業の声｜組織の行動が"目的接続型"に変化</h2>
+      <div class="case-studies-grid">
+        <div class="case-study-card" data-aos="fade-up" data-aos-delay="100">
+          <h3>スタートアップ代表（従業員12名）</h3>
+          <p>"社員が"これは何のため？"と問い始めた時、組織が動き出したと感じました"</p>
+        </div>
+        <div class="case-study-card" data-aos="fade-up" data-aos-delay="200">
+          <h3>SaaS企業COO（従業員45名）</h3>
+          <p>"事業拡大フェーズに、戦略→Todoへの接続がチーム文化になった"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTAセクション -->
+  <section id="cta" class="cta-section" style="background:#4A6FFF; color:#fff; text-align:center;">
+    <div class="container cta-content" data-aos="fade-up">
+      <h2 style="font-size:2.2rem; font-weight:bold; margin-bottom:1.5rem;">まずは、"構造"を見てみませんか？</h2>
+      <p style="color:#e0e7ff; font-size:1.1rem; margin-bottom:2.5rem;">
+        <span style="color:#fff; font-weight:bold;">Teambase</span>がどんな構造で組織を変えていくのか<br>
+        他社との違いを資料でじっくり把握したい方へ<br>
+        <span style="color:#fff;">15分で代表みかみとの面談も可能です</span>
+      </p>
+      <div style="display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap;">
+        <a href="#" style="background:#fff; color:#4A6FFF; font-weight:bold; border-radius:8px; padding:1.2rem 2.2rem; font-size:1.1rem; display:flex; align-items:center; gap:0.7em; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-decoration:none;">
+          📩 概要資料を請求する
+        </a>
+        <a href="#" style="background:#fff; color:#4A6FFF; font-weight:bold; border-radius:8px; padding:1.2rem 2.2rem; font-size:1.1rem; display:flex; align-items:center; gap:0.7em; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-decoration:none;">
+          💬 15分無料コンサル
+        </a>
+        <a href="#" style="background:#fff; color:#4A6FFF; font-weight:bold; border-radius:8px; padding:1.2rem 2.2rem; font-size:1.1rem; display:flex; align-items:center; gap:0.7em; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-decoration:none;">
+          🧠 目的マップ事例を見る
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <h4>アクション</h4>
+          <ul>
+            <li><a href="#cta">💬 代表みかみの15分コンサルティングを体験する</a></li>
+            <li><a href="#cta">📝 無料組織診断を実施する</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>会社情報</h4>
+          <ul>
+            <li><a href="https://addness.co.jp/" target="_blank" rel="noopener noreferrer">会社概要</a></li>
+            <li><a href="https://note.com/addness_recruit" target="_blank" rel="noopener noreferrer">ブログ</a></li>
+            <li><a href="https://addness.co.jp/join-us/" target="_blank" rel="noopener noreferrer">採用情報</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2025 アドネス株式会社 All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+  </script>
+</body>
+</html> 
