@@ -140,9 +140,9 @@ function sendConfirmationEmail(postData) {
   
   var subject = '【TeamBase】無料トライアル申し込み承認リンクをお送りします';
   
-  // オンボーディングページのリンク（実際のドメインに変更してください）
-  var onboardingLink = 'http://localhost:1800/onboarding.html'; // ローカル開発用
-  // 本番環境: var onboardingLink = 'https://yourdomain.com/onboarding.html';
+  // オンボーディングページのリンク
+  var onboardingLink = 'https://addness-info-osaka.github.io/TeamBase/onboarding.html'; // GitHub Pages
+  // ローカル開発用: var onboardingLink = 'http://localhost:1800/onboarding.html';
   
   var htmlBody = `
 <!DOCTYPE html>
