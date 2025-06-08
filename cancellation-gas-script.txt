@@ -873,6 +873,272 @@ function getFormTypeText(formType) {
 }
 
 // ====================================================
+// 12日目自動メール送信システム
+// ====================================================
+function checkTrialExpiration() {
+  try {
+    Logger.log("===== 12日目自動メール送信チェック開始 =====");
+    
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    var today = new Date();
+    var processedCount = 0;
+    
+    Logger.log("チェック対象データ行数: " + (data.length - 1));
+    
+    // ヘッダー行をスキップして各申し込みをチェック
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      var timestamp = row[COLUMNS.TIMESTAMP - 1]; // A列: 申し込み日時
+      var email = row[COLUMNS.EMAIL - 1]; // C列: メールアドレス
+      var status = row[COLUMNS.STATUS - 1]; // J列: ステータス
+      var name = row[COLUMNS.CONTACT_NAME - 1]; // B列: 担当者名
+      var companyName = row[COLUMNS.COMPANY_NAME - 1]; // I列: 会社名
+      
+      if (!timestamp || !email) continue; // 必要データなしはスキップ
+      
+      // 申し込み日時から12日後を計算
+      var applicationDate = new Date(timestamp);
+      var reminderDate = new Date(applicationDate);
+      reminderDate.setDate(applicationDate.getDate() + 12);
+      
+      // 今日が12日目かチェック（日付のみ比較）
+      var todayStr = today.toDateString();
+      var reminderStr = reminderDate.toDateString();
+      
+      Logger.log(`行${i+1}: ${email} - 申込日:${applicationDate.toDateString()}, 12日目:${reminderStr}, 今日:${todayStr}`);
+      
+      if (todayStr === reminderStr) {
+        // 現在のステータスをチェック
+        if (status === '解約済み') {
+          Logger.log(`スキップ: ${email} は既に解約済み`);
+          continue;
+        }
+        
+        if (status === 'トライアル期限間近') {
+          Logger.log(`スキップ: ${email} には既に12日目メール送信済み`);
+          continue;
+        }
+        
+        Logger.log(`12日目メール送信対象: ${email}`);
+        
+        // 12日目の有料移行確認メールを送信
+        var emailSent = sendTrialExpirationEmail(email, name, companyName);
+        
+        if (emailSent) {
+          // ステータスを「トライアル期限間近」に更新
+          sheet.getRange(i + 1, COLUMNS.STATUS).setValue('トライアル期限間近');
+          Logger.log(`ステータス更新完了: ${email} -> トライアル期限間近`);
+          processedCount++;
+        }
+      }
+    }
+    
+    Logger.log(`===== 12日目メール送信完了: ${processedCount}件処理 =====`);
+    return processedCount;
+    
+  } catch (error) {
+    Logger.log("12日目メール送信チェックエラー: " + error.toString());
+    Logger.log("エラースタックトレース: " + error.stack);
+    return 0;
+  }
+}
+
+// 12日目の有料移行確認メール送信
+function sendTrialExpirationEmail(email, name, companyName) {
+  try {
+    Logger.log("12日目メール送信開始: " + email);
+    
+    var subject = '【TeamBase】トライアル期間終了のお知らせ（残り2日）';
+    
+    var htmlBody = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeamBase - トライアル期間終了のお知らせ</title>
+  <style>
+    body {
+      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #4A6FFF;
+      padding-bottom: 20px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4A6FFF;
+      margin-bottom: 10px;
+    }
+    .warning-box {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 5px solid #f39c12;
+    }
+    .pricing-box {
+      background-color: #e3f2fd;
+      border: 1px solid #bbdefb;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .price-highlight {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1976d2;
+      margin: 10px 0;
+    }
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      color: white;
+      padding: 15px 30px;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 20px 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .cancel-button {
+      background: #6c757d;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
+      color: #6c757d;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">TeamBase</div>
+      <h2>トライアル期間終了のお知らせ</h2>
+    </div>
+
+    <p><strong>${name}</strong> 様</p>
+    
+    <p>TeamBaseの14日間無料トライアルをご利用いただき、誠にありがとうございます。</p>
+    
+    <div class="warning-box">
+      <h3>⏰ 重要：トライアル期間終了まで残り2日</h3>
+      <p>お客様のトライアル期間は<strong>2日後</strong>に終了予定です。継続してご利用いただく場合は、有料プランへの移行が必要です。</p>
+    </div>
+
+    <h3>📊 有料プラン料金</h3>
+    <div class="pricing-box">
+      <p>月額料金（税込）</p>
+      <div class="price-highlight">¥19,800 / ユーザー・月</div>
+      <p>※ トライアル期間中の最大同時利用ユーザー数に基づいて計算されます</p>
+    </div>
+
+    <h3>🎯 選択肢</h3>
+    <p><strong>1. 継続利用をご希望の場合</strong></p>
+    <ul>
+      <li>特別な手続きは不要です</li>
+      <li>トライアル期間終了後、自動的に有料プランに移行します</li>
+      <li>翌日に請求書を発行・送付いたします</li>
+    </ul>
+
+    <p><strong>2. 解約をご希望の場合</strong></p>
+    <ul>
+      <li><strong>トライアル期間終了前</strong>に解約手続きを完了してください</li>
+      <li>解約手続きが期限を過ぎると、自動的に有料プランに移行します</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="https://addness-info-osaka.github.io/TeamBase/cancellation-form.html" class="button cancel-button">解約手続きはこちら</a>
+    </div>
+
+    <h3>📞 お問い合わせ</h3>
+    <p>ご不明な点やご質問がございましたら、お気軽にお問い合わせください。</p>
+    <ul>
+      <li>TEL: 06-4400-0754</li>
+      <li>Email: info.osaka@addness.co.jp</li>
+    </ul>
+
+    <p>引き続き、TeamBaseをご愛用いただきありがとうございます。</p>
+    
+    <div class="footer">
+      <p><strong>アドネス株式会社 SL.AI Team Base</strong><br>
+      〒540-0021 大阪府大阪市中央区大手通２丁目４−８ assess大手通ビル４F<br>
+      TEL: 06-4400-0754 | Email: info.osaka@addness.co.jp</p>
+      <p>このメールは自動送信されています。</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: COMPANY_NAME
+    });
+    
+    Logger.log('12日目メール送信完了: ' + email);
+    return true;
+    
+  } catch (error) {
+    Logger.log('12日目メール送信失敗: ' + error.toString());
+    return false;
+  }
+}
+
+// ====================================================
+// 自動実行用セットアップ関数
+// ====================================================
+function setupDailyTrigger() {
+  try {
+    // 既存のトリガーを削除
+    var triggers = ScriptApp.getProjectTriggers();
+    for (var i = 0; i < triggers.length; i++) {
+      if (triggers[i].getHandlerFunction() === 'checkTrialExpiration') {
+        ScriptApp.deleteTrigger(triggers[i]);
+      }
+    }
+    
+    // 毎日午前10時に実行するトリガーを作成
+    ScriptApp.newTrigger('checkTrialExpiration')
+      .timeBased()
+      .everyDays(1)
+      .atHour(10)
+      .create();
+    
+    Logger.log('日次トリガー設定完了: 毎日10時にcheckTrialExpiration実行');
+    return true;
+    
+  } catch (error) {
+    Logger.log('トリガー設定エラー: ' + error.toString());
+    return false;
+  }
+}
+
+// ====================================================
 // テスト用メール送信関数
 // ====================================================
 function testEmailSending() {
