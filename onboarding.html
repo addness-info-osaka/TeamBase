@@ -10,14 +10,18 @@
       --primary: #4A6FFF;
       --secondary: #F5F7FF;
       --accent: #FF6B6B;
+      --success: #28a745;
       --dark: #333;
       --light: #fff;
       --gray: #666;
       --light-gray: #F8F9FA;
-      --max-width: 1000px;
+      --max-width: 1200px;
       --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
       --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
-      --success: #28a745;
+      --gradient-success: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+      --shadow-light: 0 4px 6px rgba(0,0,0,0.05);
+      --shadow-medium: 0 8px 24px rgba(0,0,0,0.15);
+      --shadow-heavy: 0 12px 40px rgba(0,0,0,0.2);
     }
 
     * {
@@ -28,9 +32,10 @@
     }
 
     body {
-      background-color: var(--secondary);
+      background: linear-gradient(135deg, #f5f7ff 0%, #e8f0ff 100%);
       color: var(--dark);
       line-height: 1.6;
+      min-height: 100vh;
     }
 
     .container {
@@ -41,22 +46,25 @@
 
     /* ヘッダー */
     header {
-      background-color: var(--light);
-      padding: 1rem 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      background: var(--light);
+      padding: 1.5rem 0;
+      box-shadow: var(--shadow-light);
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(10px);
     }
 
     .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .logo {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
       color: var(--primary);
       text-decoration: none;
@@ -65,12 +73,48 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .header-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .app-link {
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .teambase-link {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .teambase-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 111, 255, 0.4);
+    }
+
+    .todoapp-link {
+      background: var(--light);
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .todoapp-link:hover {
+      background: var(--primary);
+      color: var(--light);
+    }
+
     .trial-badge {
       background: var(--gradient-accent);
       color: var(--light);
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 20px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: bold;
       animation: pulse 2s infinite;
     }
@@ -80,150 +124,203 @@
       50% { transform: scale(1.05); }
     }
 
-    /* ウェルカムセクション */
-    .welcome-section {
-      padding: 3rem 0;
+    /* ヒーローセクション */
+    .hero-section {
+      padding: 4rem 0;
       text-align: center;
       background: var(--light);
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
-    .welcome-title {
-      font-size: 2.5rem;
+    .hero-title {
+      font-size: 3rem;
       color: var(--dark);
       margin-bottom: 1rem;
-    }
-
-    .welcome-subtitle {
-      font-size: 1.2rem;
-      color: var(--gray);
-      margin-bottom: 2rem;
-    }
-
-    .trial-info {
-      background: var(--secondary);
-      border: 2px solid var(--primary);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin: 2rem auto;
-      max-width: 600px;
-    }
-
-    .trial-info h3 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .video-count {
       background: var(--gradient-primary);
-      color: var(--light);
-      padding: 0.8rem 1.5rem;
-      border-radius: 25px;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 1rem;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* メインコンテンツ */
-    .onboarding-section {
-      padding: 2rem 0;
-      min-height: calc(100vh - 180px);
-    }
-
-    .onboarding-container {
-      background: var(--light);
-      border-radius: 16px;
-      padding: 3rem 2rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .onboarding-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .onboarding-header h1 {
-      font-size: 2rem;
-      color: var(--dark);
-      margin-bottom: 1rem;
-    }
-
-    .onboarding-header p {
+    .hero-subtitle {
+      font-size: 1.3rem;
       color: var(--gray);
-      font-size: 1.1rem;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    /* プログレスバー */
-    .progress-container {
+    /* プログレスセクション */
+    .progress-section {
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 20px;
       margin-bottom: 3rem;
+      box-shadow: var(--shadow-light);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .progress-title {
+      font-size: 1.5rem;
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      display: block;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.9rem;
     }
 
     .progress-bar {
       width: 100%;
-      height: 10px;
+      height: 12px;
       background: var(--light-gray);
-      border-radius: 5px;
-      margin-bottom: 1rem;
+      border-radius: 6px;
       overflow: hidden;
+      margin-bottom: 1rem;
     }
 
     .progress-bar-fill {
       height: 100%;
       background: var(--gradient-primary);
-      width: 10%;
-      transition: width 0.3s ease;
+      width: 0%;
+      transition: width 0.5s ease;
+      border-radius: 6px;
     }
 
     .progress-text {
-      display: flex;
-      justify-content: space-between;
-      color: var(--gray);
-      font-size: 0.9rem;
-    }
-
-    /* ステップコンテンツ */
-    .step-content {
-      display: none;
-      animation: fade-in 0.5s ease;
-    }
-
-    .step-content.active {
-      display: block;
-    }
-
-    .step-title {
-      font-size: 1.8rem;
-      color: var(--primary);
-      margin-bottom: 1rem;
       text-align: center;
+      color: var(--gray);
+      font-size: 0.95rem;
     }
 
-    .step-description {
-      color: var(--gray);
+    /* 動画グリッド */
+    .videos-section {
+      margin-bottom: 4rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      color: var(--dark);
       margin-bottom: 2rem;
       text-align: center;
+    }
+
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .video-card {
+      background: var(--light);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .video-card.completed {
+      background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+      border: 2px solid var(--success);
+    }
+
+    .video-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .video-number {
+      background: var(--gradient-primary);
+      color: var(--light);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
       font-size: 1.1rem;
     }
 
-    /* 動画セクション */
-    .video-section {
-      margin-bottom: 3rem;
-      padding: 2rem;
-      background: var(--light);
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      border: 1px solid var(--light-gray);
+    .video-card.completed .video-number {
+      background: var(--gradient-success);
+    }
+
+    .completion-badge {
+      background: var(--gradient-success);
+      color: var(--light);
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.3s ease;
+    }
+
+    .video-card.completed .completion-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .video-title {
+      font-size: 1.3rem;
+      color: var(--dark);
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+
+    .video-description {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
     }
 
     .video-container {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 アスペクト比 */
+      padding-bottom: 56.25%;
       height: 0;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      box-shadow: var(--shadow-medium);
     }
 
     .video-container iframe {
@@ -235,52 +332,92 @@
       border: none;
     }
 
-    /* チェックボックスエリア */
-    .checkbox-group {
-      margin-top: 2rem;
-      text-align: center;
+    .video-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
     }
 
-    .checkbox-item {
-      display: inline-flex;
+    .watch-checkbox {
+      display: flex;
       align-items: center;
-      padding: 1rem 2rem;
+      gap: 0.8rem;
+      padding: 0.8rem 1.2rem;
       background: var(--secondary);
-      border-radius: 12px;
+      border-radius: 25px;
       transition: all 0.3s ease;
       cursor: pointer;
-      margin: 0 auto;
-      max-width: 400px;
     }
 
-    .checkbox-item:hover {
+    .watch-checkbox:hover {
       background: #e8f0ff;
-      transform: translateY(-2px);
     }
 
-    .checkbox-item input[type="checkbox"] {
-      margin-right: 1rem;
-      width: 20px;
-      height: 20px;
-      accent-color: var(--primary);
+    .watch-checkbox.completed {
+      background: var(--gradient-success);
+      color: var(--light);
     }
 
-    .checkbox-item label {
-      color: var(--dark);
-      font-size: 1rem;
+    .watch-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--success);
+    }
+
+    .checkbox-label {
+      font-size: 0.9rem;
       font-weight: 500;
       cursor: pointer;
     }
 
-    /* ボタンスタイル */
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 3rem;
-      gap: 1rem;
+    .video-duration {
+      color: var(--gray);
+      font-size: 0.85rem;
+      background: var(--light-gray);
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
     }
 
-    .btn {
+    /* 完了アクション */
+    .completion-action {
+      background: var(--light);
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-light);
+      margin-top: 3rem;
+    }
+
+    .completion-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      animation: bounce 2s infinite;
+    }
+
+    .completion-title {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .completion-message {
+      font-size: 1.1rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
       padding: 1rem 2rem;
       border: none;
       border-radius: 12px;
@@ -291,7 +428,7 @@
       text-decoration: none;
       display: inline-block;
       text-align: center;
-      min-width: 120px;
+      min-width: 160px;
     }
 
     .btn-primary {
@@ -301,111 +438,68 @@
 
     .btn-primary:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(74, 111, 255, 0.4);
+      box-shadow: 0 8px 25px rgba(74, 111, 255, 0.4);
     }
 
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .btn-secondary {
-      background: var(--light);
-      color: var(--primary);
-      border: 2px solid var(--primary);
-    }
-
-    .btn-secondary:hover {
-      background: var(--primary);
-      color: var(--light);
-      transform: translateY(-3px);
-    }
-
-    /* 完了画面 */
-    .completion-content {
-      text-align: center;
-      padding: 3rem 0;
-    }
-
-    .completion-icon {
-      font-size: 5rem;
-      margin-bottom: 2rem;
-      animation: bounce 2s infinite;
-    }
-
-    .completion-title {
-      font-size: 2.5rem;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-    }
-
-    .completion-message {
-      font-size: 1.3rem;
-      color: var(--gray);
-      margin-bottom: 3rem;
-      line-height: 1.8;
-    }
-
-    .completion-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      margin: 3rem 0;
-      flex-wrap: wrap;
-    }
-
-    .stat-item {
-      text-align: center;
-      padding: 2rem;
-      background: var(--secondary);
-      border-radius: 16px;
-      min-width: 150px;
-    }
-
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--primary);
-      display: block;
-    }
-
-    .stat-label {
-      color: var(--gray);
-      margin-top: 0.5rem;
-    }
-
-    .final-cta {
+    .btn-accent {
       background: var(--gradient-accent);
       color: var(--light);
-      padding: 1.5rem 3rem;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-block;
-      transition: all 0.3s ease;
-      margin-top: 2rem;
     }
 
-    .final-cta:hover {
+    .btn-accent:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
     }
 
-    @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-15px);
-      }
+    /* フィルターとソート */
+    .controls-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.6rem 1.2rem;
+      border: 2px solid var(--primary);
+      background: var(--light);
+      color: var(--primary);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    .search-box {
+      padding: 0.8rem 1.2rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 25px;
+      font-size: 0.9rem;
+      transition: border-color 0.3s ease;
+      min-width: 200px;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
     }
 
     /* レスポンシブ */
@@ -414,34 +508,41 @@
         padding: 0 15px;
       }
 
-      .welcome-title {
-        font-size: 2rem;
+      .hero-title {
+        font-size: 2.2rem;
       }
 
-      .onboarding-container {
-        padding: 2rem 1.5rem;
-      }
-
-      .completion-stats {
-        flex-direction: column;
-        align-items: center;
+      .videos-grid {
+        grid-template-columns: 1fr;
         gap: 1.5rem;
       }
 
-      .button-container {
+      .header-content {
+        justify-content: center;
+      }
+
+      .header-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .progress-stats {
+        gap: 1rem;
+      }
+
+      .action-buttons {
         flex-direction: column;
+        align-items: center;
       }
 
-      .step-title {
-        font-size: 1.5rem;
+      .controls-section {
+        flex-direction: column;
+        align-items: stretch;
       }
 
-      .completion-title {
-        font-size: 2rem;
-      }
-
-      .completion-message {
-        font-size: 1.1rem;
+      .filter-buttons {
+        justify-content: center;
       }
     }
 
@@ -450,34 +551,29 @@
       background-color: var(--dark);
       color: var(--light);
       text-align: center;
-      padding: 2rem 0;
-      margin-top: 3rem;
+      padding: 3rem 0;
+      margin-top: 4rem;
     }
 
-    /* ステップインジケーター */
-    .step-indicators {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
+    /* ローディング状態 */
+    .video-card.loading {
+      opacity: 0.7;
+      pointer-events: none;
     }
 
-    .step-indicator {
-      width: 12px;
-      height: 12px;
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
       border-radius: 50%;
-      background: var(--light-gray);
-      transition: all 0.3s ease;
+      animation: spin 1s linear infinite;
     }
 
-    .step-indicator.active {
-      background: var(--primary);
-      transform: scale(1.2);
-    }
-
-    .step-indicator.completed {
-      background: var(--success);
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -486,276 +582,289 @@
   <header>
     <div class="container header-content">
       <a href="index.html" class="logo">SL.AI Team Base</a>
+      <div class="header-links">
+        <a href="https://teambase.addness.com/login" class="app-link teambase-link" target="_blank">
+          🚀 TeamBase を開く
+        </a>
+        <a href="https://todo.addness.com/login" class="app-link todoapp-link" target="_blank">
+          ✅ Todo Appを開く
+        </a>
+      </div>
       <div class="trial-badge">14日間無料トライアル</div>
     </div>
   </header>
 
-  <!-- ウェルカムセクション -->
-  <section class="welcome-section">
+  <!-- ヒーローセクション -->
+  <section class="hero-section">
     <div class="container">
-      <h1 class="welcome-title">TeamBase オンボーディング</h1>
-      <p class="welcome-subtitle">無料トライアルが開始されました。完全ガイドでTeamBaseをマスターしましょう。</p>
-      <div class="trial-info">
-        <h3>🎯 14日間無料トライアル開始</h3>
-        <p><strong>トライアル期間:</strong> 14日間（本日から）<br>
-        <strong>料金:</strong> 完全無料<br>
-        <strong>12日目:</strong> 自動的に有料プラン移行のご案内をお送りします</p>
+      <h1 class="hero-title">TeamBase 完全マスター講座</h1>
+      <p class="hero-subtitle">
+        10本の動画でTeamBaseの全機能をマスターできます。<br>
+        お好きな順番で、いつでも何度でもご視聴ください。
+      </p>
+    </div>
+  </section>
+
+  <!-- プログレスセクション -->
+  <section class="progress-section">
+    <div class="container">
+      <div class="progress-header">
+        <h2 class="progress-title">学習進捗</h2>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-number" id="completedCount">0</span>
+            <div class="stat-label">完了</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">10</span>
+            <div class="stat-label">総動画数</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="progressPercent">0%</span>
+            <div class="stat-label">進捗率</div>
+          </div>
+        </div>
       </div>
-      <div class="video-count">全10本の動画で完全マスター</div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">まずは1本目の動画から始めましょう！</div>
     </div>
   </section>
 
   <!-- メインコンテンツ -->
-  <section class="onboarding-section">
+  <section class="videos-section">
     <div class="container">
-      <div class="onboarding-container">
-        <!-- ヘッダー -->
-        <div class="onboarding-header">
-          <h1>TeamBase 完全ガイド</h1>
-          <p>10本の動画でTeamBaseの使い方を完全にマスターできます</p>
+      <h2 class="section-title">学習動画一覧</h2>
+      
+      <!-- コントロール -->
+      <div class="controls-section">
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">すべて</button>
+          <button class="filter-btn" data-filter="completed">完了済み</button>
+          <button class="filter-btn" data-filter="incomplete">未完了</button>
         </div>
+        <input type="text" class="search-box" placeholder="動画を検索..." id="searchBox">
+      </div>
 
-        <!-- プログレスバー -->
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-bar-fill"></div>
-          </div>
-          <div class="progress-text">
-            <span class="progress-step">動画 <span id="currentStep">1</span>/10</span>
-            <span class="progress-percentage">10%</span>
-          </div>
-        </div>
-
-        <!-- ステップインジケーター -->
-        <div class="step-indicators">
-          <div class="step-indicator active"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-          <div class="step-indicator"></div>
-        </div>
-
+      <!-- 動画グリッド -->
+      <div class="videos-grid" id="videosGrid">
         <!-- 動画1 -->
-        <div class="step-content active" data-step="1">
-          <h2 class="step-title">動画1: TeamBase概要とログイン</h2>
-          <p class="step-description">TeamBaseの基本概念とログイン方法を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/945882819d714e6185efef1958b7ef0e?sid=6fd8680a-5982-42d8-9a0d-b485db6a980d" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="1" data-keywords="概要 ログイン 基本">
+          <div class="video-header">
+            <div class="video-number">1</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">TeamBase概要とログイン</h3>
+          <p class="video-description">TeamBaseの基本概念とログイン方法を学習します。プラットフォームの全体像を把握しましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/945882819d714e6185efef1958b7ef0e?sid=6fd8680a-5982-42d8-9a0d-b485db6a980d" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video1_check">
+              <label for="video1_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video1_check" class="step-checkbox">
-                <label for="video1_check">動画を視聴してTeamBaseの概要を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 5分</div>
           </div>
         </div>
 
         <!-- 動画2 -->
-        <div class="step-content" data-step="2">
-          <h2 class="step-title">動画2: ダッシュボードの使い方</h2>
-          <p class="step-description">メインダッシュボードの機能と基本操作を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/ce44e24e4410450cb7d28d29dca02a30?sid=b18b2202-eff7-4bac-af46-034f57835ab6" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="2" data-keywords="ダッシュボード 管理 画面">
+          <div class="video-header">
+            <div class="video-number">2</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">ダッシュボードの使い方</h3>
+          <p class="video-description">メインダッシュボードの機能と基本操作を学習します。情報の見方と活用方法をマスターしましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/ce44e24e4410450cb7d28d29dca02a30?sid=b18b2202-eff7-4bac-af46-034f57835ab6" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video2_check">
+              <label for="video2_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video2_check" class="step-checkbox">
-                <label for="video2_check">ダッシュボードの使い方を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 7分</div>
           </div>
         </div>
 
         <!-- 動画3 -->
-        <div class="step-content" data-step="3">
-          <h2 class="step-title">動画3: プロジェクト作成と管理</h2>
-          <p class="step-description">新しいプロジェクトの作成方法と基本的な管理機能を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/d4d53528376b4504aca747ae6f7642bf?sid=e95255d6-0529-4ff6-ba3a-1f27dbf9c01e" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="3" data-keywords="プロジェクト 作成 管理">
+          <div class="video-header">
+            <div class="video-number">3</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">プロジェクト作成と管理</h3>
+          <p class="video-description">新しいプロジェクトの作成方法と基本的な管理機能を学習します。効率的なプロジェクト運営を実現しましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/d4d53528376b4504aca747ae6f7642bf?sid=e95255d6-0529-4ff6-ba3a-1f27dbf9c01e" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video3_check">
+              <label for="video3_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video3_check" class="step-checkbox">
-                <label for="video3_check">プロジェクトの作成と管理方法を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 8分</div>
           </div>
         </div>
 
         <!-- 動画4 -->
-        <div class="step-content" data-step="4">
-          <h2 class="step-title">動画4: タスク管理の基本</h2>
-          <p class="step-description">効率的なタスク作成、割り当て、管理の方法を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/ee6c0a4007f64fa7bdb6b103d466b48f?sid=5ce694b4-d93c-4949-8261-15ccfa088b25" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="4" data-keywords="タスク 管理 基本">
+          <div class="video-header">
+            <div class="video-number">4</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">タスク管理の基本</h3>
+          <p class="video-description">効率的なタスク作成、割り当て、管理の方法を学習します。チームの生産性を向上させましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/ee6c0a4007f64fa7bdb6b103d466b48f?sid=5ce694b4-d93c-4949-8261-15ccfa088b25" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video4_check">
+              <label for="video4_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video4_check" class="step-checkbox">
-                <label for="video4_check">タスク管理の基本操作を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 6分</div>
           </div>
         </div>
 
         <!-- 動画5 -->
-        <div class="step-content" data-step="5">
-          <h2 class="step-title">動画5: チームメンバー管理</h2>
-          <p class="step-description">チームメンバーの招待、役割設定、権限管理を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/dcdf269134ee4f0b939a02ec45bd60d4?sid=e0729db5-517f-4de0-8eed-2981342bcc5c" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="5" data-keywords="チーム メンバー 管理 招待">
+          <div class="video-header">
+            <div class="video-number">5</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">チームメンバー管理</h3>
+          <p class="video-description">チームメンバーの招待、役割設定、権限管理を学習します。チーム体制を整えましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/dcdf269134ee4f0b939a02ec45bd60d4?sid=e0729db5-517f-4de0-8eed-2981342bcc5c" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video5_check">
+              <label for="video5_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video5_check" class="step-checkbox">
-                <label for="video5_check">チームメンバー管理の方法を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 9分</div>
           </div>
         </div>
 
         <!-- 動画6 -->
-        <div class="step-content" data-step="6">
-          <h2 class="step-title">動画6: KPI設定と追跡</h2>
-          <p class="step-description">重要業績評価指標（KPI）の設定と進捗追跡方法を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/158c2d9a6f764b42a77f1edef9148436?sid=48869391-65dd-4b78-b8ad-260f22c948b5" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="6" data-keywords="KPI 設定 追跡 指標">
+          <div class="video-header">
+            <div class="video-number">6</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">KPI設定と追跡</h3>
+          <p class="video-description">重要業績評価指標（KPI）の設定と進捗追跡方法を学習します。成果を数値で見える化しましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/158c2d9a6f764b42a77f1edef9148436?sid=48869391-65dd-4b78-b8ad-260f22c948b5" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video6_check">
+              <label for="video6_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video6_check" class="step-checkbox">
-                <label for="video6_check">KPI設定と追跡方法を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 7分</div>
           </div>
         </div>
 
         <!-- 動画7 -->
-        <div class="step-content" data-step="7">
-          <h2 class="step-title">動画7: レポートと分析機能</h2>
-          <p class="step-description">詳細なレポート作成と分析機能の使い方を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/b77a5bb62209407e94f3509eaa393077?sid=923796f6-267e-4ae1-ac6a-8021e09b2be0" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="7" data-keywords="レポート 分析 機能">
+          <div class="video-header">
+            <div class="video-number">7</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">レポートと分析機能</h3>
+          <p class="video-description">詳細なレポート作成と分析機能の使い方を学習します。データに基づいた意思決定を行いましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/b77a5bb62209407e94f3509eaa393077?sid=923796f6-267e-4ae1-ac6a-8021e09b2be0" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video7_check">
+              <label for="video7_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video7_check" class="step-checkbox">
-                <label for="video7_check">レポートと分析機能を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 8分</div>
           </div>
         </div>
 
         <!-- 動画8 -->
-        <div class="step-content" data-step="8">
-          <h2 class="step-title">動画8: カスタマイズと設定</h2>
-          <p class="step-description">ワークスペースのカスタマイズと詳細設定方法を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/84b76dc28c1e40e8b2e0adc055ece45d?sid=792de8cb-bb5d-4e5a-8c58-308f96b06dd0" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="8" data-keywords="カスタマイズ 設定 ワークスペース">
+          <div class="video-header">
+            <div class="video-number">8</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">カスタマイズと設定</h3>
+          <p class="video-description">ワークスペースのカスタマイズと詳細設定方法を学習します。自分たちに最適な環境を構築しましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/84b76dc28c1e40e8b2e0adc055ece45d?sid=792de8cb-bb5d-4e5a-8c58-308f96b06dd0" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video8_check">
+              <label for="video8_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video8_check" class="step-checkbox">
-                <label for="video8_check">カスタマイズと設定方法を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 6分</div>
           </div>
         </div>
 
         <!-- 動画9 -->
-        <div class="step-content" data-step="9">
-          <h2 class="step-title">動画9: 自動化とワークフロー</h2>
-          <p class="step-description">業務の自動化とワークフロー設定で効率を最大化する方法を学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/0053e29432be4d05b361e3b32b5ae474?sid=853cd253-55ad-4c30-85b5-9e11c48c87ff" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="9" data-keywords="自動化 ワークフロー 効率">
+          <div class="video-header">
+            <div class="video-number">9</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">自動化とワークフロー</h3>
+          <p class="video-description">業務の自動化とワークフロー設定で効率を最大化する方法を学習します。手作業を減らしましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/0053e29432be4d05b361e3b32b5ae474?sid=853cd253-55ad-4c30-85b5-9e11c48c87ff" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video9_check">
+              <label for="video9_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video9_check" class="step-checkbox">
-                <label for="video9_check">自動化とワークフローの設定を理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 10分</div>
           </div>
         </div>
 
         <!-- 動画10 -->
-        <div class="step-content" data-step="10">
-          <h2 class="step-title">動画10: 応用テクニックとベストプラクティス</h2>
-          <p class="step-description">チーム運営を成功に導く応用テクニックとベストプラクティスを学習します</p>
-          
-          <div class="video-section">
-            <div class="video-container">
-              <iframe src="https://www.loom.com/embed/341f5c1fa4154b088adade54c88ac554?sid=a446c299-db4b-46f3-8f52-c25a2fde67c9" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        <div class="video-card" data-video="10" data-keywords="応用 テクニック ベストプラクティス">
+          <div class="video-header">
+            <div class="video-number">10</div>
+            <div class="completion-badge">✓ 完了</div>
+          </div>
+          <h3 class="video-title">応用テクニックとベストプラクティス</h3>
+          <p class="video-description">チーム運営を成功に導く応用テクニックとベストプラクティスを学習します。プロレベルの運用を目指しましょう。</p>
+          <div class="video-container">
+            <iframe src="https://www.loom.com/embed/341f5c1fa4154b088adade54c88ac554?sid=a446c299-db4b-46f3-8f52-c25a2fde67c9" allowfullscreen></iframe>
+          </div>
+          <div class="video-actions">
+            <div class="watch-checkbox">
+              <input type="checkbox" id="video10_check">
+              <label for="video10_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="video10_check" class="step-checkbox">
-                <label for="video10_check">応用テクニックとベストプラクティスを理解しました</label>
-              </div>
-            </div>
+            <div class="video-duration">約 12分</div>
           </div>
         </div>
+      </div>
 
-        <!-- 完了画面 -->
-        <div class="step-content" data-step="11">
-          <div class="completion-content">
-            <div class="completion-icon">🎉</div>
-            <h2 class="completion-title">オンボーディング完了！</h2>
-            <p class="completion-message">
-              おめでとうございます！<br>
-              TeamBaseの全機能をマスターしました。<br>
-              これでチーム管理のプロフェッショナルです！
-            </p>
-            
-            <div class="completion-stats">
-              <div class="stat-item">
-                <span class="stat-number">10</span>
-                <div class="stat-label">動画完了</div>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">100%</span>
-                <div class="stat-label">習得率</div>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">14日間</span>
-                <div class="stat-label">無料トライアル</div>
-              </div>
-            </div>
-
-            <a href="https://teambase.addness.com/login" class="final-cta">
-              🚀 TeamBaseを始める
-            </a>
-          </div>
-        </div>
-
-        <!-- ボタン -->
-        <div class="button-container">
-          <button class="btn btn-secondary" id="prevButton" onclick="previousStep()">前の動画</button>
-          <button class="btn btn-primary" id="nextButton" onclick="nextStep()">次の動画</button>
+      <!-- 完了アクション -->
+      <div class="completion-action" id="completionAction" style="display: none;">
+        <div class="completion-icon">🎉</div>
+        <h2 class="completion-title">おめでとうございます！</h2>
+        <p class="completion-message">
+          全10本の動画を完了しました！<br>
+          これでTeamBaseのエキスパートです。実際にアプリを使って始めましょう。
+        </p>
+        <div class="action-buttons">
+          <a href="https://teambase.addness.com/login" class="action-btn btn-primary" target="_blank">
+            🚀 TeamBaseを始める
+          </a>
+          <a href="https://todo.addness.com/login" class="action-btn btn-accent" target="_blank">
+            ✅ Todo Appを使う
+          </a>
         </div>
       </div>
     </div>
@@ -769,115 +878,153 @@
   </footer>
 
   <script>
-    let currentStep = 1;
-    const totalSteps = 10;
-    const totalPages = 11; // 10動画 + 完了画面
-
-    // 要素の取得
-    const progressFill = document.querySelector('.progress-bar-fill');
-    const progressStep = document.getElementById('currentStep');
-    const progressPercentage = document.querySelector('.progress-percentage');
-    const prevButton = document.getElementById('prevButton');
-    const nextButton = document.getElementById('nextButton');
-    const stepContents = document.querySelectorAll('.step-content');
-    const stepIndicators = document.querySelectorAll('.step-indicator');
-
-    // ステップの表示切り替え
-    function showStep(step) {
-      currentStep = step;
+    // 進捗管理
+    function updateProgress() {
+      const totalVideos = 10;
+      const completedVideos = document.querySelectorAll('input[type="checkbox"]:checked').length;
+      const progressPercent = Math.round((completedVideos / totalVideos) * 100);
       
-      stepContents.forEach(content => {
-        content.classList.remove('active');
-        if (parseInt(content.dataset.step) === step) {
-          content.classList.add('active');
-        }
-      });
-
-      // プログレスバーの更新
-      const progress = (step / totalPages) * 100;
-      progressFill.style.width = `${progress}%`;
+      document.getElementById('completedCount').textContent = completedVideos;
+      document.getElementById('progressPercent').textContent = progressPercent + '%';
+      document.getElementById('progressBar').style.width = progressPercent + '%';
       
-      if (step <= totalSteps) {
-        progressStep.textContent = step;
-        progressPercentage.textContent = `${Math.round((step / totalSteps) * 100)}%`;
+      // プログレステキストの更新
+      const progressText = document.getElementById('progressText');
+      if (completedVideos === 0) {
+        progressText.textContent = 'まずは1本目の動画から始めましょう！';
+      } else if (completedVideos === totalVideos) {
+        progressText.textContent = '🎉 全ての動画を完了しました！素晴らしいです！';
+        document.getElementById('completionAction').style.display = 'block';
       } else {
-        progressStep.textContent = totalSteps;
-        progressPercentage.textContent = '100%';
+        progressText.textContent = `${completedVideos}本完了！残り${totalVideos - completedVideos}本です。`;
       }
-
-      // ステップインジケーターの更新
-      stepIndicators.forEach((indicator, index) => {
-        indicator.classList.remove('active', 'completed');
-        if (index + 1 === step && step <= totalSteps) {
-          indicator.classList.add('active');
-        } else if (index + 1 < step) {
-          indicator.classList.add('completed');
-        }
-      });
-
-      // ボタンの状態更新
-      prevButton.disabled = step === 1;
-      prevButton.style.display = step === 1 ? 'none' : 'inline-block';
       
-      if (step <= totalSteps) {
-        // 動画画面では、チェックボックスの状態に応じてボタンを有効/無効化
-        const stepCheckbox = document.querySelector(`.step-content[data-step="${step}"] .step-checkbox`);
-        nextButton.disabled = !stepCheckbox.checked;
-        nextButton.textContent = step === totalSteps ? '完了画面へ' : '次の動画';
-      } else {
-        // 完了画面
-        nextButton.style.display = 'none';
-      }
-    }
-
-    // チェックボックスの変更を監視
-    document.querySelectorAll('.step-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        const step = parseInt(checkbox.closest('.step-content').dataset.step);
-        if (step === currentStep && step <= totalSteps) {
-          nextButton.disabled = !checkbox.checked;
+      // 動画カードの状態更新
+      document.querySelectorAll('.video-card').forEach((card, index) => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        const watchCheckbox = card.querySelector('.watch-checkbox');
+        
+        if (checkbox.checked) {
+          card.classList.add('completed');
+          watchCheckbox.classList.add('completed');
+        } else {
+          card.classList.remove('completed');
+          watchCheckbox.classList.remove('completed');
         }
       });
-    });
+    }
 
-    function nextStep() {
-      if (currentStep < totalPages) {
-        showStep(currentStep + 1);
+    // フィルター機能
+    function setupFilters() {
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const videoCards = document.querySelectorAll('.video-card');
+      
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // アクティブボタンの切り替え
+          filterButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          const filter = btn.dataset.filter;
+          
+          videoCards.forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            const isCompleted = checkbox.checked;
+            
+            let shouldShow = true;
+            if (filter === 'completed' && !isCompleted) shouldShow = false;
+            if (filter === 'incomplete' && isCompleted) shouldShow = false;
+            
+            card.style.display = shouldShow ? 'block' : 'none';
+          });
+        });
+      });
+    }
+
+    // 検索機能
+    function setupSearch() {
+      const searchBox = document.getElementById('searchBox');
+      const videoCards = document.querySelectorAll('.video-card');
+      
+      searchBox.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        videoCards.forEach(card => {
+          const title = card.querySelector('.video-title').textContent.toLowerCase();
+          const description = card.querySelector('.video-description').textContent.toLowerCase();
+          const keywords = card.dataset.keywords.toLowerCase();
+          
+          const matches = title.includes(searchTerm) || 
+                         description.includes(searchTerm) || 
+                         keywords.includes(searchTerm);
+          
+          card.style.display = matches ? 'block' : 'none';
+        });
+      });
+    }
+
+    // 進捗保存
+    function saveProgress() {
+      const progress = {};
+      document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+        progress[`video${index + 1}`] = checkbox.checked;
+      });
+      
+      localStorage.setItem('teambase-onboarding-progress', JSON.stringify({
+        progress: progress,
+        lastAccessed: new Date().toISOString()
+      }));
+    }
+
+    // 進捗読み込み
+    function loadProgress() {
+      const saved = localStorage.getItem('teambase-onboarding-progress');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          Object.keys(data.progress).forEach(key => {
+            const checkbox = document.getElementById(key + '_check');
+            if (checkbox) {
+              checkbox.checked = data.progress[key];
+            }
+          });
+        } catch (e) {
+          console.log('進捗の読み込みに失敗しました');
+        }
       }
     }
 
-    function previousStep() {
-      if (currentStep > 1) {
-        showStep(currentStep - 1);
-      }
+    // イベントリスナーの設定
+    function setupEventListeners() {
+      // チェックボックスの変更イベント
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          updateProgress();
+          saveProgress();
+        });
+      });
+
+      // チェックボックスエリア全体をクリック可能に
+      document.querySelectorAll('.watch-checkbox').forEach(watchCheckbox => {
+        watchCheckbox.addEventListener('click', (e) => {
+          if (e.target.type !== 'checkbox') {
+            const checkbox = watchCheckbox.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+          }
+        });
+      });
     }
 
-    // キーボードナビゲーション
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft' && currentStep > 1) {
-        previousStep();
-      } else if (e.key === 'ArrowRight' && currentStep < totalPages) {
-        const stepCheckbox = document.querySelector(`.step-content[data-step="${currentStep}"] .step-checkbox`);
-        if (currentStep > totalSteps || stepCheckbox?.checked) {
-          nextStep();
-        }
-      } else if (e.key === ' ') {
-        // スペースキーでチェックボックスをトグル
-        e.preventDefault();
-        const stepCheckbox = document.querySelector(`.step-content[data-step="${currentStep}"] .step-checkbox`);
-        if (stepCheckbox) {
-          stepCheckbox.checked = !stepCheckbox.checked;
-          stepCheckbox.dispatchEvent(new Event('change'));
-        }
-      }
-    });
-
-    // 初期表示
-    showStep(1);
-
-    // ページロード時のアニメーション
+    // 初期化
     document.addEventListener('DOMContentLoaded', () => {
-      // AOS初期化（もしロードされていれば）
+      loadProgress();
+      updateProgress();
+      setupFilters();
+      setupSearch();
+      setupEventListeners();
+      
+      // AOS初期化
       if (typeof AOS !== 'undefined') {
         AOS.init({
           duration: 800,
@@ -887,51 +1034,8 @@
       }
     });
 
-    // 進捗の保存（ローカルストレージ）
-    function saveProgress() {
-      const completed = [];
-      document.querySelectorAll('.step-checkbox:checked').forEach(checkbox => {
-        const step = parseInt(checkbox.closest('.step-content').dataset.step);
-        completed.push(step);
-      });
-      localStorage.setItem('teambase-onboarding-progress', JSON.stringify({
-        completed: completed,
-        currentStep: currentStep,
-        lastAccessed: new Date().toISOString()
-      }));
-    }
-
-    // 進捗の復元
-    function loadProgress() {
-      const saved = localStorage.getItem('teambase-onboarding-progress');
-      if (saved) {
-        try {
-          const progress = JSON.parse(saved);
-          progress.completed.forEach(step => {
-            const checkbox = document.querySelector(`#video${step}_check`);
-            if (checkbox) {
-              checkbox.checked = true;
-            }
-          });
-          if (progress.currentStep && progress.currentStep <= totalPages) {
-            showStep(progress.currentStep);
-          }
-        } catch (e) {
-          console.log('進捗の復元に失敗しました');
-        }
-      }
-    }
-
-    // チェックボックス変更時に進捗を保存
-    document.querySelectorAll('.step-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', saveProgress);
-    });
-
-    // ページ離脱時に進捗を保存
+    // ページ離脱時に進捗保存
     window.addEventListener('beforeunload', saveProgress);
-
-    // 初期化時に進捗を復元
-    loadProgress();
   </script>
 </body>
 </html> 
