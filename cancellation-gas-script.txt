@@ -51,6 +51,20 @@ function doGet(e) {
 // ====================================================
 function doPost(e) {
   try {
+    // リクエストの基本情報をログ出力
+    Logger.log("===== doPost 開始 =====");
+    Logger.log("Request method: " + (e ? e.parameter : 'undefined'));
+    Logger.log("Post data: " + (e && e.postData ? e.postData.contents : 'undefined'));
+    
+    if (!e || !e.postData || !e.postData.contents) {
+      Logger.log("エラー: POSTデータが存在しません");
+      return ContentService.createTextOutput(JSON.stringify({
+        result: 'error',
+        message: 'POSTデータが存在しません',
+        timestamp: new Date().toString()
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
     const postData = JSON.parse(e.postData.contents);
     
     // デバッグログ
@@ -59,21 +73,71 @@ function doPost(e) {
       Logger.log(JSON.stringify(postData, null, 2));
     }
     
+    // データの種類を判定して処理を分岐
     if (postData.type === 'cancellation') {
+      Logger.log("解約処理を開始します");
       return handleCancellation(postData);
     } else {
-      // 既存の申し込み処理
+      Logger.log("申し込み処理を開始します");
       return handleSignup(postData);
     }
     
   } catch (error) {
-    Logger.log("===== エラー発生 =====");
-    Logger.log("エラー: " + error.toString());
+    Logger.log("===== doPost エラー発生 =====");
+    Logger.log("エラー詳細: " + error.toString());
+    Logger.log("スタックトレース: " + error.stack);
     
     return ContentService.createTextOutput(JSON.stringify({
       result: 'error',
       timestamp: new Date().toString(),
-      message: 'エラーが発生しました',
+      message: 'サーバーエラーが発生しました',
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ====================================================
+// 解約処理のメイン関数
+// ====================================================
+function handleCancellation(postData) {
+  try {
+    Logger.log("===== handleCancellation 開始 =====");
+    Logger.log("解約データ: " + JSON.stringify(postData));
+    
+    // 解約処理を実行
+    const success = processCancellation(
+      postData.email,
+      postData.companyName,
+      postData.name,
+      postData.cancelReason,
+      postData.detailedReason
+    );
+    
+    if (success) {
+      Logger.log("解約処理成功");
+      return ContentService.createTextOutput(JSON.stringify({
+        result: 'success',
+        timestamp: new Date().toString(),
+        message: '解約申し込みを正常に受け付けました'
+      })).setMimeType(ContentService.MimeType.JSON);
+    } else {
+      Logger.log("解約処理失敗");
+      return ContentService.createTextOutput(JSON.stringify({
+        result: 'error',
+        timestamp: new Date().toString(),
+        message: '解約処理中にエラーが発生しました'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+  } catch (error) {
+    Logger.log("===== handleCancellation エラー発生 =====");
+    Logger.log("エラー詳細: " + error.toString());
+    Logger.log("スタックトレース: " + error.stack);
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      timestamp: new Date().toString(),
+      message: '解約処理中にエラーが発生しました',
       error: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
@@ -474,47 +538,75 @@ function getCancellationReasonText(reasonCode) {
 
 // 既存の申し込み処理（従来の機能を維持）
 function handleSignup(postData) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var lastRow = sheet.getLastRow() + 1;
-  var timestamp = new Date();
-  
-  // サインアップフォーム用のデータをスプレッドシートに書き込む
-  sheet.getRange(lastRow, COLUMNS.TIMESTAMP).setValue(timestamp);
-  sheet.getRange(lastRow, COLUMNS.CONTACT_NAME).setValue(postData.columnB || '');
-  sheet.getRange(lastRow, COLUMNS.EMAIL).setValue(postData.columnC || '');
-  sheet.getRange(lastRow, COLUMNS.PHONE).setValue(postData.columnD || '');
-  sheet.getRange(lastRow, COLUMNS.DEPARTMENT).setValue(postData.columnE || '');
-  sheet.getRange(lastRow, COLUMNS.EMPLOYEE_COUNT).setValue(postData.columnF || '');
-  sheet.getRange(lastRow, COLUMNS.PURPOSE).setValue(postData.columnG || '');
-  sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('未送信');
-  
-  // 会社情報を追加列に保存
-  if (postData.companyData) {
-    sheet.getRange(lastRow, COLUMNS.COMPANY_NAME).setValue(postData.companyData.companyName || '');
-    sheet.getRange(lastRow, COLUMNS.STATUS).setValue(postData.companyData.status || '');
-    sheet.getRange(lastRow, COLUMNS.FORM_TYPE).setValue(postData.companyData.formType || '申し込み');
+  try {
+    Logger.log("===== handleSignup 開始 =====");
+    Logger.log("受信データ: " + JSON.stringify(postData));
+    
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow() + 1;
+    var timestamp = new Date();
+    
+    Logger.log("スプレッドシート書き込み開始 - 行番号: " + lastRow);
+    
+    // サインアップフォーム用のデータをスプレッドシートに書き込む
+    sheet.getRange(lastRow, COLUMNS.TIMESTAMP).setValue(timestamp);
+    sheet.getRange(lastRow, COLUMNS.CONTACT_NAME).setValue(postData.columnB || '');
+    sheet.getRange(lastRow, COLUMNS.EMAIL).setValue(postData.columnC || '');
+    sheet.getRange(lastRow, COLUMNS.PHONE).setValue(postData.columnD || '');
+    sheet.getRange(lastRow, COLUMNS.DEPARTMENT).setValue(postData.columnE || '');
+    sheet.getRange(lastRow, COLUMNS.EMPLOYEE_COUNT).setValue(postData.columnF || '');
+    sheet.getRange(lastRow, COLUMNS.PURPOSE).setValue(postData.columnG || '');
+    sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('未送信');
+    
+    // 会社情報を追加列に保存
+    if (postData.companyData) {
+      sheet.getRange(lastRow, COLUMNS.COMPANY_NAME).setValue(postData.companyData.companyName || '');
+      sheet.getRange(lastRow, COLUMNS.STATUS).setValue(postData.companyData.status || '');
+      sheet.getRange(lastRow, COLUMNS.FORM_TYPE).setValue(postData.companyData.formType || '申し込み');
+    }
+    
+    Logger.log("スプレッドシート書き込み完了");
+    
+    // 管理者への通知メール送信（既存機能）
+    Logger.log("管理者メール送信開始");
+    sendAdminNotification(postData, lastRow);
+    
+    // 申し込み者本人への確認メール送信（既存機能）
+    Logger.log("申し込み者メール送信開始");
+    var emailSent = sendConfirmationEmail(postData);
+    Logger.log("メール送信結果: " + emailSent);
+    
+    // メール送信状態を更新
+    if (emailSent) {
+      sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信完了');
+      Logger.log("メール送信状態を '送信完了' に更新");
+    } else {
+      sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信失敗');
+      Logger.log("メール送信状態を '送信失敗' に更新");
+    }
+    
+    Logger.log("===== handleSignup 完了 =====");
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'success',
+      timestamp: timestamp.toString(),
+      message: 'お申し込みデータを正常に受信し、確認メールを送信しました',
+      rowNumber: lastRow,
+      emailSent: emailSent
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log("===== handleSignup エラー発生 =====");
+    Logger.log("エラー詳細: " + error.toString());
+    Logger.log("スタックトレース: " + error.stack);
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      result: 'error',
+      timestamp: new Date().toString(),
+      message: '申し込み処理中にエラーが発生しました',
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
   }
-  
-  // 管理者への通知メール送信（既存機能）
-  sendAdminNotification(postData, lastRow);
-  
-  // 申し込み者本人への確認メール送信（既存機能）
-  var emailSent = sendConfirmationEmail(postData);
-  
-  // メール送信状態を更新
-  if (emailSent) {
-    sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信完了');
-  } else {
-    sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信失敗');
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify({
-    result: 'success',
-    timestamp: timestamp.toString(),
-    message: 'お申し込みデータを正常に受信し、確認メールを送信しました',
-    rowNumber: lastRow,
-    emailSent: emailSent
-  })).setMimeType(ContentService.MimeType.JSON);
 }
 
 // 管理者への通知メール送信（既存機能）
@@ -552,16 +644,30 @@ function sendAdminNotification(postData, rowNumber) {
 
 // 申し込み者本人への確認メール送信（既存機能）
 function sendConfirmationEmail(postData) {
-  var email = postData.columnC;
-  var name = postData.columnB;
-  var companyName = postData.companyData?.companyName || '';
-  
-  if (!email) {
-    Logger.log('メールアドレスが設定されていません');
-    return false;
-  }
-  
-  var subject = '【TeamBase】無料トライアル申し込み承認リンクをお送りします';
+  try {
+    Logger.log("===== sendConfirmationEmail 開始 =====");
+    
+    var email = postData.columnC;
+    var name = postData.columnB;
+    var companyName = postData.companyData?.companyName || '';
+    
+    Logger.log("送信先メール: " + email);
+    Logger.log("送信先名前: " + name);
+    Logger.log("会社名: " + companyName);
+    
+    if (!email) {
+      Logger.log('エラー: メールアドレスが設定されていません');
+      return false;
+    }
+    
+    // メールアドレスの形式チェック
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Logger.log('エラー: 無効なメールアドレス形式: ' + email);
+      return false;
+    }
+    
+    var subject = '【TeamBase】無料トライアル申し込み承認リンクをお送りします';
   
   // オンボーディングページのリンク（GitHub Pages）
   var onboardingLink = 'https://addness-info-osaka.github.io/TeamBase/step1-todo.html';
@@ -626,17 +732,47 @@ function sendConfirmationEmail(postData) {
 </html>
 `;
 
-  try {
+    Logger.log("メール送信実行開始");
+    Logger.log("件名: " + subject);
+    Logger.log("送信者名: " + COMPANY_NAME);
+    
     MailApp.sendEmail({
       to: email,
       subject: subject,
       htmlBody: htmlBody,
       name: COMPANY_NAME
     });
+    
     Logger.log('申し込み者への確認メール送信完了: ' + email);
+    Logger.log("===== sendConfirmationEmail 完了 =====");
     return true;
+    
   } catch (error) {
+    Logger.log("===== sendConfirmationEmail エラー発生 =====");
     Logger.log('申し込み者への確認メール送信失敗: ' + error.toString());
+    Logger.log("エラースタックトレース: " + error.stack);
+    return false;
+  }
+}
+
+// ====================================================
+// テスト用メール送信関数
+// ====================================================
+function testEmailSending() {
+  try {
+    Logger.log("===== テストメール送信開始 =====");
+    
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: '【TeamBase】GASメール送信テスト',
+      body: 'このメールは、GASスクリプトのメール送信機能テストです。\n\n送信時刻: ' + new Date().toString()
+    });
+    
+    Logger.log("テストメール送信完了");
+    return true;
+    
+  } catch (error) {
+    Logger.log("テストメール送信失敗: " + error.toString());
     return false;
   }
 }
