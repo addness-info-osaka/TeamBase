@@ -543,6 +543,43 @@ function handleSignup(postData) {
     Logger.log("受信データ: " + JSON.stringify(postData));
     
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var email = postData.columnC;
+    
+    // 重複チェック: 同じメールアドレスの申し込みがあるかチェック
+    Logger.log("重複チェック開始 - メールアドレス: " + email);
+    var existingRow = checkDuplicateEmail(sheet, email);
+    
+    if (existingRow > 0) {
+      Logger.log("重複発見: " + existingRow + "行目に同じメールアドレスが存在");
+      
+      // 既存データの状態をチェック
+      var existingStatus = sheet.getRange(existingRow, COLUMNS.STATUS).getValue();
+      Logger.log("既存ステータス: " + existingStatus);
+      
+      if (existingStatus === '解約済み') {
+        Logger.log("解約済みユーザーの再申し込み - 新規処理を実行");
+        // 解約済みの場合は新規申し込みとして処理
+      } else {
+        Logger.log("アクティブなユーザーの重複申し込み - 確認メールのみ再送信");
+        // アクティブなユーザーの場合は確認メールのみ再送信
+        var emailSent = sendConfirmationEmail(postData);
+        
+        // 最後のアクセス日時を更新
+        sheet.getRange(existingRow, 1).setValue(new Date()); // A列: タイムスタンプ更新
+        
+        // 管理者に重複申し込みを通知
+        sendAdminNotification(postData, existingRow, true);
+        
+        return ContentService.createTextOutput(JSON.stringify({
+          result: 'success',
+          message: '既存のお申し込みが確認されました。確認メールを再送信しました。',
+          isDuplicate: true,
+          existingRow: existingRow,
+          emailSent: emailSent
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+    
     var lastRow = sheet.getLastRow() + 1;
     var timestamp = new Date();
     
@@ -569,7 +606,7 @@ function handleSignup(postData) {
     
     // 管理者への通知メール送信（既存機能）
     Logger.log("管理者メール送信開始");
-    sendAdminNotification(postData, lastRow);
+    sendAdminNotification(postData, lastRow, false);
     
     // 申し込み者本人への確認メール送信（既存機能）
     Logger.log("申し込み者メール送信開始");
@@ -610,9 +647,33 @@ function handleSignup(postData) {
 }
 
 // 管理者への通知メール送信（既存機能）
-function sendAdminNotification(postData, rowNumber) {
-  var subject = '【TeamBase】新しい無料トライアル申し込みがありました';
-  var body = `
+function sendAdminNotification(postData, rowNumber, isDuplicate) {
+  var subject = isDuplicate ? 
+    '【TeamBase】重複申し込み検知：確認メール再送信' : 
+    '【TeamBase】新しい無料トライアル申し込みがありました';
+  
+  var body = isDuplicate ? `
+重複申し込みが検知されました。
+
+■ 処理内容
+- 既存のお申し込みが確認されました
+- 確認メールを再送信しました
+- スプレッドシートのタイムスタンプを更新
+
+■ 申し込み者情報
+会社名: ${postData.companyData?.companyName || '未入力'}
+担当者名: ${postData.columnB || '未入力'}
+メールアドレス: ${postData.columnC || '未入力'}
+電話番号: ${postData.columnD || '未入力'}
+部署名: ${postData.columnE || '未入力'}
+従業員数: ${postData.columnF || '未入力'}
+導入目的: ${postData.columnG || '未入力'}
+
+■ 既存データ
+スプレッドシート行番号: ${rowNumber}行目
+
+お客様には既存申し込みの確認メールを再送信済みです。
+` : `
 新しいTeamBaseの無料トライアル申し込みがありました。
 
 申し込み者情報：
@@ -752,6 +813,34 @@ function sendConfirmationEmail(postData) {
     Logger.log('申し込み者への確認メール送信失敗: ' + error.toString());
     Logger.log("エラースタックトレース: " + error.stack);
     return false;
+  }
+}
+
+// ====================================================
+// 重複チェック関数
+// ====================================================
+function checkDuplicateEmail(sheet, email) {
+  try {
+    if (!email) return 0;
+    
+    var data = sheet.getDataRange().getValues();
+    Logger.log("重複チェック: " + data.length + "行のデータをチェック");
+    
+    // ヘッダー行をスキップして検索
+    for (var i = 1; i < data.length; i++) {
+      var rowEmail = data[i][COLUMNS.EMAIL - 1]; // 0ベースなので-1
+      if (rowEmail === email) {
+        Logger.log("重複発見: " + (i + 1) + "行目でメールアドレス一致: " + email);
+        return i + 1; // 実際の行番号を返す（1ベース）
+      }
+    }
+    
+    Logger.log("重複なし: メールアドレス " + email + " は新規");
+    return 0;
+    
+  } catch (error) {
+    Logger.log("重複チェックエラー: " + error.toString());
+    return 0; // エラー時は新規として扱う
   }
 }
 
