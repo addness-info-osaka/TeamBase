@@ -1,0 +1,467 @@
+// TeamBase Academy 統合管理システム
+// 作成日: 2024年3月
+// 更新日: 2024年3月
+
+// デバッグモード
+const DEBUG = true;
+
+// スプレッドシートの設定
+const SPREADSHEET_ID = '1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // 実際のスプレッドシートIDに置き換えてください
+const SHEET_NAME = 'トライアル管理';
+
+// メール設定
+const ADMIN_EMAIL = 'info.osaka@addness.co.jp';
+const COMPANY_NAME = 'SL.AI Team Base';
+const COMPANY_EMAIL = 'noreply@sl-ai.com';
+const REPLY_TO = 'support@teamsbase.jp';
+
+// トライアル設定
+const TRIAL_PERIOD_DAYS = 14;
+const REMINDER_DAYS = [12, 13]; // トライアル終了の2日前と1日前にリマインダーを送信
+
+// スプレッドシートの列定義
+const COLUMNS = {
+  TIMESTAMP: 1,        // A列: タイムスタンプ
+  CONTACT_NAME: 2,     // B列: 担当者名  
+  EMAIL: 3,            // C列: メールアドレス
+  PHONE: 4,            // D列: 電話番号
+  DEPARTMENT: 5,       // E列: 部署名
+  EMPLOYEE_COUNT: 6,   // F列: 従業員数
+  PURPOSE: 7,          // G列: 導入目的
+  EMAIL_STATUS: 8,     // H列: メール送信状態
+  COMPANY_NAME: 9,     // I列: 会社名
+  STATUS: 10,          // J列: ステータス
+  FORM_TYPE: 11,       // K列: フォーム種別
+  // 解約専用列
+  CANCELLATION_REASON: 12,        // L列: 解約理由
+  CANCELLATION_DETAIL: 13,        // M列: 解約詳細理由
+  ALLOW_CONTACT: 14,              // N列: 今後の連絡許可
+  ALLOW_MARKETING: 15,            // O列: マーケティング連絡許可
+  PREFERRED_CONTACT_DATE: 16,     // P列: 希望連絡日時
+  ADDITIONAL_MESSAGE: 17,         // Q列: 追加メッセージ
+  CANCELLATION_STATUS: 18         // R列: 解約ステータス
+};
+
+// メールテンプレート
+const EMAIL_TEMPLATES = {
+  trialStart: {
+    subject: '【TeamBase】トライアル開始のお知らせ',
+    body: `
+      <p>TeamBaseのトライアルをご利用いただき、ありがとうございます。</p>
+      <p>トライアル期間は${TRIAL_PERIOD_DAYS}日間です。</p>
+      <p>トライアル期間中は、すべての機能を無料でお試しいただけます。</p>
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      <p>TeamBase</p>
+    `
+  },
+  trialReminder: {
+    subject: '【TeamBase】トライアル期間終了のお知らせ',
+    body: `
+      <p>TeamBaseのトライアル期間がまもなく終了となります。</p>
+      <p>引き続きご利用をご希望の場合は、以下のURLからお申し込みください。</p>
+      <p><a href="https://teamsbase.jp/payment">お申し込みページへ</a></p>
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      <p>TeamBase</p>
+    `
+  },
+  trialEnd: {
+    subject: '【TeamBase】トライアル期間終了のお知らせ',
+    body: `
+      <p>TeamBaseのトライアル期間が終了いたしました。</p>
+      <p>引き続きご利用をご希望の場合は、以下のURLからお申し込みください。</p>
+      <p><a href="https://teamsbase.jp/payment">お申し込みページへ</a></p>
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      <p>TeamBase</p>
+    `
+  },
+  cancelConfirm: {
+    subject: '【TeamBase】キャンセル確認',
+    body: `
+      <p>TeamBaseのキャンセルを受け付けました。</p>
+      <p>ご利用いただき、ありがとうございました。</p>
+      <p>またのご利用をお待ちしております。</p>
+      <p>TeamBase</p>
+    `
+  }
+};
+
+// スプレッドシートの初期化
+function initializeSpreadsheet() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    const headers = [
+      'タイムスタンプ',           // A列
+      '担当者名',                // B列  
+      'メールアドレス',           // C列
+      '電話番号',                // D列
+      '部署名',                  // E列
+      '従業員数',                // F列
+      '導入目的',                // G列
+      'メール送信状態',           // H列
+      '会社名',                  // I列
+      'ステータス',              // J列
+      'フォーム種別',            // K列
+      '解約理由',                // L列
+      '解約詳細理由',            // M列
+      '今後の連絡許可',          // N列
+      'マーケティング連絡許可',  // O列
+      '希望連絡日時',            // P列
+      '追加メッセージ',          // Q列
+      '解約ステータス'           // R列
+    ];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.setFrozenRows(1);
+  }
+  
+  return sheet;
+}
+
+// トライアル開始処理
+function startTrial(email, name, companyName) {
+  const sheet = initializeSpreadsheet();
+  const now = new Date();
+  const endDate = new Date(now.getTime() + (TRIAL_PERIOD_DAYS * 24 * 60 * 60 * 1000));
+  
+  // 既存のエントリーをチェック
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][COLUMNS.EMAIL - 1] === email) {
+      return {
+        success: false,
+        message: 'このメールアドレスは既に登録されています。'
+      };
+    }
+  }
+  
+  // 新しいエントリーを追加
+  sheet.appendRow([
+    now,                    // タイムスタンプ
+    name,                   // 担当者名
+    email,                  // メールアドレス
+    '',                     // 電話番号
+    '',                     // 部署名
+    '',                     // 従業員数
+    '',                     // 導入目的
+    '未送信',               // メール送信状態
+    companyName,            // 会社名
+    'トライアル中',         // ステータス
+    '申し込み',             // フォーム種別
+    '',                     // 解約理由
+    '',                     // 解約詳細理由
+    '',                     // 今後の連絡許可
+    '',                     // マーケティング連絡許可
+    '',                     // 希望連絡日時
+    '',                     // 追加メッセージ
+    ''                      // 解約ステータス
+  ]);
+  
+  // 開始メールを送信
+  sendEmail(
+    email,
+    EMAIL_TEMPLATES.trialStart.subject,
+    EMAIL_TEMPLATES.trialStart.body
+  );
+  
+  return {
+    success: true,
+    message: 'トライアルを開始しました。'
+  };
+}
+
+// トライアル管理の定期実行
+function manageTrials() {
+  const sheet = initializeSpreadsheet();
+  const data = sheet.getDataRange().getValues();
+  const now = new Date();
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const email = row[COLUMNS.EMAIL - 1];
+    const endDate = new Date(row[COLUMNS.TIMESTAMP - 1].getTime() + (TRIAL_PERIOD_DAYS * 24 * 60 * 60 * 1000));
+    const status = row[COLUMNS.STATUS - 1];
+    
+    if (status !== 'トライアル中') continue;
+    
+    // トライアル終了日の計算
+    const daysUntilEnd = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+    
+    // リマインダーメールの送信
+    if (REMINDER_DAYS.includes(daysUntilEnd)) {
+      sendEmail(
+        email,
+        EMAIL_TEMPLATES.trialReminder.subject,
+        EMAIL_TEMPLATES.trialReminder.body
+      );
+    }
+    
+    // トライアル終了処理
+    if (daysUntilEnd <= 0) {
+      sheet.getRange(i + 1, COLUMNS.STATUS).setValue('トライアル終了');
+      sheet.getRange(i + 1, COLUMNS.EMAIL_STATUS).setValue('送信完了');
+      
+      sendEmail(
+        email,
+        EMAIL_TEMPLATES.trialEnd.subject,
+        EMAIL_TEMPLATES.trialEnd.body
+      );
+    }
+  }
+}
+
+// 解約処理
+function processCancellation(email, companyName, name, cancelReason, detailedReason) {
+  try {
+    const sheet = initializeSpreadsheet();
+    const data = sheet.getDataRange().getValues();
+    const now = new Date();
+    
+    // 該当する申し込みを検索
+    let found = false;
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      if (row[COLUMNS.EMAIL - 1] === email) {
+        // ステータスを「解約済み」に更新
+        sheet.getRange(i + 1, COLUMNS.STATUS).setValue('解約済み');
+        sheet.getRange(i + 1, COLUMNS.CANCELLATION_REASON).setValue(cancelReason);
+        sheet.getRange(i + 1, COLUMNS.CANCELLATION_DETAIL).setValue(detailedReason);
+        sheet.getRange(i + 1, COLUMNS.CANCELLATION_STATUS).setValue('解約処理完了');
+        sheet.getRange(i + 1, COLUMNS.EMAIL_STATUS).setValue('送信完了');
+        
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      Logger.log(`該当する申し込みが見つかりません: ${email}`);
+    }
+    
+    // 管理者への解約通知
+    sendAdminCancellationNotification(email, companyName, name, cancelReason, detailedReason, found);
+    
+    // 申し込み者への解約確認メール
+    sendCancellationConfirmationEmail(email, name, companyName);
+    
+    Logger.log(`解約処理完了: ${email}`);
+    return true;
+    
+  } catch (error) {
+    Logger.log(`解約処理エラー: ${error.toString()}`);
+    return false;
+  }
+}
+
+// 管理者への解約通知メール
+function sendAdminCancellationNotification(email, companyName, name, cancelReason, detailedReason, foundInSheet) {
+  const reasonMapping = {
+    'cost': 'コストが合わない',
+    'functionality': '機能が不足している',
+    'usability': '使いにくい',
+    'other_tool': '他のツールを使用することになった',
+    'trial_only': 'トライアルのみの利用予定だった',
+    'other': 'その他'
+  };
+  
+  const reasonText = reasonMapping[cancelReason] || cancelReason;
+  
+  const subject = '【TeamBase】トライアル期間中解約申し込み';
+  const body = `
+トライアル期間中の解約申し込みがありました。
+
+■ 解約申し込み情報
+会社名: ${companyName}
+担当者名: ${name}
+メールアドレス: ${email}
+解約理由: ${reasonText}
+詳細理由: ${detailedReason || '（記載なし）'}
+
+■ 処理状況
+スプレッドシート更新: ${foundInSheet ? '完了' : '該当データが見つからず'}
+確認メール送信: 実行予定
+
+■ 対応事項
+${foundInSheet ? 
+  '・スプレッドシートのステータスを「解約済み」に更新しました\n・請求処理の停止をご確認ください' : 
+  '・スプレッドシートに該当データが見つかりませんでした\n・手動での確認をお願いします'
+}
+
+申し込み者には解約確認メールを自動送信済みです。
+
+解約申し込み受付日時: ${new Date().toLocaleString('ja-JP')}
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    Logger.log('管理者への解約通知メール送信完了');
+  } catch (error) {
+    Logger.log('管理者への解約通知メール送信失敗: ' + error.toString());
+  }
+}
+
+// 申し込み者への解約確認メール
+function sendCancellationConfirmationEmail(email, name, companyName) {
+  const subject = '【TeamBase】解約申し込み完了のお知らせ';
+  
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeamBase - 解約申し込み完了</title>
+  <style>
+    body {
+      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #6c757d;
+      padding-bottom: 20px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+    .info-box {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
+      color: #6c757d;
+      font-size: 14px;
+    }
+    .contact-info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">TeamBase</div>
+      <h2>解約申し込み完了のお知らせ</h2>
+    </div>
+
+    <p><strong>${name}</strong> 様</p>
+    <p>この度は、TeamBaseの無料トライアル解約申し込みをいただき、ありがとうございました。</p>
+
+    <div class="info-box">
+      <h3>✅ 解約申し込み受付完了</h3>
+      <p>以下の内容で解約申し込みを受け付けいたしました。</p>
+      <ul>
+        <li><strong>会社名：</strong> ${companyName}</li>
+        <li><strong>担当者名：</strong> ${name}</li>
+        <li><strong>メールアドレス：</strong> ${email}</li>
+        <li><strong>解約申し込み日時：</strong> ${new Date().toLocaleString('ja-JP')}</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>📋 今後の流れ</h3>
+      <ul>
+        <li>解約処理を完了いたします</li>
+        <li>トライアル期間終了後の請求は発生いたしません</li>
+        <li>サービスへのアクセスは段階的に制限されます</li>
+      </ul>
+    </div>
+
+    <p>TeamBaseをご利用いただき、誠にありがとうございました。<br>
+    今後ともよろしくお願いいたします。</p>
+
+    <div class="contact-info">
+      <h3>お問い合わせ</h3>
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      <p>📧 info.osaka@addness.co.jp</p>
+      <p>📞 06-4400-0754（平日 9:00-18:00）</p>
+    </div>
+
+    <div class="footer">
+      <p>このメールは自動送信されています。</p>
+      <p>© 2024 TeamBase. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: COMPANY_NAME
+    });
+    Logger.log('解約確認メール送信完了: ' + email);
+  } catch (error) {
+    Logger.log('解約確認メール送信失敗: ' + error.toString());
+  }
+}
+
+// メール送信関数
+function sendEmail(to, subject, body) {
+  const options = {
+    from: COMPANY_NAME,
+    replyTo: REPLY_TO,
+    htmlBody: body
+  };
+  
+  try {
+    GmailApp.sendEmail(to, subject, '', options);
+    return true;
+  } catch (error) {
+    console.error('メール送信エラー:', error);
+    return false;
+  }
+}
+
+// トリガーの設定
+function createTriggers() {
+  // 既存のトリガーを削除
+  const triggers = ScriptApp.getProjectTriggers();
+  triggers.forEach(trigger => ScriptApp.deleteTrigger(trigger));
+  
+  // 毎日午前0時にトライアル管理を実行
+  ScriptApp.newTrigger('manageTrials')
+    .timeBased()
+    .everyDays(1)
+    .atHour(0)
+    .create();
+}
+
+// 初期設定
+function setup() {
+  initializeSpreadsheet();
+  createTriggers();
+} 
