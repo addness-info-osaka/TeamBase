@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>TeamBase 解約申請フォーム | SL.AI Team Base</title>
+  <style>
+    :root {
+      --primary: #4A6FFF;
+      --secondary: #F5F7FF;
+      --accent: #FF6B6B;
+      --warning: #FFA726;
+      --success: #66BB6A;
+      --dark: #333;
+      --light: #fff;
+      --gray: #666;
+      --light-gray: #F8F9FA;
+      --max-width: 800px;
+      --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
+      --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+      --gradient-warning: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--secondary);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background-color: var(--light);
+      padding: 1rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-decoration: none;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .support-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.3s ease;
+    }
+
+    .support-link:hover {
+      opacity: 0.8;
+    }
+
+    /* メインコンテンツ */
+    .cancellation-section {
+      padding: 4rem 0;
+      min-height: calc(100vh - 180px);
+    }
+
+    .cancellation-container {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .cancellation-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .cancellation-header h1 {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .cancellation-header p {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    /* 重要な注意事項 */
+    .important-notice {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+      border: 2px solid var(--warning);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .important-notice h3 {
+      color: var(--warning);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .important-notice ul {
+      color: #E65100;
+      padding-left: 1rem;
+    }
+
+    .important-notice li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* フォーム */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .required::after {
+      content: '*';
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    /* チェックボックススタイル */
+    .checkbox-group {
+      margin: 2rem 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--light-gray);
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+      background: #E3F2FD;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    /* 理由選択 */
+    .reason-options {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    .reason-option {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem;
+      background: var(--light-gray);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .reason-option:hover {
+      background: #E3F2FD;
+      transform: translateX(4px);
+    }
+
+    .reason-option input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .reason-option.selected {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    /* ボタン */
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--light);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 111, 255, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--light-gray);
+      color: var(--gray);
+      border: 2px solid var(--light-gray);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray);
+      color: var(--light);
+    }
+
+    .btn-danger {
+      background: var(--gradient-accent);
+      color: var(--light);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    /* 確認モーダル */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background: var(--light);
+      margin: 15% auto;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .modal h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    /* ローディング状態 */
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--light-gray);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 15px;
+      }
+
+      .cancellation-container {
+        padding: 1.5rem;
+      }
+
+      .cancellation-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+
+      .reason-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 成功メッセージ */
+    .success-message {
+      display: none;
+      background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .success-message h3 {
+      color: var(--success);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <a href="index.html" class="logo">SL.AI Team Base</a>
+        <a href="mailto:info.osaka@addness.co.jp" class="support-link">
+          📧 サポートに相談する
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <section class="cancellation-section">
+    <div class="container">
+      <div class="cancellation-container">
+        <div class="cancellation-header">
+          <h1>🙋‍♀️ TeamBase 解約申請</h1>
+          <p>解約申請フォームをご記入いただき、担当者からご連絡いたします</p>
+        </div>
+
+        <!-- 重要な注意事項 -->
+        <div class="important-notice">
+          <h3>
+            ⚠️ 解約前にご確認ください
+          </h3>
+          <ul>
+            <li>解約処理は申請受付後、翌営業日以内に対応いたします</li>
+            <li>解約後はアカウントとすべてのデータが削除されます</li>
+            <li>一度削除されたデータの復旧はできません</li>
+            <li>解約前にサポートチームにご相談いただくことも可能です</li>
+          </ul>
+        </div>
+
+        <!-- 解約フォーム -->
+        <form id="cancellationForm">
+          <!-- 基本情報 -->
+          <div class="form-group">
+            <label for="companyName" class="required">会社名</label>
+            <input type="text" id="companyName" name="companyName" required>
+          </div>
+
+          <div class="form-group">
+            <label for="contactName" class="required">ご担当者名</label>
+            <input type="text" id="contactName" name="contactName" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="required">メールアドレス</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">電話番号</label>
+            <input type="tel" id="phoneNumber" name="phoneNumber">
+          </div>
+
+          <!-- 解約理由 -->
+          <div class="form-group">
+            <label class="required">解約理由をお聞かせください</label>
+            <div class="reason-options">
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="cost" required>
+                <span>💰 コストが合わない</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="functionality" required>
+                <span>⚙️ 機能が要件に合わない</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="usage" required>
+                <span>👥 チームでの利用が進まない</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="alternative" required>
+                <span>🔄 他のツールに移行</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="temporary" required>
+                <span>⏸️ 一時的な利用停止</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="cancellationReason" value="other" required>
+                <span>📝 その他</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 詳細な理由 -->
+          <div class="form-group">
+            <label for="detailReason">詳細な理由やご要望（任意）</label>
+            <textarea id="detailReason" name="detailReason" placeholder="改善のご提案や具体的な理由があればお聞かせください"></textarea>
+          </div>
+
+          <!-- 今後の連絡について -->
+          <div class="form-group">
+            <label>今後の連絡について</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="allowContact" name="allowContact" value="yes">
+                <label for="allowContact">製品の改善情報やアップデート情報の受信を希望する</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="allowMarketing" name="allowMarketing" value="yes">
+                <label for="allowMarketing">新サービスやキャンペーン情報の受信を希望する</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 希望連絡日時 -->
+          <div class="form-group">
+            <label for="preferredContactDate">担当者からの確認連絡希望日時（任意）</label>
+            <input type="datetime-local" id="preferredContactDate" name="preferredContactDate">
+          </div>
+
+          <!-- 追加メッセージ -->
+          <div class="form-group">
+            <label for="additionalMessage">担当者への追加メッセージ（任意）</label>
+            <textarea id="additionalMessage" name="additionalMessage" placeholder="何かご質問やお伝えしたいことがあればお書きください"></textarea>
+          </div>
+
+          <!-- ボタン -->
+          <div class="button-container">
+            <a href="https://teambase.addness.com/login" class="btn btn-secondary">
+              キャンセル（TeamBaseに戻る）
+            </a>
+            <button type="button" class="btn btn-danger" onclick="confirmCancellation()">
+              解約申請を送信
+            </button>
+          </div>
+        </form>
+
+        <!-- ローディング表示 -->
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>解約申請を送信しています...</p>
+        </div>
+
+        <!-- 成功メッセージ -->
+        <div class="success-message" id="successMessage">
+          <h3>✅ 解約申請を受け付けました</h3>
+          <p>ご申請ありがとうございます。担当者から翌営業日以内にご連絡いたします。</p>
+          <p><strong>受付番号：</strong><span id="applicationNumber"></span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 確認モーダル -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h3>⚠️ 解約申請の確認</h3>
+      <p>本当に解約申請を送信しますか？</p>
+      <p><small>※この申請により解約処理が開始され、データが削除されます</small></p>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+        <button class="btn btn-danger" onclick="submitCancellation()">解約申請を送信</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 理由選択のスタイル変更
+    document.querySelectorAll('input[name="cancellationReason"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        // 全ての選択肢のスタイルをリセット
+        document.querySelectorAll('.reason-option').forEach(option => {
+          option.classList.remove('selected');
+        });
+        
+        // 選択された項目のスタイルを適用
+        if (this.checked) {
+          this.closest('.reason-option').classList.add('selected');
+        }
+      });
+    });
+
+    // 確認モーダルを表示
+    function confirmCancellation() {
+      // フォームバリデーション
+      const form = document.getElementById('cancellationForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      document.getElementById('confirmModal').style.display = 'block';
+    }
+
+    // モーダルを閉じる
+    function closeModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    // 解約申請を送信
+    async function submitCancellation() {
+      closeModal();
+      
+      const form = document.getElementById('cancellationForm');
+      const loading = document.getElementById('loading');
+      const successMessage = document.getElementById('successMessage');
+
+      // ローディング表示
+      form.style.display = 'none';
+      loading.style.display = 'block';
+
+      // フォームデータを取得
+      const formData = new FormData(form);
+      const data = {};
+      
+      // 基本データを整理
+      for (let [key, value] of formData.entries()) {
+        if (key === 'allowContact' || key === 'allowMarketing') {
+          // チェックボックスは配列として処理
+          if (!data[key]) data[key] = [];
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      }
+
+      // チェックされていないチェックボックスは空配列に
+      ['allowContact', 'allowMarketing'].forEach(key => {
+        if (!data[key]) data[key] = [];
+      });
+
+      // 送信データの構造
+      const submitData = {
+        timestamp: new Date().toISOString(),
+        type: 'cancellation',
+        companyData: {
+          companyName: data.companyName,
+          contactName: data.contactName,
+          email: data.email,
+          phoneNumber: data.phoneNumber || ''
+        },
+        cancellationData: {
+          reason: data.cancellationReason,
+          detailReason: data.detailReason || '',
+          allowContact: data.allowContact.includes('yes'),
+          allowMarketing: data.allowMarketing.includes('yes'),
+          preferredContactDate: data.preferredContactDate || '',
+          additionalMessage: data.additionalMessage || ''
+        }
+      };
+
+      try {
+        // GASのWebアプリURLを設定（新しいデプロイURL）
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycby8c-COR2eZUdjSpxautLiqAu4Qdewf5vEZolikW6WlWZi9yVWTD-nB3jLLNhteb-CdjA/exec';
+        
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submitData)
+        });
+
+        const result = await response.json();
+
+        if (result.result === 'success') {
+          // 成功時の処理
+          loading.style.display = 'none';
+          successMessage.style.display = 'block';
+          
+          // 受付番号を表示
+          const applicationNumber = `CANCEL-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+          document.getElementById('applicationNumber').textContent = applicationNumber;
+          
+          // ページを上部にスクロール
+          window.scrollTo(0, 0);
+        } else {
+          throw new Error(result.message || '送信に失敗しました');
+        }
+      } catch (error) {
+        console.error('送信エラー:', error);
+        loading.style.display = 'none';
+        form.style.display = 'block';
+        alert('送信に失敗しました。しばらく時間をおいて再度お試しください。\n\nエラー: ' + error.message);
+      }
+    }
+
+    // モーダル外クリックで閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('confirmModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html> 

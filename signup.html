@@ -64,6 +64,36 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .header-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .header-link {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .header-link:hover {
+      color: var(--primary);
+      background: var(--secondary);
+    }
+
+    .header-link.cancellation {
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .header-link.cancellation:hover {
+      background: var(--accent);
+      color: var(--light);
+    }
+
     /* メインコンテンツ */
     .signup-section {
       padding: 4rem 0;
@@ -254,6 +284,10 @@
   <header>
     <div class="container header-content">
       <a href="index.html" class="logo">SL.AI Team Base</a>
+      <div class="header-links">
+        <a href="teambase-academy.html" class="header-link">📚 Academy</a>
+        <a href="cancellation-form.html" class="header-link cancellation">📝 解約申請</a>
+      </div>
     </div>
   </header>
 

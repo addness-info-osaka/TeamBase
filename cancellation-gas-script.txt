@@ -2,9 +2,36 @@
 // TeamBase 解約処理用GASスクリプト
 // ====================================================
 
+// デバッグモード - 詳細なログを出力します
+const DEBUG = true;
+
 // 設定値
 const ADMIN_EMAIL = 'info.osaka@addness.co.jp';
 const COMPANY_NAME = 'SL.AI Team Base';
+const COMPANY_EMAIL = 'noreply@sl-ai.com'; // ← 必要に応じて変更
+
+// スプレッドシートの列定義
+const COLUMNS = {
+  TIMESTAMP: 1,        // A列: タイムスタンプ
+  CONTACT_NAME: 2,     // B列: 担当者名  
+  EMAIL: 3,            // C列: メールアドレス
+  PHONE: 4,            // D列: 電話番号
+  DEPARTMENT: 5,       // E列: 部署名
+  EMPLOYEE_COUNT: 6,   // F列: 従業員数
+  PURPOSE: 7,          // G列: 導入目的
+  EMAIL_STATUS: 8,     // H列: メール送信状態
+  COMPANY_NAME: 9,     // I列: 会社名
+  STATUS: 10,          // J列: ステータス
+  FORM_TYPE: 11,       // K列: フォーム種別
+  // 解約専用列
+  CANCELLATION_REASON: 12,        // L列: 解約理由
+  CANCELLATION_DETAIL: 13,        // M列: 解約詳細理由
+  ALLOW_CONTACT: 14,              // N列: 今後の連絡許可
+  ALLOW_MARKETING: 15,            // O列: マーケティング連絡許可
+  PREFERRED_CONTACT_DATE: 16,     // P列: 希望連絡日時
+  ADDITIONAL_MESSAGE: 17,         // Q列: 追加メッセージ
+  CANCELLATION_STATUS: 18         // R列: 解約ステータス
+};
 
 // ====================================================
 // 解約フォームからのPOSTリクエストを処理
@@ -14,38 +41,27 @@ function doPost(e) {
     const postData = JSON.parse(e.postData.contents);
     
     // デバッグログ
-    Logger.log("===== 解約申し込み受信 =====");
-    Logger.log(JSON.stringify(postData, null, 2));
-    
-    if (postData.action === 'cancel') {
-      // 解約処理を実行
-      const result = processCancellation(
-        postData.email,
-        postData.company_name,
-        postData.name,
-        postData.cancel_reason,
-        postData.detailed_reason
-      );
-      
-      // レスポンスを返す
-      return ContentService.createTextOutput(JSON.stringify({
-        result: result ? 'success' : 'error',
-        message: result ? '解約申し込みを受け付けました' : '解約処理中にエラーが発生しました'
-      })).setMimeType(ContentService.MimeType.JSON);
+    if (DEBUG) {
+      Logger.log("===== 受信データ =====");
+      Logger.log(JSON.stringify(postData, null, 2));
     }
     
-    return ContentService.createTextOutput(JSON.stringify({
-      result: 'error',
-      message: '不正なリクエストです'
-    })).setMimeType(ContentService.MimeType.JSON);
+    if (postData.type === 'cancellation') {
+      return handleCancellation(postData);
+    } else {
+      // 既存の申し込み処理
+      return handleSignup(postData);
+    }
     
   } catch (error) {
-    Logger.log("===== 解約処理エラー =====");
+    Logger.log("===== エラー発生 =====");
     Logger.log("エラー: " + error.toString());
     
     return ContentService.createTextOutput(JSON.stringify({
       result: 'error',
-      message: 'サーバーエラーが発生しました'
+      timestamp: new Date().toString(),
+      message: 'エラーが発生しました',
+      error: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -285,4 +301,372 @@ function testCancellation() {
     'テスト用の解約申し込みです'
   );
   Logger.log(`テスト結果: ${result ? '成功' : '失敗'}`);
+}
+
+// 解約申請の処理
+function handleCancellation(postData) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var timestamp = new Date();
+  
+  // 既存の会社情報を検索
+  var existingRow = findExistingCompany(sheet, postData.companyData.companyName, postData.companyData.email);
+  
+  if (existingRow > 0) {
+    // 既存顧客の解約処理
+    updateExistingCustomerCancellation(sheet, existingRow, postData, timestamp);
+  } else {
+    // 新規行として解約申請を記録
+    addNewCancellationRow(sheet, postData, timestamp);
+  }
+  
+  // 管理者への解約通知メール送信
+  sendCancellationNotificationToAdmin(postData, existingRow);
+  
+  // 申請者への確認メール送信
+  var emailSent = sendCancellationConfirmationEmail(postData);
+  
+  // レスポンスを返す
+  return ContentService.createTextOutput(JSON.stringify({
+    result: 'success',
+    timestamp: timestamp.toString(),
+    message: '解約申請を正常に受信し、確認メールを送信しました',
+    isExistingCustomer: existingRow > 0,
+    emailSent: emailSent
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 既存顧客の検索
+function findExistingCompany(sheet, companyName, email) {
+  var lastRow = sheet.getLastRow();
+  
+  if (lastRow < 2) return 0; // ヘッダー行のみの場合
+  
+  // 会社名とメールアドレスで検索
+  for (var i = 2; i <= lastRow; i++) {
+    var sheetCompanyName = sheet.getRange(i, COLUMNS.COMPANY_NAME).getValue();
+    var sheetEmail = sheet.getRange(i, COLUMNS.EMAIL).getValue();
+    
+    if (sheetCompanyName === companyName && sheetEmail === email) {
+      return i;
+    }
+  }
+  
+  return 0; // 見つからない場合
+}
+
+// 既存顧客の解約情報更新
+function updateExistingCustomerCancellation(sheet, row, postData, timestamp) {
+  // 解約情報を追加
+  sheet.getRange(row, COLUMNS.CANCELLATION_REASON).setValue(postData.cancellationData.reason);
+  sheet.getRange(row, COLUMNS.CANCELLATION_DETAIL).setValue(postData.cancellationData.detailReason);
+  sheet.getRange(row, COLUMNS.ALLOW_CONTACT).setValue(postData.cancellationData.allowContact ? 'はい' : 'いいえ');
+  sheet.getRange(row, COLUMNS.ALLOW_MARKETING).setValue(postData.cancellationData.allowMarketing ? 'はい' : 'いいえ');
+  sheet.getRange(row, COLUMNS.PREFERRED_CONTACT_DATE).setValue(postData.cancellationData.preferredContactDate);
+  sheet.getRange(row, COLUMNS.ADDITIONAL_MESSAGE).setValue(postData.cancellationData.additionalMessage);
+  sheet.getRange(row, COLUMNS.CANCELLATION_STATUS).setValue('解約申請受付');
+  
+  // ステータスを更新
+  sheet.getRange(row, COLUMNS.STATUS).setValue('解約申請中');
+  
+  Logger.log(`既存顧客の解約申請を更新しました - 行: ${row}`);
+}
+
+// 新規解約申請行の追加
+function addNewCancellationRow(sheet, postData, timestamp) {
+  var lastRow = sheet.getLastRow() + 1;
+  
+  // 基本情報を記録
+  sheet.getRange(lastRow, COLUMNS.TIMESTAMP).setValue(timestamp);
+  sheet.getRange(lastRow, COLUMNS.CONTACT_NAME).setValue(postData.companyData.contactName);
+  sheet.getRange(lastRow, COLUMNS.EMAIL).setValue(postData.companyData.email);
+  sheet.getRange(lastRow, COLUMNS.PHONE).setValue(postData.companyData.phoneNumber);
+  sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('未送信');
+  sheet.getRange(lastRow, COLUMNS.COMPANY_NAME).setValue(postData.companyData.companyName || '');
+  sheet.getRange(lastRow, COLUMNS.STATUS).setValue('解約申請中');
+  sheet.getRange(lastRow, COLUMNS.FORM_TYPE).setValue('解約申請');
+  
+  // 解約情報を記録
+  sheet.getRange(lastRow, COLUMNS.CANCELLATION_REASON).setValue(postData.cancellationData.reason);
+  sheet.getRange(lastRow, COLUMNS.CANCELLATION_DETAIL).setValue(postData.cancellationData.detailReason);
+  sheet.getRange(lastRow, COLUMNS.ALLOW_CONTACT).setValue(postData.cancellationData.allowContact ? 'はい' : 'いいえ');
+  sheet.getRange(lastRow, COLUMNS.ALLOW_MARKETING).setValue(postData.cancellationData.allowMarketing ? 'はい' : 'いいえ');
+  sheet.getRange(lastRow, COLUMNS.PREFERRED_CONTACT_DATE).setValue(postData.cancellationData.preferredContactDate);
+  sheet.getRange(lastRow, COLUMNS.ADDITIONAL_MESSAGE).setValue(postData.cancellationData.additionalMessage);
+  sheet.getRange(lastRow, COLUMNS.CANCELLATION_STATUS).setValue('解約申請受付');
+  
+  Logger.log(`新規解約申請を記録しました - 行: ${lastRow}`);
+}
+
+// 管理者への解約通知メール
+function sendCancellationNotificationToAdmin(postData, existingRow) {
+  var subject = '【TeamBase】解約申請がありました';
+  
+  // 解約理由のテキスト変換
+  var reasonText = getCancellationReasonText(postData.cancellationData.reason);
+  
+  var body = `
+TeamBaseの解約申請がありました。
+
+申請者情報：
+会社名: ${postData.companyData.companyName}
+担当者名: ${postData.companyData.contactName}
+メールアドレス: ${postData.companyData.email}
+電話番号: ${postData.companyData.phoneNumber || '未入力'}
+
+解約情報：
+解約理由: ${reasonText}
+詳細理由: ${postData.cancellationData.detailReason || '未入力'}
+今後の連絡許可: ${postData.cancellationData.allowContact ? 'はい' : 'いいえ'}
+マーケティング連絡許可: ${postData.cancellationData.allowMarketing ? 'はい' : 'いいえ'}
+希望連絡日時: ${postData.cancellationData.preferredContactDate || '指定なし'}
+追加メッセージ: ${postData.cancellationData.additionalMessage || 'なし'}
+
+${existingRow > 0 ? `既存顧客（スプレッドシート${existingRow}行目）の解約申請です。` : '新規解約申請としてスプレッドシートに記録されました。'}
+
+申請者には自動で確認メールを送信済みです。
+翌営業日以内に担当者からご連絡をお願いします。
+
+【重要】解約処理実行時は以下を確認してください：
+1. アカウントの無効化
+2. 請求処理の停止
+3. データのバックアップ（必要に応じて）
+4. データの削除
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    Logger.log('管理者への解約通知メール送信完了');
+  } catch (error) {
+    Logger.log('管理者への解約通知メール送信失敗: ' + error.toString());
+  }
+}
+
+// 解約理由コードを日本語テキストに変換
+function getCancellationReasonText(reasonCode) {
+  const reasonMap = {
+    'cost': '💰 コストが合わない',
+    'functionality': '⚙️ 機能が要件に合わない', 
+    'usage': '👥 チームでの利用が進まない',
+    'alternative': '🔄 他のツールに移行',
+    'temporary': '⏸️ 一時的な利用停止',
+    'other': '📝 その他'
+  };
+  
+  return reasonMap[reasonCode] || reasonCode;
+}
+
+// 既存の申し込み処理（従来の機能を維持）
+function handleSignup(postData) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var lastRow = sheet.getLastRow() + 1;
+  var timestamp = new Date();
+  
+  // サインアップフォーム用のデータをスプレッドシートに書き込む
+  sheet.getRange(lastRow, COLUMNS.TIMESTAMP).setValue(timestamp);
+  sheet.getRange(lastRow, COLUMNS.CONTACT_NAME).setValue(postData.columnB || '');
+  sheet.getRange(lastRow, COLUMNS.EMAIL).setValue(postData.columnC || '');
+  sheet.getRange(lastRow, COLUMNS.PHONE).setValue(postData.columnD || '');
+  sheet.getRange(lastRow, COLUMNS.DEPARTMENT).setValue(postData.columnE || '');
+  sheet.getRange(lastRow, COLUMNS.EMPLOYEE_COUNT).setValue(postData.columnF || '');
+  sheet.getRange(lastRow, COLUMNS.PURPOSE).setValue(postData.columnG || '');
+  sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('未送信');
+  
+  // 会社情報を追加列に保存
+  if (postData.companyData) {
+    sheet.getRange(lastRow, COLUMNS.COMPANY_NAME).setValue(postData.companyData.companyName || '');
+    sheet.getRange(lastRow, COLUMNS.STATUS).setValue(postData.companyData.status || '');
+    sheet.getRange(lastRow, COLUMNS.FORM_TYPE).setValue(postData.companyData.formType || '申し込み');
+  }
+  
+  // 管理者への通知メール送信（既存機能）
+  sendAdminNotification(postData, lastRow);
+  
+  // 申し込み者本人への確認メール送信（既存機能）
+  var emailSent = sendConfirmationEmail(postData);
+  
+  // メール送信状態を更新
+  if (emailSent) {
+    sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信完了');
+  } else {
+    sheet.getRange(lastRow, COLUMNS.EMAIL_STATUS).setValue('送信失敗');
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    result: 'success',
+    timestamp: timestamp.toString(),
+    message: 'お申し込みデータを正常に受信し、確認メールを送信しました',
+    rowNumber: lastRow,
+    emailSent: emailSent
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 管理者への通知メール送信（既存機能）
+function sendAdminNotification(postData, rowNumber) {
+  var subject = '【TeamBase】新しい無料トライアル申し込みがありました';
+  var body = `
+新しいTeamBaseの無料トライアル申し込みがありました。
+
+申し込み者情報：
+会社名: ${postData.companyData?.companyName || '未入力'}
+担当者名: ${postData.columnB || '未入力'}
+メールアドレス: ${postData.columnC || '未入力'}
+電話番号: ${postData.columnD || '未入力'}
+部署名: ${postData.columnE || '未入力'}
+従業員数: ${postData.columnF || '未入力'}
+導入目的: ${postData.columnG || '未入力'}
+
+スプレッドシートの${rowNumber}行目に詳細を記録しました。
+
+申し込み者には自動で確認メールを送信済みです。
+続けてオンボーディングサポートの準備をお願いします。
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: ADMIN_EMAIL,
+      subject: subject,
+      body: body
+    });
+    Logger.log('管理者への通知メール送信完了');
+  } catch (error) {
+    Logger.log('管理者への通知メール送信失敗: ' + error.toString());
+  }
+}
+
+// 申し込み者本人への確認メール送信（既存機能）
+function sendConfirmationEmail(postData) {
+  var email = postData.columnC;
+  var name = postData.columnB;
+  var companyName = postData.companyData?.companyName || '';
+  
+  if (!email) {
+    Logger.log('メールアドレスが設定されていません');
+    return false;
+  }
+  
+  var subject = '【TeamBase】無料トライアル申し込み承認リンクをお送りします';
+  
+  // オンボーディングページのリンク（GitHub Pages）
+  var onboardingLink = 'https://addness-info-osaka.github.io/TeamBase/step1-todo.html';
+  
+  var htmlBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+    .button { display: inline-block; background: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+    .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>TeamBase 無料トライアル申し込みありがとうございます</h1>
+    </div>
+    <div class="content">
+      <p>${name} 様</p>
+      
+      <p>この度は、TeamBaseの無料トライアルにお申し込みいただき、誠にありがとうございます。</p>
+      
+      <p><strong>申し込み内容確認：</strong></p>
+      <ul>
+        <li>会社名: ${companyName}</li>
+        <li>担当者名: ${name}</li>
+        <li>メールアドレス: ${email}</li>
+      </ul>
+      
+      <p>申し込みを承認するため、下記のリンクをクリックしてオンボーディングを開始してください：</p>
+      
+      <p style="text-align: center;">
+        <a href="${onboardingLink}" class="button">オンボーディングを開始する</a>
+      </p>
+      
+      <p><strong>次のステップ：</strong></p>
+      <ol>
+        <li><strong>Step 1:</strong> 上記ボタンをクリックしてTodo Appアカウント作成</li>
+        <li><strong>Step 2:</strong> TeamBaseアカウント作成と組織情報設定</li>
+        <li><strong>Step 3:</strong> Academy動画でTeamBaseの使い方を完全マスター</li>
+      </ol>
+      
+      <p><strong>🔖 ブックマーク推奨:</strong> オンボーディングページはブックマークしておくと便利です！</p>
+      
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+      
+      <p>今後ともよろしくお願いいたします。</p>
+    </div>
+    <div class="footer">
+      <p><strong>アドネス株式会社 SL.AI Team Base</strong><br>
+      〒540-0021 大阪府大阪市中央区大手通２丁目４−８ assess大手通ビル４F<br>
+      TEL: 06-4400-0754 | Email: info.osaka@addness.co.jp</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: COMPANY_NAME
+    });
+    Logger.log('申請者への解約確認メール送信完了: ' + email);
+    return true;
+  } catch (error) {
+    Logger.log('申請者への解約確認メール送信失敗: ' + error.toString());
+    return false;
+  }
+}
+
+// スプレッドシートのヘッダー行を自動設定する関数（初回設定用）
+function setupSpreadsheetHeaders() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  // ヘッダー行の設定
+  var headers = [
+    'タイムスタンプ',           // A列
+    '担当者名',                // B列  
+    'メールアドレス',           // C列
+    '電話番号',                // D列
+    '部署名',                  // E列
+    '従業員数',                // F列
+    '導入目的',                // G列
+    'メール送信状態',           // H列
+    '会社名',                  // I列
+    'ステータス',              // J列
+    'フォーム種別',            // K列
+    '解約理由',                // L列
+    '解約詳細理由',            // M列
+    '今後の連絡許可',          // N列
+    'マーケティング連絡許可',  // O列
+    '希望連絡日時',            // P列
+    '追加メッセージ',          // Q列
+    '解約ステータス'           // R列
+  ];
+  
+  // ヘッダー行が空の場合のみ設定
+  if (sheet.getRange(1, 1).getValue() === '') {
+    for (var i = 0; i < headers.length; i++) {
+      sheet.getRange(1, i + 1).setValue(headers[i]);
+    }
+    
+    // ヘッダー行のスタイル設定
+    var headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#E3F2FD');
+    
+    Logger.log('スプレッドシートのヘッダー行を設定しました');
+  } else {
+    Logger.log('ヘッダー行は既に設定されています');
+  }
 } 

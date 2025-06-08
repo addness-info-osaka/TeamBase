@@ -126,28 +126,341 @@
 
     /* ヒーローセクション */
     .hero-section {
-      padding: 4rem 0;
+      padding: 5rem 0;
       text-align: center;
-      background: var(--light);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(74, 111, 255, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+      z-index: 1;
+    }
+
+    .hero-section .container {
+      position: relative;
+      z-index: 2;
     }
 
     .hero-title {
-      font-size: 3rem;
-      color: var(--dark);
-      margin-bottom: 1rem;
-      background: var(--gradient-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 3.5rem;
+      color: var(--light);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      animation: fadeInUp 1s ease-out;
     }
 
     .hero-subtitle {
-      font-size: 1.3rem;
-      color: var(--gray);
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
       margin-bottom: 3rem;
-      max-width: 600px;
+      max-width: 700px;
       margin-left: auto;
       margin-right: auto;
+      line-height: 1.8;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+
+
+    /* ステップインジケーター */
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .step {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .step.completed {
+      background: var(--success);
+      color: var(--light);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+
+    .step.active {
+      background: var(--light);
+      color: var(--primary);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .step.inactive {
+      background: rgba(255, 255, 255, 0.3);
+      color: var(--light);
+    }
+
+    .step-connector {
+      width: 50px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .step-connector.completed {
+      background: var(--success);
+    }
+
+    .bookmark-highlight {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 500px;
+      animation: fadeInUp 1s ease-out 0.6s both;
+    }
+
+    .bookmark-text {
+      color: var(--light);
+      font-size: 1rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .bookmark-icon {
+      font-size: 1.2rem;
+      animation: bounce 2s infinite;
+    }
+
+    .bookmark-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--light);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 1rem auto 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      width: fit-content;
+    }
+
+    .bookmark-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .bookmark-btn-icon {
+      font-size: 1.1rem;
+    }
+
+    /* ブックマークモーダル */
+    .bookmark-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .bookmark-modal-content {
+      background: var(--light);
+      margin: 10% auto;
+      padding: 0;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--shadow-heavy);
+      animation: slideIn 0.3s ease;
+    }
+
+    .bookmark-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--light-gray);
+      background: var(--gradient-primary);
+      color: var(--light);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .bookmark-modal-header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .bookmark-modal-body {
+      padding: 2rem;
+    }
+
+    .bookmark-method {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: var(--secondary);
+      border-radius: 12px;
+    }
+
+    .bookmark-method:last-of-type {
+      margin-bottom: 1rem;
+    }
+
+    .bookmark-method h4 {
+      margin: 0 0 1rem 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .shortcut-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .shortcut-display kbd {
+      background: var(--dark);
+      color: var(--light);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid #555;
+    }
+
+    .bookmark-method p {
+      margin: 0;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    .bookmark-tip {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border: 1px solid #ffeeba;
+      padding: 1rem;
+      border-radius: 12px;
+      color: #856404;
+      font-size: 0.9rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 3rem 0;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .bookmark-highlight {
+        margin: 1.5rem auto;
+        padding: 1rem;
+      }
+      
+      .bookmark-text {
+        font-size: 0.9rem;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      
+      .videos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+      }
+      
+      .video-card {
+        padding: 1.5rem;
+      }
     }
 
     /* プログレスセクション */
@@ -233,15 +546,15 @@
 
     .videos-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 3rem;
       margin-bottom: 3rem;
     }
 
     .video-card {
       background: var(--light);
       border-radius: 20px;
-      padding: 1.5rem;
+      padding: 2rem;
       box-shadow: var(--shadow-light);
       transition: all 0.3s ease;
       position: relative;
@@ -546,13 +859,60 @@
       }
     }
 
+    /* ナビゲーション */
+    .navigation-section {
+      background: var(--secondary);
+      padding: 3rem 0;
+      margin-top: 4rem;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary {
+      background: var(--light-gray);
+      color: var(--gray);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray);
+      color: var(--light);
+      transform: translateY(-2px);
+    }
+
+    .nav-info {
+      text-align: center;
+      flex: 1;
+    }
+
+    .nav-info p {
+      color: var(--gray);
+      font-size: 1.1rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
     /* フッター */
     footer {
       background-color: var(--dark);
       color: var(--light);
       text-align: center;
       padding: 3rem 0;
-      margin-top: 4rem;
     }
 
     /* ローディング状態 */
@@ -583,25 +943,77 @@
     <div class="container header-content">
       <a href="index.html" class="logo">SL.AI Team Base</a>
       <div class="header-links">
-        <a href="https://teambase.addness.com/login" class="app-link teambase-link" target="_blank">
+        <a href="https://teambase.addness.com/login" class="app-link teambase-link" target="_blank" rel="noopener noreferrer">
           🚀 TeamBase を開く
         </a>
-        <a href="https://todo.addness.com/login" class="app-link todoapp-link" target="_blank">
+        <a href="https://todo.addness.com/login" class="app-link todoapp-link" target="_blank" rel="noopener noreferrer">
           ✅ Todo Appを開く
         </a>
       </div>
-      <div class="trial-badge">14日間無料トライアル</div>
     </div>
   </header>
 
   <!-- ヒーローセクション -->
   <section class="hero-section">
     <div class="container">
-      <h1 class="hero-title">TeamBase 完全マスター講座</h1>
+      <!-- ステップインジケーター -->
+      <div class="step-indicator">
+        <div class="step completed">1</div>
+        <div class="step-connector completed"></div>
+        <div class="step completed">2</div>
+        <div class="step-connector completed"></div>
+        <div class="step active">3</div>
+      </div>
+      
+      <h1 class="hero-title">TeamBase Academy</h1>
       <p class="hero-subtitle">
         10本の動画でTeamBaseの全機能をマスターできます。<br>
         お好きな順番で、いつでも何度でもご視聴ください。
       </p>
+      
+      <div class="bookmark-highlight">
+        <p class="bookmark-text">
+          <span class="bookmark-icon">📌</span>
+          <strong>ブックマーク推奨：</strong>このページをブックマークして、いつでもアクセスできるようにしておきましょう。
+        </p>
+        <button class="bookmark-btn" onclick="showBookmarkGuide()">
+          <span class="bookmark-btn-icon">⭐</span>
+          ブックマークする方法を見る
+        </button>
+      </div>
+
+      <!-- ブックマークガイドモーダル -->
+      <div class="bookmark-modal" id="bookmarkModal">
+        <div class="bookmark-modal-content">
+          <div class="bookmark-modal-header">
+            <h3>📌 ブックマークの追加方法</h3>
+            <button class="close-btn" onclick="closeBookmarkGuide()">&times;</button>
+          </div>
+          <div class="bookmark-modal-body">
+            <div class="bookmark-method">
+              <h4>🖥️ PC (Windows/Linux)</h4>
+              <div class="shortcut-display">
+                <kbd>Ctrl</kbd> + <kbd>D</kbd>
+              </div>
+              <p>上記のキーを同時に押してください</p>
+            </div>
+            <div class="bookmark-method">
+              <h4>🍎 Mac</h4>
+              <div class="shortcut-display">
+                <kbd>⌘</kbd> + <kbd>D</kbd>
+              </div>
+              <p>上記のキーを同時に押してください</p>
+            </div>
+            <div class="bookmark-method">
+              <h4>📱 スマートフォン</h4>
+              <p>ブラウザの設定メニュー（⋮）から「ブックマークに追加」を選択してください</p>
+            </div>
+            <div class="bookmark-tip">
+              💡 <strong>ヒント：</strong>ブックマーク名を「TeamBase Academy」に変更すると見つけやすくなります！
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -635,7 +1047,7 @@
   <!-- メインコンテンツ -->
   <section class="videos-section">
     <div class="container">
-      <h2 class="section-title">学習動画一覧</h2>
+      <h2 class="section-title">組織マネジメント構築教材</h2>
       
       <!-- コントロール -->
       <div class="controls-section">
@@ -644,7 +1056,6 @@
           <button class="filter-btn" data-filter="completed">完了済み</button>
           <button class="filter-btn" data-filter="incomplete">未完了</button>
         </div>
-        <input type="text" class="search-box" placeholder="動画を検索..." id="searchBox">
       </div>
 
       <!-- 動画グリッド -->
@@ -655,8 +1066,8 @@
             <div class="video-number">1</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">TeamBase概要とログイン</h3>
-          <p class="video-description">TeamBaseの基本概念とログイン方法を学習します。プラットフォームの全体像を把握しましょう。</p>
+          <h3 class="video-title">このアクションマップの進め方を理解しよう！</h3>
+          <p class="video-description">TeamBaseを始める前に、このアクションマップの効果的な進め方を理解しましょう。学習の全体像を把握します。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/945882819d714e6185efef1958b7ef0e?sid=6fd8680a-5982-42d8-9a0d-b485db6a980d" allowfullscreen></iframe>
           </div>
@@ -665,7 +1076,6 @@
               <input type="checkbox" id="video1_check">
               <label for="video1_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 5分</div>
           </div>
         </div>
 
@@ -675,8 +1085,8 @@
             <div class="video-number">2</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">ダッシュボードの使い方</h3>
-          <p class="video-description">メインダッシュボードの機能と基本操作を学習します。情報の見方と活用方法をマスターしましょう。</p>
+          <h3 class="video-title">TeamBaseを使いこなす為の全体像を理解しよう！</h3>
+          <p class="video-description">TeamBase全体の機能と構造を理解し、効果的な活用方法を学習します。全体像をしっかり把握しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/ce44e24e4410450cb7d28d29dca02a30?sid=b18b2202-eff7-4bac-af46-034f57835ab6" allowfullscreen></iframe>
           </div>
@@ -685,7 +1095,6 @@
               <input type="checkbox" id="video2_check">
               <label for="video2_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 7分</div>
           </div>
         </div>
 
@@ -695,8 +1104,8 @@
             <div class="video-number">3</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">プロジェクト作成と管理</h3>
-          <p class="video-description">新しいプロジェクトの作成方法と基本的な管理機能を学習します。効率的なプロジェクト運営を実現しましょう。</p>
+          <h3 class="video-title">TeamBaseのアカウントを作成しよう！</h3>
+          <p class="video-description">TeamBaseアカウントの作成とセットアップを行います。実際にアカウントを作成して始めましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/d4d53528376b4504aca747ae6f7642bf?sid=e95255d6-0529-4ff6-ba3a-1f27dbf9c01e" allowfullscreen></iframe>
           </div>
@@ -705,7 +1114,6 @@
               <input type="checkbox" id="video3_check">
               <label for="video3_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 8分</div>
           </div>
         </div>
 
@@ -715,8 +1123,8 @@
             <div class="video-number">4</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">タスク管理の基本</h3>
-          <p class="video-description">効率的なタスク作成、割り当て、管理の方法を学習します。チームの生産性を向上させましょう。</p>
+          <h3 class="video-title">自分のノーススターを決めてみよう！</h3>
+          <p class="video-description">あなた自身のノーススター（目標・指針）を設定します。明確な方向性を定めて成果を最大化しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/ee6c0a4007f64fa7bdb6b103d466b48f?sid=5ce694b4-d93c-4949-8261-15ccfa088b25" allowfullscreen></iframe>
           </div>
@@ -725,7 +1133,6 @@
               <input type="checkbox" id="video4_check">
               <label for="video4_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 6分</div>
           </div>
         </div>
 
@@ -735,8 +1142,8 @@
             <div class="video-number">5</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">チームメンバー管理</h3>
-          <p class="video-description">チームメンバーの招待、役割設定、権限管理を学習します。チーム体制を整えましょう。</p>
+          <h3 class="video-title">直属の部下のノーススターを作成する！</h3>
+          <p class="video-description">直属の部下のノーススターを設定し、チーム全体の方向性を統一します。部下との連携を強化しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/dcdf269134ee4f0b939a02ec45bd60d4?sid=e0729db5-517f-4de0-8eed-2981342bcc5c" allowfullscreen></iframe>
           </div>
@@ -745,7 +1152,6 @@
               <input type="checkbox" id="video5_check">
               <label for="video5_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 9分</div>
           </div>
         </div>
 
@@ -755,8 +1161,8 @@
             <div class="video-number">6</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">KPI設定と追跡</h3>
-          <p class="video-description">重要業績評価指標（KPI）の設定と進捗追跡方法を学習します。成果を数値で見える化しましょう。</p>
+          <h3 class="video-title">自分のOKR・KPIを作成する！</h3>
+          <p class="video-description">あなた自身のOKR（目標・成果指標）とKPIを設定します。具体的な数値目標で成果を管理しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/158c2d9a6f764b42a77f1edef9148436?sid=48869391-65dd-4b78-b8ad-260f22c948b5" allowfullscreen></iframe>
           </div>
@@ -765,7 +1171,6 @@
               <input type="checkbox" id="video6_check">
               <label for="video6_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 7分</div>
           </div>
         </div>
 
@@ -775,8 +1180,8 @@
             <div class="video-number">7</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">レポートと分析機能</h3>
-          <p class="video-description">詳細なレポート作成と分析機能の使い方を学習します。データに基づいた意思決定を行いましょう。</p>
+          <h3 class="video-title">自分のアクションマップを作成しよう！</h3>
+          <p class="video-description">目標達成のための具体的なアクションマップを作成します。戦略的に目標に向かって進めるよう計画しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/b77a5bb62209407e94f3509eaa393077?sid=923796f6-267e-4ae1-ac6a-8021e09b2be0" allowfullscreen></iframe>
           </div>
@@ -785,7 +1190,6 @@
               <input type="checkbox" id="video7_check">
               <label for="video7_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 8分</div>
           </div>
         </div>
 
@@ -795,8 +1199,8 @@
             <div class="video-number">8</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">カスタマイズと設定</h3>
-          <p class="video-description">ワークスペースのカスタマイズと詳細設定方法を学習します。自分たちに最適な環境を構築しましょう。</p>
+          <h3 class="video-title">ToDoアプリをセットアップ/実行しよう！</h3>
+          <p class="video-description">連携するToDoアプリのセットアップと実際の使用方法を学習します。日々のタスク管理を効率化しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/84b76dc28c1e40e8b2e0adc055ece45d?sid=792de8cb-bb5d-4e5a-8c58-308f96b06dd0" allowfullscreen></iframe>
           </div>
@@ -805,7 +1209,6 @@
               <input type="checkbox" id="video8_check">
               <label for="video8_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 6分</div>
           </div>
         </div>
 
@@ -815,8 +1218,8 @@
             <div class="video-number">9</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">自動化とワークフロー</h3>
-          <p class="video-description">業務の自動化とワークフロー設定で効率を最大化する方法を学習します。手作業を減らしましょう。</p>
+          <h3 class="video-title">部下以下のノーススターを部下に作成してもらおう！</h3>
+          <p class="video-description">チーム全体に目標設定を浸透させるため、部下に対して部下以下のノーススター作成をガイドします。組織全体の方向性を統一しましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/0053e29432be4d05b361e3b32b5ae474?sid=853cd253-55ad-4c30-85b5-9e11c48c87ff" allowfullscreen></iframe>
           </div>
@@ -825,7 +1228,6 @@
               <input type="checkbox" id="video9_check">
               <label for="video9_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 10分</div>
           </div>
         </div>
 
@@ -835,8 +1237,8 @@
             <div class="video-number">10</div>
             <div class="completion-badge">✓ 完了</div>
           </div>
-          <h3 class="video-title">応用テクニックとベストプラクティス</h3>
-          <p class="video-description">チーム運営を成功に導く応用テクニックとベストプラクティスを学習します。プロレベルの運用を目指しましょう。</p>
+          <h3 class="video-title">セットアップの完了を確認しよう！</h3>
+          <p class="video-description">全ての設定が正しく完了したかを確認します。TeamBaseの本格運用に向けて最終チェックを行いましょう。</p>
           <div class="video-container">
             <iframe src="https://www.loom.com/embed/341f5c1fa4154b088adade54c88ac554?sid=a446c299-db4b-46f3-8f52-c25a2fde67c9" allowfullscreen></iframe>
           </div>
@@ -845,7 +1247,6 @@
               <input type="checkbox" id="video10_check">
               <label for="video10_check" class="checkbox-label">視聴完了</label>
             </div>
-            <div class="video-duration">約 12分</div>
           </div>
         </div>
       </div>
@@ -865,6 +1266,20 @@
           <a href="https://todo.addness.com/login" class="action-btn btn-accent" target="_blank">
             ✅ Todo Appを使う
           </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ナビゲーション -->
+  <section class="navigation-section">
+    <div class="container">
+      <div class="navigation">
+        <a href="step2-teambase.html" class="nav-btn btn-secondary">
+          ← 前へ：TeamBase登録
+        </a>
+        <div class="nav-info">
+          <p>🎉 全ステップ完了！TeamBaseを活用してチームの成果を最大化しましょう。</p>
         </div>
       </div>
     </div>
@@ -1036,6 +1451,32 @@
 
     // ページ離脱時に進捗保存
     window.addEventListener('beforeunload', saveProgress);
+
+    // ブックマークガイドモーダル関連の関数
+    function showBookmarkGuide() {
+      document.getElementById('bookmarkModal').style.display = 'block';
+      document.body.style.overflow = 'hidden'; // スクロールを無効化
+    }
+
+    function closeBookmarkGuide() {
+      document.getElementById('bookmarkModal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // スクロールを有効化
+    }
+
+    // モーダル外をクリックしたときに閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('bookmarkModal');
+      if (event.target === modal) {
+        closeBookmarkGuide();
+      }
+    }
+
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeBookmarkGuide();
+      }
+    });
   </script>
 </body>
 </html> 
