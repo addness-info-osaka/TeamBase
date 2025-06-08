@@ -34,6 +34,19 @@ const COLUMNS = {
 };
 
 // ====================================================
+// GET リクエスト処理
+// ====================================================
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'success',
+    message: 'TeamBase 統合GAS Webアプリが正常に動作しています',
+    timestamp: new Date().toString(),
+    version: '2.0',
+    features: ['申し込み処理', '解約処理', 'メール通知', 'スプレッドシート連携']
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ====================================================
 // 解約フォームからのPOSTリクエストを処理
 // ====================================================
 function doPost(e) {
@@ -620,10 +633,10 @@ function sendConfirmationEmail(postData) {
       htmlBody: htmlBody,
       name: COMPANY_NAME
     });
-    Logger.log('申請者への解約確認メール送信完了: ' + email);
+    Logger.log('申し込み者への確認メール送信完了: ' + email);
     return true;
   } catch (error) {
-    Logger.log('申請者への解約確認メール送信失敗: ' + error.toString());
+    Logger.log('申し込み者への確認メール送信失敗: ' + error.toString());
     return false;
   }
 }
