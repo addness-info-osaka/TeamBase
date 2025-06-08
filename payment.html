@@ -443,10 +443,10 @@
     const signupData = JSON.parse(sessionStorage.getItem('signupData'));
     const selectedPlan = JSON.parse(sessionStorage.getItem('selectedPlan'));
 
-    // 料金を2500円に設定
+    // 料金を19,800円に設定
     if (selectedPlan) {
-      selectedPlan.price = 2500;
-      selectedPlan.priceText = '2,500円';
+      selectedPlan.price = 19800;
+      selectedPlan.priceText = '19,800円';
       sessionStorage.setItem('selectedPlan', JSON.stringify(selectedPlan));
     }
 
