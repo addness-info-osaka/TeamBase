@@ -14,7 +14,7 @@
       --light: #fff;
       --gray: #666;
       --light-gray: #F8F9FA;
-      --max-width: 900px;
+      --max-width: 1000px;
       --gradient-primary: linear-gradient(135deg, #4A6FFF 0%, #6B8AFF 100%);
       --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
       --success: #28a745;
@@ -114,6 +114,16 @@
       margin-bottom: 0.5rem;
     }
 
+    .video-count {
+      background: var(--gradient-primary);
+      color: var(--light);
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+
     /* メインコンテンツ */
     .onboarding-section {
       padding: 2rem 0;
@@ -150,17 +160,17 @@
 
     .progress-bar {
       width: 100%;
-      height: 8px;
+      height: 10px;
       background: var(--light-gray);
-      border-radius: 4px;
+      border-radius: 5px;
       margin-bottom: 1rem;
       overflow: hidden;
     }
 
     .progress-bar-fill {
       height: 100%;
-      background: var(--primary);
-      width: 33%;
+      background: var(--gradient-primary);
+      width: 10%;
       transition: width 0.3s ease;
     }
 
@@ -184,15 +194,18 @@
     .step-title {
       font-size: 1.8rem;
       color: var(--primary);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
     }
 
     .step-description {
       color: var(--gray);
       margin-bottom: 2rem;
+      text-align: center;
+      font-size: 1.1rem;
     }
 
-    /* 動画セクションのスタイル */
+    /* 動画セクション */
     .video-section {
       margin-bottom: 3rem;
       padding: 2rem;
@@ -202,55 +215,60 @@
       border: 1px solid var(--light-gray);
     }
 
-    .video-title {
-      font-size: 1.2rem;
-      color: var(--dark);
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--secondary);
-    }
-
     .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 アスペクト比 */
+      height: 0;
       margin-bottom: 2rem;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
 
     .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 450px;
+      height: 100%;
       border: none;
     }
 
+    /* チェックボックスエリア */
     .checkbox-group {
-      margin-top: 1.5rem;
+      margin-top: 2rem;
+      text-align: center;
     }
 
     .checkbox-item {
-      margin-bottom: 1rem;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      padding: 0.8rem;
+      padding: 1rem 2rem;
       background: var(--secondary);
-      border-radius: 8px;
+      border-radius: 12px;
       transition: all 0.3s ease;
+      cursor: pointer;
+      margin: 0 auto;
+      max-width: 400px;
     }
 
     .checkbox-item:hover {
       background: #e8f0ff;
+      transform: translateY(-2px);
     }
 
     .checkbox-item input[type="checkbox"] {
-      margin-right: 0.8rem;
-      width: 18px;
-      height: 18px;
+      margin-right: 1rem;
+      width: 20px;
+      height: 20px;
       accent-color: var(--primary);
     }
 
     .checkbox-item label {
       color: var(--dark);
-      font-size: 0.95rem;
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
     }
 
@@ -263,16 +281,17 @@
     }
 
     .btn {
-      padding: 0.8rem 2rem;
+      padding: 1rem 2rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       text-decoration: none;
       display: inline-block;
       text-align: center;
+      min-width: 120px;
     }
 
     .btn-primary {
@@ -281,8 +300,8 @@
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(74, 111, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(74, 111, 255, 0.4);
     }
 
     .btn-primary:disabled {
@@ -301,72 +320,78 @@
     .btn-secondary:hover {
       background: var(--primary);
       color: var(--light);
+      transform: translateY(-3px);
     }
 
     /* 完了画面 */
     .completion-content {
       text-align: center;
-      padding: 2rem 0;
+      padding: 3rem 0;
     }
 
     .completion-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
+      font-size: 5rem;
+      margin-bottom: 2rem;
       animation: bounce 2s infinite;
     }
 
     .completion-title {
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: var(--primary);
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .completion-message {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: var(--gray);
       margin-bottom: 3rem;
       line-height: 1.8;
     }
 
-    .completion-features {
+    .completion-stats {
       display: flex;
       justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
+      gap: 3rem;
+      margin: 3rem 0;
       flex-wrap: wrap;
     }
 
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.5rem;
+    .stat-item {
+      text-align: center;
+      padding: 2rem;
       background: var(--secondary);
-      border-radius: 12px;
-      transition: transform 0.3s ease;
-      min-width: 200px;
+      border-radius: 16px;
+      min-width: 150px;
     }
 
-    .feature-item:hover {
-      transform: translateY(-5px);
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      display: block;
     }
 
-    .feature-icon {
-      font-size: 2rem;
-    }
-
-    .feature-text {
-      text-align: left;
-    }
-
-    .feature-text h3 {
-      color: var(--dark);
-      margin-bottom: 0.3rem;
-    }
-
-    .feature-text p {
+    .stat-label {
       color: var(--gray);
-      margin: 0;
+      margin-top: 0.5rem;
+    }
+
+    .final-cta {
+      background: var(--gradient-accent);
+      color: var(--light);
+      padding: 1.5rem 3rem;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      margin-top: 2rem;
+    }
+
+    .final-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
     }
 
     @keyframes bounce {
@@ -374,7 +399,7 @@
         transform: translateY(0);
       }
       50% {
-        transform: translateY(-10px);
+        transform: translateY(-15px);
       }
     }
 
@@ -397,17 +422,26 @@
         padding: 2rem 1.5rem;
       }
 
-      .completion-features {
+      .completion-stats {
         flex-direction: column;
         align-items: center;
+        gap: 1.5rem;
       }
 
       .button-container {
         flex-direction: column;
       }
 
-      .video-container iframe {
-        height: 300px;
+      .step-title {
+        font-size: 1.5rem;
+      }
+
+      .completion-title {
+        font-size: 2rem;
+      }
+
+      .completion-message {
+        font-size: 1.1rem;
       }
     }
 
@@ -418,6 +452,32 @@
       text-align: center;
       padding: 2rem 0;
       margin-top: 3rem;
+    }
+
+    /* ステップインジケーター */
+    .step-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .step-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--light-gray);
+      transition: all 0.3s ease;
+    }
+
+    .step-indicator.active {
+      background: var(--primary);
+      transform: scale(1.2);
+    }
+
+    .step-indicator.completed {
+      background: var(--success);
     }
   </style>
 </head>
@@ -433,14 +493,15 @@
   <!-- ウェルカムセクション -->
   <section class="welcome-section">
     <div class="container">
-      <h1 class="welcome-title">TeamBase へようこそ！</h1>
-      <p class="welcome-subtitle">無料トライアルが開始されました。まずはTodoアプリの使い方を学びましょう。</p>
+      <h1 class="welcome-title">TeamBase オンボーディング</h1>
+      <p class="welcome-subtitle">無料トライアルが開始されました。完全ガイドでTeamBaseをマスターしましょう。</p>
       <div class="trial-info">
         <h3>🎯 14日間無料トライアル開始</h3>
         <p><strong>トライアル期間:</strong> 14日間（本日から）<br>
         <strong>料金:</strong> 完全無料<br>
         <strong>12日目:</strong> 自動的に有料プラン移行のご案内をお送りします</p>
       </div>
+      <div class="video-count">全10本の動画で完全マスター</div>
     </div>
   </section>
 
@@ -450,8 +511,8 @@
       <div class="onboarding-container">
         <!-- ヘッダー -->
         <div class="onboarding-header">
-          <h1>Todoアプリをマスターしましょう</h1>
-          <p>効率的なタスク管理のために、基本的な操作方法を学びます</p>
+          <h1>TeamBase 完全ガイド</h1>
+          <p>10本の動画でTeamBaseの使い方を完全にマスターできます</p>
         </div>
 
         <!-- プログレスバー -->
@@ -460,131 +521,241 @@
             <div class="progress-bar-fill"></div>
           </div>
           <div class="progress-text">
-            <span class="progress-step">ステップ <span id="currentStep">1</span>/3</span>
-            <span class="progress-percentage">33%</span>
+            <span class="progress-step">動画 <span id="currentStep">1</span>/10</span>
+            <span class="progress-percentage">10%</span>
           </div>
         </div>
 
-        <!-- ステップ1: Todoアプリの基本操作 -->
+        <!-- ステップインジケーター -->
+        <div class="step-indicators">
+          <div class="step-indicator active"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+          <div class="step-indicator"></div>
+        </div>
+
+        <!-- 動画1 -->
         <div class="step-content active" data-step="1">
-          <h2 class="step-title">Todoアプリの基本操作</h2>
-          <p class="step-description">Todoアプリの基本的な機能と使い方を確認します。すべてチェックしたら次へ進めます。</p>
+          <h2 class="step-title">動画1: TeamBase概要とログイン</h2>
+          <p class="step-description">TeamBaseの基本概念とログイン方法を学習します</p>
           
           <div class="video-section">
-            <h3 class="video-title">1. Todoアプリの基本操作　ログイン</h3>
             <div class="video-container">
-              <iframe src="https://player.vimeo.com/video/1069133957?h=49b5be1d67&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
-                      width="800" height="450" 
-                      frameborder="0" 
-                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
-                      title="ToDoアプリの基本操作説明01"></iframe>
+              <iframe src="https://www.loom.com/embed/945882819d714e6185efef1958b7ef0e?sid=6fd8680a-5982-42d8-9a0d-b485db6a980d" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
             </div>
             <div class="checkbox-group">
               <div class="checkbox-item">
-                <input type="checkbox" id="todo_basic1_check" class="step-checkbox">
-                <label for="todo_basic1_check">Todoアプリのログイン方法を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_basic2_check" class="step-checkbox">
-                <label for="todo_basic2_check">Todoアプリの基本的な機能を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_basic3_check" class="step-checkbox">
-                <label for="todo_basic3_check">Todoアプリの特徴を理解しました</label>
+                <input type="checkbox" id="video1_check" class="step-checkbox">
+                <label for="video1_check">動画を視聴してTeamBaseの概要を理解しました</label>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ステップ2: タスクプールと定常Todo -->
+        <!-- 動画2 -->
         <div class="step-content" data-step="2">
-          <h2 class="step-title">タスクプールと定常Todo</h2>
-          <p class="step-description">効率的なタスク管理のコア機能を学習します。</p>
+          <h2 class="step-title">動画2: ダッシュボードの使い方</h2>
+          <p class="step-description">メインダッシュボードの機能と基本操作を学習します</p>
           
           <div class="video-section">
-            <h3 class="video-title">2. Todoアプリの基本操作　タスクプールについて</h3>
             <div class="video-container">
-              <iframe src="https://player.vimeo.com/video/1069133914?h=8cc9dee985&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
-                      width="800" height="450" 
-                      frameborder="0" 
-                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
-                      title="ToDoアプリの基本操作説明02"></iframe>
+              <iframe src="https://www.loom.com/embed/ce44e24e4410450cb7d28d29dca02a30?sid=b18b2202-eff7-4bac-af46-034f57835ab6" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
             </div>
             <div class="checkbox-group">
               <div class="checkbox-item">
-                <input type="checkbox" id="todo_advanced1_check" class="step-checkbox">
-                <label for="todo_advanced1_check">タスクプールの概念を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_advanced2_check" class="step-checkbox">
-                <label for="todo_advanced2_check">タスクプールの使い方を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_advanced3_check" class="step-checkbox">
-                <label for="todo_advanced3_check">定常Todoの使い方を理解しました</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="video-section">
-            <h3 class="video-title">3. Todoアプリの基本操作 Todoの作り方</h3>
-            <div class="video-container">
-              <iframe src="https://player.vimeo.com/video/1069133930?h=c89e23e108&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479" 
-                      width="800" height="450" 
-                      frameborder="0" 
-                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
-                      title="ToDoアプリの基本操作説明03"></iframe>
-            </div>
-            <div class="checkbox-group">
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_create1_check" class="step-checkbox">
-                <label for="todo_create1_check">Todoの作成方法を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_create2_check" class="step-checkbox">
-                <label for="todo_create2_check">Todoの編集方法を理解しました</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="todo_create3_check" class="step-checkbox">
-                <label for="todo_create3_check">Todoの管理方法を理解しました</label>
+                <input type="checkbox" id="video2_check" class="step-checkbox">
+                <label for="video2_check">ダッシュボードの使い方を理解しました</label>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ステップ3: 完了画面 -->
+        <!-- 動画3 -->
         <div class="step-content" data-step="3">
+          <h2 class="step-title">動画3: プロジェクト作成と管理</h2>
+          <p class="step-description">新しいプロジェクトの作成方法と基本的な管理機能を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/d4d53528376b4504aca747ae6f7642bf?sid=e95255d6-0529-4ff6-ba3a-1f27dbf9c01e" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video3_check" class="step-checkbox">
+                <label for="video3_check">プロジェクトの作成と管理方法を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画4 -->
+        <div class="step-content" data-step="4">
+          <h2 class="step-title">動画4: タスク管理の基本</h2>
+          <p class="step-description">効率的なタスク作成、割り当て、管理の方法を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/ee6c0a4007f64fa7bdb6b103d466b48f?sid=5ce694b4-d93c-4949-8261-15ccfa088b25" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video4_check" class="step-checkbox">
+                <label for="video4_check">タスク管理の基本操作を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画5 -->
+        <div class="step-content" data-step="5">
+          <h2 class="step-title">動画5: チームメンバー管理</h2>
+          <p class="step-description">チームメンバーの招待、役割設定、権限管理を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/dcdf269134ee4f0b939a02ec45bd60d4?sid=e0729db5-517f-4de0-8eed-2981342bcc5c" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video5_check" class="step-checkbox">
+                <label for="video5_check">チームメンバー管理の方法を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画6 -->
+        <div class="step-content" data-step="6">
+          <h2 class="step-title">動画6: KPI設定と追跡</h2>
+          <p class="step-description">重要業績評価指標（KPI）の設定と進捗追跡方法を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/158c2d9a6f764b42a77f1edef9148436?sid=48869391-65dd-4b78-b8ad-260f22c948b5" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video6_check" class="step-checkbox">
+                <label for="video6_check">KPI設定と追跡方法を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画7 -->
+        <div class="step-content" data-step="7">
+          <h2 class="step-title">動画7: レポートと分析機能</h2>
+          <p class="step-description">詳細なレポート作成と分析機能の使い方を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/b77a5bb62209407e94f3509eaa393077?sid=923796f6-267e-4ae1-ac6a-8021e09b2be0" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video7_check" class="step-checkbox">
+                <label for="video7_check">レポートと分析機能を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画8 -->
+        <div class="step-content" data-step="8">
+          <h2 class="step-title">動画8: カスタマイズと設定</h2>
+          <p class="step-description">ワークスペースのカスタマイズと詳細設定方法を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/84b76dc28c1e40e8b2e0adc055ece45d?sid=792de8cb-bb5d-4e5a-8c58-308f96b06dd0" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video8_check" class="step-checkbox">
+                <label for="video8_check">カスタマイズと設定方法を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画9 -->
+        <div class="step-content" data-step="9">
+          <h2 class="step-title">動画9: 自動化とワークフロー</h2>
+          <p class="step-description">業務の自動化とワークフロー設定で効率を最大化する方法を学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/0053e29432be4d05b361e3b32b5ae474?sid=853cd253-55ad-4c30-85b5-9e11c48c87ff" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video9_check" class="step-checkbox">
+                <label for="video9_check">自動化とワークフローの設定を理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 動画10 -->
+        <div class="step-content" data-step="10">
+          <h2 class="step-title">動画10: 応用テクニックとベストプラクティス</h2>
+          <p class="step-description">チーム運営を成功に導く応用テクニックとベストプラクティスを学習します</p>
+          
+          <div class="video-section">
+            <div class="video-container">
+              <iframe src="https://www.loom.com/embed/341f5c1fa4154b088adade54c88ac554?sid=a446c299-db4b-46f3-8f52-c25a2fde67c9" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="video10_check" class="step-checkbox">
+                <label for="video10_check">応用テクニックとベストプラクティスを理解しました</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 完了画面 -->
+        <div class="step-content" data-step="11">
           <div class="completion-content">
             <div class="completion-icon">🎉</div>
             <h2 class="completion-title">オンボーディング完了！</h2>
             <p class="completion-message">
-              お疲れ様でした！<br>
-              これでTodoアプリの基本的な使い方をマスターできました。<br>
-              早速TeamBaseでチーム管理を始めましょう！
+              おめでとうございます！<br>
+              TeamBaseの全機能をマスターしました。<br>
+              これでチーム管理のプロフェッショナルです！
             </p>
-            <div class="completion-features">
-              <div class="feature-item">
-                <div class="feature-icon">✅</div>
-                <div class="feature-text">
-                  <h3>Todoアプリ</h3>
-                  <p>効率的なタスク管理を実現</p>
-                </div>
+            
+            <div class="completion-stats">
+              <div class="stat-item">
+                <span class="stat-number">10</span>
+                <div class="stat-label">動画完了</div>
               </div>
-              <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <div class="feature-text">
-                  <h3>TeamBase</h3>
-                  <p>チーム管理とKPI達成をサポート</p>
-                </div>
+              <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <div class="stat-label">習得率</div>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">14日間</span>
+                <div class="stat-label">無料トライアル</div>
               </div>
             </div>
+
+            <a href="https://teambase.addness.com/login" class="final-cta">
+              🚀 TeamBaseを始める
+            </a>
           </div>
         </div>
 
         <!-- ボタン -->
         <div class="button-container">
-          <button class="btn btn-secondary" id="prevButton" onclick="previousStep()">前へ戻る</button>
-          <button class="btn btn-primary" id="nextButton" onclick="nextStep()">次へ進む</button>
+          <button class="btn btn-secondary" id="prevButton" onclick="previousStep()">前の動画</button>
+          <button class="btn btn-primary" id="nextButton" onclick="nextStep()">次の動画</button>
         </div>
       </div>
     </div>
@@ -599,7 +770,8 @@
 
   <script>
     let currentStep = 1;
-    const totalSteps = 3;
+    const totalSteps = 10;
+    const totalPages = 11; // 10動画 + 完了画面
 
     // 要素の取得
     const progressFill = document.querySelector('.progress-bar-fill');
@@ -608,6 +780,7 @@
     const prevButton = document.getElementById('prevButton');
     const nextButton = document.getElementById('nextButton');
     const stepContents = document.querySelectorAll('.step-content');
+    const stepIndicators = document.querySelectorAll('.step-indicator');
 
     // ステップの表示切り替え
     function showStep(step) {
@@ -621,24 +794,39 @@
       });
 
       // プログレスバーの更新
-      const progress = (step / totalSteps) * 100;
+      const progress = (step / totalPages) * 100;
       progressFill.style.width = `${progress}%`;
-      progressStep.textContent = step;
-      progressPercentage.textContent = `${Math.round(progress)}%`;
+      
+      if (step <= totalSteps) {
+        progressStep.textContent = step;
+        progressPercentage.textContent = `${Math.round((step / totalSteps) * 100)}%`;
+      } else {
+        progressStep.textContent = totalSteps;
+        progressPercentage.textContent = '100%';
+      }
+
+      // ステップインジケーターの更新
+      stepIndicators.forEach((indicator, index) => {
+        indicator.classList.remove('active', 'completed');
+        if (index + 1 === step && step <= totalSteps) {
+          indicator.classList.add('active');
+        } else if (index + 1 < step) {
+          indicator.classList.add('completed');
+        }
+      });
 
       // ボタンの状態更新
       prevButton.disabled = step === 1;
       prevButton.style.display = step === 1 ? 'none' : 'inline-block';
       
-      if (step === 1 || step === 2) {
-        // 学習画面では、チェックボックスの状態に応じてボタンを有効/無効化
-        const stepCheckboxes = document.querySelectorAll(`.step-content[data-step="${step}"] .step-checkbox`);
-        const allChecked = Array.from(stepCheckboxes).every(checkbox => checkbox.checked);
-        nextButton.disabled = !allChecked;
-        nextButton.textContent = '次へ進む';
-      } else if (step === totalSteps) {
-        nextButton.textContent = 'TeamBaseを始める';
-        nextButton.disabled = false;
+      if (step <= totalSteps) {
+        // 動画画面では、チェックボックスの状態に応じてボタンを有効/無効化
+        const stepCheckbox = document.querySelector(`.step-content[data-step="${step}"] .step-checkbox`);
+        nextButton.disabled = !stepCheckbox.checked;
+        nextButton.textContent = step === totalSteps ? '完了画面へ' : '次の動画';
+      } else {
+        // 完了画面
+        nextButton.style.display = 'none';
       }
     }
 
@@ -646,20 +834,15 @@
     document.querySelectorAll('.step-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', () => {
         const step = parseInt(checkbox.closest('.step-content').dataset.step);
-        if (step === 1 || step === 2) {
-          const stepCheckboxes = document.querySelectorAll(`.step-content[data-step="${step}"] .step-checkbox`);
-          const allChecked = Array.from(stepCheckboxes).every(cb => cb.checked);
-          nextButton.disabled = !allChecked;
+        if (step === currentStep && step <= totalSteps) {
+          nextButton.disabled = !checkbox.checked;
         }
       });
     });
 
     function nextStep() {
-      if (currentStep < totalSteps) {
+      if (currentStep < totalPages) {
         showStep(currentStep + 1);
-      } else {
-        // 最終ステップの場合はTeamBaseのログインページへ
-        window.location.href = 'https://teambase.addness.com/login';
       }
     }
 
@@ -668,6 +851,26 @@
         showStep(currentStep - 1);
       }
     }
+
+    // キーボードナビゲーション
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentStep > 1) {
+        previousStep();
+      } else if (e.key === 'ArrowRight' && currentStep < totalPages) {
+        const stepCheckbox = document.querySelector(`.step-content[data-step="${currentStep}"] .step-checkbox`);
+        if (currentStep > totalSteps || stepCheckbox?.checked) {
+          nextStep();
+        }
+      } else if (e.key === ' ') {
+        // スペースキーでチェックボックスをトグル
+        e.preventDefault();
+        const stepCheckbox = document.querySelector(`.step-content[data-step="${currentStep}"] .step-checkbox`);
+        if (stepCheckbox) {
+          stepCheckbox.checked = !stepCheckbox.checked;
+          stepCheckbox.dispatchEvent(new Event('change'));
+        }
+      }
+    });
 
     // 初期表示
     showStep(1);
@@ -683,6 +886,52 @@
         });
       }
     });
+
+    // 進捗の保存（ローカルストレージ）
+    function saveProgress() {
+      const completed = [];
+      document.querySelectorAll('.step-checkbox:checked').forEach(checkbox => {
+        const step = parseInt(checkbox.closest('.step-content').dataset.step);
+        completed.push(step);
+      });
+      localStorage.setItem('teambase-onboarding-progress', JSON.stringify({
+        completed: completed,
+        currentStep: currentStep,
+        lastAccessed: new Date().toISOString()
+      }));
+    }
+
+    // 進捗の復元
+    function loadProgress() {
+      const saved = localStorage.getItem('teambase-onboarding-progress');
+      if (saved) {
+        try {
+          const progress = JSON.parse(saved);
+          progress.completed.forEach(step => {
+            const checkbox = document.querySelector(`#video${step}_check`);
+            if (checkbox) {
+              checkbox.checked = true;
+            }
+          });
+          if (progress.currentStep && progress.currentStep <= totalPages) {
+            showStep(progress.currentStep);
+          }
+        } catch (e) {
+          console.log('進捗の復元に失敗しました');
+        }
+      }
+    }
+
+    // チェックボックス変更時に進捗を保存
+    document.querySelectorAll('.step-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', saveProgress);
+    });
+
+    // ページ離脱時に進捗を保存
+    window.addEventListener('beforeunload', saveProgress);
+
+    // 初期化時に進捗を復元
+    loadProgress();
   </script>
 </body>
 </html> 
