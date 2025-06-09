@@ -1201,4 +1201,24 @@ function setupSpreadsheetHeaders() {
   } else {
     Logger.log('ヘッダー行は既に設定されています');
   }
+}
+
+// ====================================================
+// GAS上で解約申請フォームを表示するHTMLサービス追加
+// ====================================================
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('cancellationForm');
+}
+
+function submitCancellation(formData) {
+  // 既存のprocessCancellationロジックを利用
+  var result = processCancellation(
+    formData.email,
+    formData.companyName,
+    formData.name,
+    formData.cancelReason,
+    formData.detailedReason
+  );
+  return result ? '解約申請が正常に処理されました。' : '解約申請処理中にエラーが発生しました。';
 } 
