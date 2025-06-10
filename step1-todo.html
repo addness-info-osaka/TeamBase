@@ -485,10 +485,13 @@
 
   <script>
     function toggleNextButton() {
-      const checkbox = document.getElementById('todoComplete');
+      const checkbox1 = document.getElementById('todo_basic_1');
+      const checkbox2 = document.getElementById('todo_pool_2');
+      const checkbox3 = document.getElementById('todo_create_3');
+      const checkboxComplete = document.getElementById('todoComplete');
       const nextBtn = document.getElementById('nextBtn');
       
-      if (checkbox.checked) {
+      if (checkbox1.checked && checkbox2.checked && checkbox3.checked && checkboxComplete.checked) {
         nextBtn.classList.add('enabled');
       } else {
         nextBtn.classList.remove('enabled');
@@ -511,7 +514,13 @@
     }
 
     // イベントリスナー
-    document.getElementById('todoComplete').addEventListener('change', saveProgress);
+    document.getElementById('todoComplete').addEventListener('change', () => {
+      saveProgress();
+      toggleNextButton();
+    });
+    document.getElementById('todo_basic_1').addEventListener('change', toggleNextButton);
+    document.getElementById('todo_pool_2').addEventListener('change', toggleNextButton);
+    document.getElementById('todo_create_3').addEventListener('change', toggleNextButton);
 
     // Todoアプリチェックリストの進捗保存
     function saveTodoProgress() {
