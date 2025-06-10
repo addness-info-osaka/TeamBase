@@ -170,8 +170,6 @@
       animation: fadeInUp 1s ease-out 0.2s both;
     }
 
-
-
     /* ステップインジケーター */
     .step-indicator {
       display: flex;
@@ -430,36 +428,160 @@
 
     /* レスポンシブ対応 */
     @media (max-width: 768px) {
+      .container {
+        padding: 0 5px;
+      }
       .hero-section {
-        padding: 3rem 0;
+        padding: 2rem 0;
       }
-      
       .hero-title {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
       }
-      
       .hero-subtitle {
+        font-size: 1rem;
+      }
+      .bookmark-highlight {
+        margin: 1rem auto;
+        padding: 0.7rem;
+      }
+      .section-title {
+        font-size: 1.2rem;
+      }
+      .progress-section {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      .progress-title {
         font-size: 1.1rem;
       }
-      
-      .bookmark-highlight {
-        margin: 1.5rem auto;
-        padding: 1rem;
-      }
-      
-      .bookmark-text {
-        font-size: 0.9rem;
+      .progress-header {
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.5rem;
       }
-      
+      .progress-stats {
+        gap: 0.5rem;
+      }
+      .progress-bar {
+        height: 8px;
+      }
       .videos-grid {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
       }
-      
       .video-card {
-        padding: 1.5rem;
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      .video-header {
+        margin-bottom: 0.5rem;
+      }
+      .video-number {
+        width: 28px;
+        height: 28px;
+        font-size: 0.95rem;
+      }
+      .video-title {
+        font-size: 1rem;
+      }
+      .video-description {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      .video-container {
+        padding-bottom: 56.25%;
+        height: 0;
+        margin-bottom: 1rem;
+      }
+      .video-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .watch-checkbox {
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.95rem;
+      }
+      .checkbox-label {
+        font-size: 0.95rem;
+      }
+      .completion-action {
+        padding: 1.5rem 0.5rem;
+        border-radius: 12px;
+        margin-top: 1.5rem;
+      }
+      .completion-title {
+        font-size: 1.2rem;
+      }
+      .completion-message {
+        font-size: 0.95rem;
+      }
+      .action-buttons {
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+      .action-btn {
+        min-width: unset;
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.8rem 0;
+      }
+      .controls-section {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .filter-buttons {
+        width: 100%;
+        justify-content: center;
+      }
+      .filter-btn {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 0.5rem 0;
+      }
+      .navigation-section {
+        padding: 1.5rem 0;
+        margin-top: 2rem;
+      }
+      .navigation {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .nav-btn {
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.8rem 0;
+      }
+      footer {
+        padding: 1.5rem 0;
+      }
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 2px;
+      }
+      .hero-title {
+        font-size: 1.1rem;
+      }
+      .section-title {
+        font-size: 1rem;
+      }
+      .video-title {
+        font-size: 0.95rem;
+      }
+      .video-description {
+        font-size: 0.9rem;
+      }
+      .completion-title {
+        font-size: 1rem;
+      }
+      .completion-message {
+        font-size: 0.9rem;
+      }
+      .action-btn {
+        font-size: 0.95rem;
+      }
+      .filter-btn {
+        font-size: 0.9rem;
       }
     }
 
@@ -813,50 +935,6 @@
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-15px); }
-    }
-
-    /* レスポンシブ */
-    @media (max-width: 768px) {
-      .container {
-        padding: 0 15px;
-      }
-
-      .hero-title {
-        font-size: 2.2rem;
-      }
-
-      .videos-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-
-      .header-content {
-        justify-content: center;
-      }
-
-      .header-links {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-      }
-
-      .progress-stats {
-        gap: 1rem;
-      }
-
-      .action-buttons {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .controls-section {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .filter-buttons {
-        justify-content: center;
-      }
     }
 
     /* ナビゲーション */
@@ -1417,12 +1495,10 @@
           updateProgress();
           saveProgress();
         });
-        // 追加: clickイベントでも即時反映（スマホ対策）
+        // clickイベントでも即時反映（スマホ対策）
         checkbox.addEventListener('click', () => {
-          setTimeout(() => {
-            updateProgress();
-            saveProgress();
-          }, 0);
+          updateProgress();
+          saveProgress();
         });
       });
 
