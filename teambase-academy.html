@@ -1047,7 +1047,7 @@
   <!-- メインコンテンツ -->
   <section class="videos-section">
     <div class="container">
-      <h2 class="section-title">組織マネジメント構築教材</h2>
+      <h2 class="section-title">Teambase Academy講座一覧</h2>
       
       <!-- コントロール -->
       <div class="controls-section">
@@ -1416,6 +1416,13 @@
         checkbox.addEventListener('change', () => {
           updateProgress();
           saveProgress();
+        });
+        // 追加: clickイベントでも即時反映（スマホ対策）
+        checkbox.addEventListener('click', () => {
+          setTimeout(() => {
+            updateProgress();
+            saveProgress();
+          }, 0);
         });
       });
 

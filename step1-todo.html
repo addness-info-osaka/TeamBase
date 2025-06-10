@@ -393,40 +393,66 @@
         </p>
       </div>
 
-      <!-- 登録ステップ -->
+      <!-- 登録ステップ（最小限の説明） -->
       <div class="registration-steps">
         <div class="step-item">
           <div class="step-number">1</div>
           <div class="step-content">
             <h3>Todo App にアクセス</h3>
-            <p>下記リンクをクリックして、Todo App の登録ページを開いてください。</p>
+            <p>下記のボタンからGoogleまたはLINEでアカウント登録・ログインしてください。</p>
             <a href="https://todo.addness.com/login" class="todo-link" target="_blank" rel="noopener noreferrer">
               ✅ Todo App ログインページを開く
             </a>
           </div>
         </div>
+      </div>
 
-        <div class="step-item">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>アカウント情報入力</h3>
-            <p>メールアドレス、パスワード、名前などの必要な情報を入力してアカウントを作成してください。</p>
+      <!-- Todoアプリ操作説明動画 -->
+      <div class="content-header">
+        <h2 class="content-title">🎥 Todoアプリの基本操作説明</h2>
+        <div style="margin-bottom:2rem;">
+          <iframe src="https://player.vimeo.com/video/1069133957?h=49b5be1d67&amp;title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="100%" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="ToDoアプリの基本操作説明01"></iframe>
+          <!-- Todoアプリチェックリスト -->
+          <div class="todo-checklist" style="margin-top: 1.5rem; padding: 1.5rem; background: var(--secondary); border-radius: 12px;">
+            <h4 style="font-size: 1.1rem; color: var(--dark); margin-bottom: 1rem;">Todoアプリ基本操作チェック</h4>
+            <div class="checklist-items">
+              <div class="checklist-item" style="margin-bottom: 0.8rem;">
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                  <input type="checkbox" id="todo_basic_1" style="width: 18px; height: 18px;">
+                  <span style="font-size: 0.95rem;">基本的な操作を理解した</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="step-item">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>メール認証の完了</h3>
-            <p>登録したメールアドレスに認証メールが送信されますので、リンクをクリックして認証を完了してください。</p>
+        <div style="margin-bottom:2rem;">
+          <iframe src="https://player.vimeo.com/video/1069133914?h=8cc9dee985&amp;title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="100%" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="ToDoアプリの基本操作説明02"></iframe>
+          <!-- Todoアプリチェックリスト -->
+          <div class="todo-checklist" style="margin-top: 1.5rem; padding: 1.5rem; background: var(--secondary); border-radius: 12px;">
+            <h4 style="font-size: 1.1rem; color: var(--dark); margin-bottom: 1rem;">Todoアプリ基本操作チェック</h4>
+            <div class="checklist-items">
+              <div class="checklist-item" style="margin-bottom: 0.8rem;">
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                  <input type="checkbox" id="todo_pool_2" style="width: 18px; height: 18px;">
+                  <span style="font-size: 0.95rem;">タスクプール、定常Todo、Todo引き続きを理解した</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="step-item">
-          <div class="step-number">4</div>
-          <div class="step-content">
-            <h3>ログイン確認</h3>
-            <p>アカウント作成後、Todo App にログインできることを確認してください。</p>
+        <div style="margin-bottom:2rem;">
+          <iframe src="https://player.vimeo.com/video/1069133930?h=c89e23e108&amp;title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="100%" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="ToDoアプリの基本操作説明03"></iframe>
+          <!-- Todoアプリチェックリスト -->
+          <div class="todo-checklist" style="margin-top: 1.5rem; padding: 1.5rem; background: var(--secondary); border-radius: 12px;">
+            <h4 style="font-size: 1.1rem; color: var(--dark); margin-bottom: 1rem;">Todoアプリ基本操作チェック</h4>
+            <div class="checklist-items">
+              <div class="checklist-item" style="margin-bottom: 0.8rem;">
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                  <input type="checkbox" id="todo_create_3" style="width: 18px; height: 18px;">
+                  <span style="font-size: 0.95rem;">Todoの作成方法を理解した</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -487,8 +513,48 @@
     // イベントリスナー
     document.getElementById('todoComplete').addEventListener('change', saveProgress);
 
+    // Todoアプリチェックリストの進捗保存
+    function saveTodoProgress() {
+      const todoProgress = {
+        basic: document.getElementById('todo_basic_1').checked,
+        pool: document.getElementById('todo_pool_2').checked,
+        create: document.getElementById('todo_create_3').checked
+      };
+      localStorage.setItem('todo-progress', JSON.stringify(todoProgress));
+    }
+
+    // Todoアプリチェックリストの進捗読み込み
+    function loadTodoProgress() {
+      const saved = localStorage.getItem('todo-progress');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          document.getElementById('todo_basic_1').checked = data.basic;
+          document.getElementById('todo_pool_2').checked = data.pool;
+          document.getElementById('todo_create_3').checked = data.create;
+        } catch (e) {
+          console.log('Todo進捗の読み込みに失敗しました');
+        }
+      }
+    }
+
+    // Todoアプリチェックリストのイベントリスナー設定
+    function setupTodoChecklist() {
+      document.querySelectorAll('.todo-checklist input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', saveTodoProgress);
+        checkbox.addEventListener('click', () => {
+          setTimeout(saveTodoProgress, 0);
+        });
+      });
+    }
+
     // 初期化
-    document.addEventListener('DOMContentLoaded', loadProgress);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      loadTodoProgress(); // Todo進捗の読み込みを追加
+      toggleNextButton();
+      setupTodoChecklist(); // Todoチェックリストの設定を追加
+    });
   </script>
 </body>
 </html> 
